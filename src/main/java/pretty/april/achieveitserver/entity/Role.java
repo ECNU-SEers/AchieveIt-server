@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author mybatis-plus
- * @since 2020-03-18
+ * @since 2020-03-20
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -26,6 +26,10 @@ public class Role implements Serializable {
     private Integer id;
 
     private String name;
+
+    private Integer creatorId;
+
+    private String remark;
 
 
 }

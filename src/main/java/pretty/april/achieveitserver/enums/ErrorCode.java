@@ -6,7 +6,9 @@ public enum ErrorCode {
     AUTHENTICATION_FAILED(1002, "Authentication failed. You must provide a valid auth."),
     UNAUTHORIZED(1003, "You have no authorization to proceed."),
     INVALID_TOKEN(1004, "Your token is invalid."),
-    SYSTEM_ERROR(1005, "System error.");
+    SYSTEM_ERROR(1005, "System error."),
+    USER_NOT_FOUND(1006, "User not found."),
+    INVALID_ARGUMENT(1007,"Invalid argument.");
 
     private final int code;
     private final String message;

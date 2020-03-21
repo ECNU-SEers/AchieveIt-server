@@ -51,11 +51,11 @@ public class TokenRefreshEndPoint {
         if (su == null) {
             return ResponseUtils.errorResponseWithMessage(ErrorCode.INVALID_TOKEN, "User not found");
         }
-        if (CollectionUtils.isEmpty(su.getRoles())) {
+        if (CollectionUtils.isEmpty(su.getAuthorities())) {
             return ResponseUtils.errorResponseWithMessage(ErrorCode.INVALID_TOKEN, "User has no roles");
         }
 
-        List<GrantedAuthority> authorities = su.getRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        List<GrantedAuthority> authorities = su.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
         UserContext userContext = new UserContext(subject, authorities);
         return ResponseUtils.successResponse(new AccessToken(jwtTokenHelper.generateAccessJwtToken(userContext)));
     }
