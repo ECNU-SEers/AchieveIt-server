@@ -10,9 +10,9 @@
     <!--数据源配置dbcp-->
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://127.0.0.1:3306/AchieveIt" />
-        <property name="username" value="root" />
-        <property name="password" value="123456" />
+        <property name="url" value="jdbc:mysql://" />
+        <property name="username" value="" />
+        <property name="password" value="" />
         <property name="maxActive" value="3"/>
         <property name="maxIdle" value="1"/>
     </bean>
