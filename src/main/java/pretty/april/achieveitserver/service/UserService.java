@@ -23,6 +23,10 @@ public class UserService {
     public User getByUsername(String username) {
         return userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
     }
+    
+    public User getById(Integer id) {
+        return userMapper.selectOne(new QueryWrapper<User>().eq("id", id));
+    }
 
     public SecurityUser getSecurityUserByUsername(String username) {
         User user = getByUsername(username);

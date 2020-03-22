@@ -45,6 +45,15 @@ public class Project implements Serializable {
     private Integer managerId;
 
     private String managerName;
+    
+    private int qaAssigned;
+	
+	private int epgAssigned;
 
+	private String instanceId;
+	
+	private int configAssigned;
+	
+	private String remark;
 
 }
