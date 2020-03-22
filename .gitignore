@@ -32,3 +32,5 @@ build/
 
 **/application.yml
 **/application.properties
+
+**/MysqlGenerator.java

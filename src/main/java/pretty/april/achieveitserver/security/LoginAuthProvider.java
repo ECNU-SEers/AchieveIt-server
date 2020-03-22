@@ -44,11 +44,11 @@ public class LoginAuthProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Username or password is invalid");
         }
 
-        if (su.getRoles() == null) {
-            throw new InsufficientAuthenticationException("User has no roles");
+        if (su.getAuthorities() == null) {
+            throw new InsufficientAuthenticationException("User has no authorities");
         }
 
-        List<GrantedAuthority> authorities = su.getRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        List<GrantedAuthority> authorities = su.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
         UserContext uc = new UserContext(su.getUsername(), authorities);
 

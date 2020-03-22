@@ -1,12 +1,14 @@
 package pretty.april.achieveitserver.controller;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pretty.april.achieveitserver.enums.ErrorCode;
 import pretty.april.achieveitserver.request.AddUserRequest;
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.mapper.UserMapper;
@@ -18,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
 
     private final UserMapper userMapper;
@@ -34,7 +37,7 @@ public class AdminController {
         Map<String, Object> map = new HashMap<>();
         map.put("username", request.getUsername());
         if (!CollectionUtils.isEmpty(userMapper.selectByMap(map))) {
-            return new Response<>();
+            return ResponseUtils.errorResponse(ErrorCode.INVALID_ARGUMENT);
         }
         User user = new User();
         BeanUtils.copyProperties(request, user);
