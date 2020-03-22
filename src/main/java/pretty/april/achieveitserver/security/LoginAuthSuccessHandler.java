@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import pretty.april.achieveitserver.utils.ResponseUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +41,7 @@ public class LoginAuthSuccessHandler implements AuthenticationSuccessHandler {
 
         httpServletResponse.setStatus(HttpStatus.OK.value());
         httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(httpServletResponse.getWriter(), tokenMap);
+        objectMapper.writeValue(httpServletResponse.getWriter(), ResponseUtils.successResponse(tokenMap));
 
         HttpSession session = httpServletRequest.getSession(false);
         if (session == null) {
