@@ -6,6 +6,7 @@ import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.entity.UserRole;
 import pretty.april.achieveitserver.mapper.UserMapper;
 import pretty.april.achieveitserver.mapper.UserRoleMapper;
+import pretty.april.achieveitserver.mapper.UserSysRoleMapper;
 import pretty.april.achieveitserver.security.SecurityUser;
 
 import java.util.HashSet;
@@ -19,9 +20,12 @@ public class UserService {
 
     private UserRoleMapper userRoleMapper;
 
-    public UserService(UserMapper userMapper, UserRoleMapper userRoleMapper) {
+    private UserSysRoleMapper userSysRoleMapper;
+
+    public UserService(UserMapper userMapper, UserRoleMapper userRoleMapper, UserSysRoleMapper userSysRoleMapper) {
         this.userMapper = userMapper;
         this.userRoleMapper = userRoleMapper;
+        this.userSysRoleMapper = userSysRoleMapper;
     }
 
     public User getByUsername(String username) {
@@ -36,7 +40,7 @@ public class UserService {
         SecurityUser su = new SecurityUser();
         su.setUsername(user.getUsername());
         su.setPassword(user.getPassword());
-        List<String> authorities = userMapper.selectPermissionsByUserId(user.getId());
+        List<String> authorities = userSysRoleMapper.selectRoleNamesByUserId(user.getId());
         Set<String> au = new HashSet<>(authorities);
         su.setAuthorities(au);
         return su;

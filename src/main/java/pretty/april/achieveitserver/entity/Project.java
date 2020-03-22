@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author mybatis-plus
- * @since 2020-03-20
+ * @since 2020-03-22
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -49,6 +49,10 @@ public class Project implements Serializable {
     private Boolean qaAssigned;
 
     private Boolean epgAssigned;
+
+    private String instanceId;
+
+    private Boolean configAssigned;
 
     private String remark;
 

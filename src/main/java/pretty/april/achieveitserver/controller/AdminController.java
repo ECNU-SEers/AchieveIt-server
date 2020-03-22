@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pretty.april.achieveitserver.entity.UserSysRole;
 import pretty.april.achieveitserver.enums.ErrorCode;
+import pretty.april.achieveitserver.mapper.UserSysRoleMapper;
 import pretty.april.achieveitserver.request.AddUserRequest;
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.mapper.UserMapper;
@@ -25,10 +27,13 @@ public class AdminController {
 
     private final UserMapper userMapper;
 
+    private UserSysRoleMapper userSysRoleMapper;
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AdminController(UserMapper userMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public AdminController(UserMapper userMapper, UserSysRoleMapper userSysRoleMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userMapper = userMapper;
+        this.userSysRoleMapper = userSysRoleMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
@@ -43,6 +48,10 @@ public class AdminController {
         BeanUtils.copyProperties(request, user);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
+        UserSysRole userSysRole = new UserSysRole();
+        userSysRole.setUserId(user.getId());
+        userSysRole.setSysRoleId(2);
+        userSysRoleMapper.insert(userSysRole);
         return ResponseUtils.successResponse();
     }
 }
