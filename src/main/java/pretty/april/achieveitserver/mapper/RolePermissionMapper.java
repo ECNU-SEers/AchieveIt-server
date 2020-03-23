@@ -13,8 +13,8 @@ public interface RolePermissionMapper extends BaseMapper<RolePermission> {
     @Insert("<script>" +
             "insert into role_permission (role_id,permission_id) values" +
             "<foreach collections='rps' item='rp' open='' separator=',' close='' >" +
-            "(rp.roleId,rp.permissionId)" +
+            "(#{rp.roleId},#{rp.permissionId})" +
             "</foreach>" +
             "</script>")
-    public void insertBatch(List<RolePermission> rps);
+    void insertBatch(List<RolePermission> rps);
 }

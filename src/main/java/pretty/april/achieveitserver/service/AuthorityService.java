@@ -123,6 +123,7 @@ public class AuthorityService {
         UserRole userRole = new UserRole();
         userRole.setRoleId(roleId);
         userRole.setUserId(request.getAssigneeId());
+        userRole.setProjectId(request.getProjectId());
         userRoleMapper.insert(userRole);
     }
 
@@ -133,12 +134,14 @@ public class AuthorityService {
         }
         UserRole ur = userRoleMapper.selectOne(new QueryWrapper<UserRole>()
                 .eq(true, "user_id", request.getUserId())
-                .eq(true, "role_id", roleId));
+                .eq(true, "role_id", roleId)
+                .eq(true, "project_id", request.getProjectId()));
         if (ur == null) {
             return;
         }
         userRoleMapper.delete(new QueryWrapper<UserRole>()
                 .eq(true, "user_id", request.getUserId())
-                .eq(true, "role_id", roleId));
+                .eq(true, "role_id", roleId)
+                .eq(true, "project_id", request.getProjectId()));
     }
 }

@@ -9,4 +9,7 @@ public class RevokeRoleRequest {
 
     @NotNull
     private Integer userId;
+
+    @NotNull
+    private Integer projectId;
 }

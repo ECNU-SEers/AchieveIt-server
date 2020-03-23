@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author mybatis-plus
- * @since 2020-03-22
+ * @since 2020-03-23
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -24,6 +24,8 @@ public class ProjectDevice implements Serializable {
     private Integer id;
 
     private String outerId;
+
+    private String type;
 
     private Integer projectId;
 

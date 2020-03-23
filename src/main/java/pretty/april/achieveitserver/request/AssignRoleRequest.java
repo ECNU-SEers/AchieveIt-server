@@ -9,4 +9,7 @@ public class AssignRoleRequest {
 
     @NotNull
     private Integer assigneeId;
+
+    @NotNull
+    private Integer projectId;
 }

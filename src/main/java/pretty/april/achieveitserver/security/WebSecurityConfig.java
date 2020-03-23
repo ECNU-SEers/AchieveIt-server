@@ -12,10 +12,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,13 +38,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private ObjectMapper objectMapper;
 
-    public WebSecurityConfig(RestAuthenticationEntryPoint authenticationEntryPoint, AuthenticationSuccessHandler successHandler, AuthenticationFailureHandler failureHandler, LoginAuthProvider loginAuthProvider, JwtAuthenticationProvider jwtAuthenticationProvider, ObjectMapper objectMapper) {
+    private JwtSettings jwtSettings;
+
+    public WebSecurityConfig(RestAuthenticationEntryPoint authenticationEntryPoint, AuthenticationSuccessHandler successHandler, AuthenticationFailureHandler failureHandler, LoginAuthProvider loginAuthProvider, JwtAuthenticationProvider jwtAuthenticationProvider, ObjectMapper objectMapper, JwtSettings jwtSettings) {
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.successHandler = successHandler;
         this.failureHandler = failureHandler;
         this.loginAuthProvider = loginAuthProvider;
         this.jwtAuthenticationProvider = jwtAuthenticationProvider;
         this.objectMapper = objectMapper;
+        this.jwtSettings = jwtSettings;
     }
 
     protected LoginProcessingFilter loginProcessingFilter() {
@@ -57,6 +62,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         JwtTokenAuthProcessingFilter filter = new JwtTokenAuthProcessingFilter(matcher, failureHandler);
         filter.setAuthenticationManager(this.authenticationManager);
         return filter;
+    }
+
+    protected CorsFilter corsFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.setMaxAge(jwtSettings.getRefreshTokenExpirationMinutes() * 60L);
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", corsConfiguration);
+        return new CorsFilter(source);
     }
 
     @Bean
@@ -92,6 +109,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(SecurityConstants.JWT_TOKEN_REQUIRED_URL).authenticated()
 
                 .and()
+                .addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtTokenAuthProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
     }

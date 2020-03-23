@@ -1,20 +1,20 @@
 package pretty.april.achieveitserver.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import java.time.LocalDate;
 import com.baomidou.mybatisplus.annotation.TableId;
+import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import java.io.Serializable;
-import java.time.LocalDate;
 
 /**
  * <p>
- *
+ * 
  * </p>
  *
  * @author mybatis-plus
- * @since 2020-03-22
+ * @since 2020-03-23
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -55,5 +55,6 @@ public class Project implements Serializable {
     private Boolean configAssigned;
 
     private String remark;
+
 
 }
