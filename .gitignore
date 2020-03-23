@@ -36,3 +36,6 @@ build/
 **/MysqlGenerator.java
 
 **/activiti.cfg.xml
+
+*/.DS_Store
+.DS_Store

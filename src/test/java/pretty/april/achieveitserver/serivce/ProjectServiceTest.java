@@ -5,8 +5,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.request.project.ApproveProjectRequest;
 import pretty.april.achieveitserver.request.project.RetrieveProjectRequest;
+import pretty.april.achieveitserver.request.project.ShowProjectListRequest;
 import pretty.april.achieveitserver.service.ProjectService;
 
 @RunWith(SpringRunner.class)
@@ -101,6 +104,14 @@ public class ProjectServiceTest {
 //		List<SearchProjectRequest> results = projectService.searchProjectWithNameIncludingKeyword(keyword);
 //		System.out.println(results.size());
 //	}
+    
+
+    @Test
+    public void retrieveProjectsWithNameIncluingKeywordByPageTest() {
+    	String keyword = "ch";
+    	PageDTO<RetrieveProjectRequest> page = projectService.retrieveProjectsWithNameIncluingKeywordByPage(1, 5, keyword);
+    	System.out.println(page.getItems());
+    }
 
 //	@Test
 //	public void showProjectListTest() {
@@ -111,18 +122,26 @@ public class ProjectServiceTest {
 //		System.out.println("epg="+projectList.getEpgAssigned());
 //		System.out.println("counter="+projectList.getParticipantCounter());
 //	}
+	
+//    @Test
+//	public void showProjectsTest() {
+//		PageDTO<ShowProjectListRequest> page = projectService.showProjects(1, 5, 1);
+//		System.out.println("items:\n"+page.getItems());
+//		System.out.println("total = "+ page.getTotal());
+//		
+//	}
 
-    @Test
-    public void acceptProjectTest() throws Exception {
-        String outerId = "2020-0322-D-pp";
-        RetrieveProjectRequest rpd = projectService.retrieveProject(outerId);
-        rpd.getProject().setRemark("0322good job!");
-        ApproveProjectRequest apd = projectService.acceptProject(rpd);
-        System.out.println("state = " + apd.getProjectInfo().getProject().getState());
-        if (apd.isReviewResult()) {
-            System.out.println("yes");
-        }
-    }
+//    @Test
+//    public void acceptProjectTest() throws Exception {
+//        String outerId = "2020-0322-D-pp";
+//        RetrieveProjectRequest rpd = projectService.retrieveProject(outerId);
+//        rpd.getProject().setRemark("0322good job!");
+//        ApproveProjectRequest apd = projectService.acceptProject(rpd);
+//        System.out.println("state = " + apd.getProjectInfo().getProject().getState());
+//        if (apd.isReviewResult()) {
+//            System.out.println("yes");
+//        }
+//    }
 
 //	@Test
 //	public void rejectProjectTest() throws Exception {

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.request.project.AssignRoleRequest;
 import pretty.april.achieveitserver.request.project.CreateProjectRequest;
@@ -34,8 +35,32 @@ public class ProjectController {
 	 * @return 包含关键字的项目ID和项目名称
 	 */
 	@GetMapping("/searchProject")
-	public List<SearchProjectRequest> searchProjectUsingKeyword(@RequestParam(value="keyword") String keyword) {
-		return projectService.searchProjectWithNameIncludingKeyword(keyword);
+	public Response<List<SearchProjectRequest>> searchProjectUsingKeyword(@RequestParam(value="keyword") String keyword) {
+		return ResponseUtils.successResponse(projectService.searchProjectWithNameIncludingKeyword(keyword));
+	}
+	
+	/**
+	 * 搜索过程中选择某个项目进行列表展示（010101）
+	 * @param outerId 项目ID
+	 * @return 项目列表
+	 */
+	@GetMapping("/showList")
+	public Response<ShowProjectListRequest> showProjectList(@RequestParam(value="outerId") String outerId) {
+		return ResponseUtils.successResponse(projectService.showProjectList(outerId));
+	}
+	
+	/**
+	 * 展示所有项目名称中包含某关键字的项目基本信息
+	 * @param pageNo
+	 * @param pageSize
+	 * @param keyword
+	 * @return 所有项目名称中包含某关键字的项目基本信息
+	 */
+	@GetMapping("/showAllInfo")
+	public Response<PageDTO<RetrieveProjectRequest>> retrieveProjectInfoWithNameIncluingKeyword(@RequestParam(value="pageNo") Integer pageNo,
+			 																					@RequestParam(value="pageSize") Integer pageSize,
+			 																					@RequestParam(value="keyword") String keyword) {
+		return ResponseUtils.successResponse(projectService.retrieveProjectsWithNameIncluingKeywordByPage(pageNo, pageSize, keyword));
 	}
 	
 	/**
@@ -51,13 +76,18 @@ public class ProjectController {
 	}
 	
 	/**
-	 * 列表展示（01010301）
-	 * @param outerId 项目ID
-	 * @return 项目列表
+	 * 展示项目列表 （01010301）
+	 * @param pageNo
+	 * @param pageSize
+	 * @param userId 用户ID
+	 * @return
 	 */
-	@GetMapping("/showList")
-	public ShowProjectListRequest showProjectList(@RequestParam(value="outerId") String outerId) {
-		return projectService.showProjectList(outerId);
+	@GetMapping("showProjects")
+	public Response<PageDTO<ShowProjectListRequest>> showProjects(@RequestParam(value="pageNo") Integer pageNo,
+													 @RequestParam(value="pageSize") Integer pageSize,
+													 @RequestParam(value="userId") Integer userId) {
+		
+		return ResponseUtils.successResponse(projectService.showProjects(pageNo, pageSize, userId));
 	}
 	
 	/**
@@ -73,7 +103,7 @@ public class ProjectController {
 	}
 	
 	/**
-	 * 审批归档
+	 * 审批归档（01010306）
 	 * @param outerId 项目ID
 	 * @return
 	 */
@@ -141,17 +171,17 @@ public class ProjectController {
 	}
 	
 	/**
-	 * 查询项目信息（010201）
+	 * 查询项目信息（01010303 & 010201）
 	 * @param outerId 项目ID
 	 * @return 项目信息
 	 */
 	@GetMapping("/retrieveProjectInfo")
-	public RetrieveProjectRequest retrieveProjectInfoByOuterId(@RequestParam(value="outerId") String outerId) {
-		return projectService.retrieveProject(outerId);
+	public Response<RetrieveProjectRequest> retrieveProjectInfoByOuterId(@RequestParam(value="outerId") String outerId) {
+		return ResponseUtils.successResponse(projectService.retrieveProject(outerId));
 	}
 	
 	/**
-	 * 更新项目信息（010202）
+	 * 更新项目信息（01010304 & 010202）
 	 * @param request
 	 * @return
 	 * @throws Exception
@@ -163,7 +193,7 @@ public class ProjectController {
 	}
 	
 	/**
-	 * 因立项驳回而更新项目信息
+	 * 因立项驳回而更新项目信息（注意：该接口只可执行一次，如果需要反复修改，调用上一个更新接口，最后一次用这个）
 	 * @param request
 	 * @return
 	 * @throws Exception

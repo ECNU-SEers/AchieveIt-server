@@ -1,8 +1,6 @@
 package pretty.april.achieveitserver.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import pretty.april.achieveitserver.entity.ProjectMember;
@@ -34,4 +32,11 @@ public interface ProjectMemberMapper extends BaseMapper<ProjectMember> {
             "from project_member inner join user on project_member.user_id = user.id " +
             "where project_member.project_id = #{projectId} and project_member.user_id = #{memberId} ")
     MemberDetails selectMemberDetailsByProjectIdAndMemberId(Integer projectId, Integer memberId);
+
+    /**
+     * @param userId
+     * @return
+     */
+    @Select("SELECT project_id FROM project_member WHERE user_id = #{userId}")
+    List<Integer> selectProjectIdByUserId(Integer userId);
 }

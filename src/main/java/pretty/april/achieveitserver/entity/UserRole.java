@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author mybatis-plus
@@ -30,6 +30,4 @@ public class UserRole implements Serializable {
     private Integer roleId;
 
     private Integer projectId;
-
-
 }

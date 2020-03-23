@@ -15,7 +15,7 @@ public class RoleService {
     }
 
     public Role getByRoleName(String name) {
-        return roleMapper.selectOne(new QueryWrapper<Role>().eq("name", "ROLE_ADMIN"));
+        return roleMapper.selectOne(new QueryWrapper<Role>().eq("name", name));
     }
 
     public void insert(Role role) {

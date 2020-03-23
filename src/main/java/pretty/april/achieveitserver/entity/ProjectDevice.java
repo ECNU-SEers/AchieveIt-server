@@ -38,6 +38,8 @@ public class ProjectDevice implements Serializable {
     private LocalDate dueDate;
 
     private LocalDate returnDate;
+    
+    private String type;
 
 
 }

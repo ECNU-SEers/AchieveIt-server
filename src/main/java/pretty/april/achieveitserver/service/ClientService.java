@@ -1,5 +1,7 @@
 package pretty.april.achieveitserver.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -7,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import pretty.april.achieveitserver.entity.Client;
 import pretty.april.achieveitserver.mapper.ClientMapper;
+import pretty.april.achieveitserver.request.client.RetrieveClientInfoRequest;
 
 @Service
 public class ClientService extends ServiceImpl<ClientMapper, Client> {
@@ -40,5 +43,13 @@ public class ClientService extends ServiceImpl<ClientMapper, Client> {
 	 */
 	public Client getClientById(Integer id) {
 		return this.baseMapper.selectById(id);
+	}
+	
+	/**
+	 * 查看所有客户的客户ID和客户名称（公司名）
+	 * @return 所有客户的客户ID和客户名称（公司名）
+	 */
+	public List<RetrieveClientInfoRequest> getAllOuterIdAndCompany() {
+		return this.baseMapper.selectOuterIdAndCompany();
 	}
 }
