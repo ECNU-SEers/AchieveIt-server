@@ -1,12 +1,12 @@
 package pretty.april.achieveitserver.service;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -96,7 +96,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
 
 //		2.设置项目状态和客户表ID并创建项目
         Project project = new Project();
-        BeanUtil.copyProperties(validator, project);
+        BeanUtils.copyProperties(validator, project);
         project.setState("申请立项");
 //		通过客户名称和客户ID得到客户表ID
         project.setClientId(clientService.getIdByOuterIdAndCompany(validator.getClientOuterId(), validator.getCompany()));
@@ -248,7 +248,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
 //		2.利用project表中的client_id得到client表中的company
         String company = clientService.getCompanyById(project.getClientId());
         ShowProjectListRequest projectList = new ShowProjectListRequest();
-        BeanUtil.copyProperties(project, projectList);
+        BeanUtils.copyProperties(project, projectList);
         projectList.setCompany(company);
         projectList.setParticipantCounter(memberService.selectCountByProjectId(project.getId()));
         if (project.getQaAssigned()) {
@@ -278,7 +278,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         }
 //		2.更新project表
         Project project = new Project();
-        BeanUtil.copyProperties(validator, project);
+        BeanUtils.copyProperties(validator, project);
         Integer projectId = primaryProject.getId();
         project.setId(projectId);
         project.setState(primaryProject.getState());
@@ -388,7 +388,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         approveProject.setProjectInfo(projectInfo);
         approveProject.setReviewResult(true);
         Project project = new Project();
-        BeanUtil.copyProperties(projectInfo.getProject(), project);
+        BeanUtils.copyProperties(projectInfo.getProject(), project);
         project.setState("已立项");
         projectMapper.updateById(project);
 
@@ -422,7 +422,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         approveProject.setProjectInfo(projectInfo);
         approveProject.setReviewResult(false);
         Project project = new Project();
-        BeanUtil.copyProperties(projectInfo.getProject(), project);
+        BeanUtils.copyProperties(projectInfo.getProject(), project);
         project.setState("立项驳回");
         projectMapper.updateById(project);
 
