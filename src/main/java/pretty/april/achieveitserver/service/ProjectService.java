@@ -2,6 +2,8 @@ package pretty.april.achieveitserver.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
@@ -10,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pretty.april.achieveitserver.activiti.ProcessManagementService;
+import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.entity.*;
 import pretty.april.achieveitserver.mapper.*;
 import pretty.april.achieveitserver.request.project.*;
@@ -192,6 +195,25 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
             projectsDetails.add(this.retrieveProject(project.getOuterId()));
         }
         return projectsDetails;
+    }
+    
+    /**
+     * 分页查询所有项目名称中包含某关键字的项目详情
+     * @param pageNo
+     * @param pageSize
+     * @param keyword
+     * @return 所有项目名称包含该关键字的项目的详情
+     */
+    public PageDTO<RetrieveProjectRequest> retrieveProjectsWithNameIncluingKeywordByPage(Integer pageNo, Integer pageSize, String keyword) {
+    	Page<Project> page = new Page<>(pageNo, pageSize);
+    	QueryWrapper<Project> queryWrapper = new QueryWrapper<Project>();
+    	queryWrapper.like("name", keyword);
+    	IPage<Project> projects = projectMapper.selectPage(page, queryWrapper);
+    	List<RetrieveProjectRequest> projectsDetails = new ArrayList<RetrieveProjectRequest>();
+    	for (Project project : projects.getRecords()) {
+            projectsDetails.add(this.retrieveProject(project.getOuterId()));
+        }
+    	return new PageDTO<RetrieveProjectRequest>(projects.getCurrent(), projects.getSize(), projects.getTotal(), projectsDetails);
     }
 
     /**
