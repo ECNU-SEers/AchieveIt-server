@@ -1,7 +1,10 @@
 package pretty.april.achieveitserver.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import pretty.april.achieveitserver.entity.Project;
 
@@ -27,4 +30,31 @@ public interface ProjectMapper extends BaseMapper<Project> {
      */
     @Select("SELECT * FROM project WHERE name LIKE \"%\"#{keyword}\"%\"")
     List<Project> selectByNameLikeKeyword(String keyword);
+    
+    /**
+     * 查询QA经理参与的所有项目
+     * 
+     * @param userId
+     * @return 某个QA经理参与的所有项目
+     */
+    @Select("SELECT project.* FROM project, project_member WHERE project_member.user_id = #{userId} AND project.id = project_member.project_id ORDER BY qa_assigned, start_date")
+    List<Project> selectProjectsOfQAManager(@Param("userId")Integer userId, Page<Project> page);
+    
+    /**
+     * 查询EPG_Leader参与的所有项目
+     * 
+     * @param userId
+     * @return 某个EPG_Leader参与的所有项目
+     */
+    @Select("SELECT project.* FROM project, project_member WHERE project_member.user_id = #{userId} AND project.id = project_member.project_id ORDER BY epg_assigned, start_date")
+    List<Project> selectProjectsOfEPGLeader(@Param("userId")Integer userId, Page<Project> page);
+    
+    /**
+     * 查询用户（非QA经理 且 非EPG_Leader）参与的所有项目
+     * 
+     * @param userId
+     * @return 某个用户参与的所有项目
+     */
+    @Select("SELECT project.* FROM project, project_member WHERE project_member.user_id = #{userId} AND project.id = project_member.project_id ORDER BY start_date")
+    List<Project> selectProjectsOfAUser(@Param("userId")Integer userId, Page<Project> page);
 }

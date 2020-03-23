@@ -263,6 +263,60 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         }
         return projectList;
     }
+    
+    /**
+     * 查询某个QA经理参与的所有项目
+     * @param userId
+     * @return 某个QA经理参与的所有项目
+     */
+    public Page<Project> getProjectsOfQAManager(Integer userId, Page<Project> page) {
+    	return page.setRecords(this.baseMapper.selectProjectsOfQAManager(userId, page));
+    }
+    
+    /**
+     * 查询某个EPG_Leader参与的所有项目
+     * @param userId
+     * @return 某个EPG_Leader参与的所有项目
+     */
+    public Page<Project> getProjectsOfEPGLeader(Integer userId, Page<Project> page) {
+    	return page.setRecords(this.baseMapper.selectProjectsOfEPGLeader(userId, page));
+    }
+    
+    /**
+     * 查询某个用户（非QA经理 且 非EPG_Leader）参与的所有项目
+     * @param userId
+     * @return 某个用户参与的所有项目
+     */
+    public Page<Project> getProjectsOfAUser(Integer userId, Page<Project> page) {
+    	return page.setRecords(this.baseMapper.selectProjectsOfAUser(userId, page));
+    }
+    
+    /**
+     * 某个用户可查看的全部项目
+     * @param pageNo
+     * @param pageSize
+     * @param userId 用户ID
+     * @return 项目列表
+     */
+    public PageDTO<ShowProjectListRequest> showProjects(Integer pageNo, Integer pageSize, Integer userId) {
+    	Page<Project> page;
+//    	1.利用用户ID查找用户的角色
+    	List<Integer> userRoles = userRoleService.getUserRoleByUserId(userId);
+//    	角色QA_MANAGER的id是3；角色EPG_LEADER的id是1
+    	if (userRoles.contains(3)) {
+    		page = this.getProjectsOfQAManager(userId, new Page<Project>(pageNo, pageSize));
+    	} else if (userRoles.contains(1)) {
+    		page = this.getProjectsOfEPGLeader(userId, new Page<Project>(pageNo, pageSize));
+    	} else {
+    		page = this.getProjectsOfAUser(userId, new Page<Project>(pageNo, pageSize));
+    	}
+    	
+    	List<ShowProjectListRequest> projectLists = new ArrayList<ShowProjectListRequest>();
+    	for (Project project: page.getRecords()) {
+    		projectLists.add(this.showProjectList(project.getOuterId()));
+    	}
+    	return new PageDTO<ShowProjectListRequest>(page.getCurrent(), page.getSize(), page.getTotal(), projectLists);
+    }
 
     @Transactional
     /**
@@ -309,7 +363,6 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
             projectBusinessArea.setBusinessAreaName(validator.getBusinessAreaName());
             projectBusinessAreaMapper.insert(projectBusinessArea);
         }
-
 
 //		5.更新milestone表：insert一条新纪录
         Milestone milestone = new Milestone();
@@ -481,6 +534,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         ProjectMember member = new ProjectMember();
         member.setProjectId(projectId);
         member.setProjectName(project.getName());
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();        
+        member.setLeaderId(userService.getByUsername(username).getId());
+        member.setLeaderName(username);
         for (Integer id : request.getUserId()) {
             if (!memberService.checkMemberExistByProjectIdAndUserId(projectId, id)) {
                 member.setUserId(id);
@@ -495,6 +551,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
                 UserRole userRole = new UserRole();
                 userRole.setUserId(id);
                 userRole.setRoleId(roleId);
+                userRole.setProjectId(projectId);
                 userRoleMapper.insert(userRole);
             }
         }
@@ -528,6 +585,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         ProjectMember member = new ProjectMember();
         member.setProjectId(projectId);
         member.setProjectName(project.getName());
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();        
+        member.setLeaderId(userService.getByUsername(username).getId());
+        member.setLeaderName(username);
         for (Integer id : request.getUserId()) {
             if (!memberService.checkMemberExistByProjectIdAndUserId(projectId, id)) {
                 member.setUserId(id);
@@ -536,12 +596,13 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
             }
         }
 //		3.将分配的EPG加入user_role表
-        Integer roleId = 3; // 角色EPG对应的id
+        Integer roleId = 2; // 角色EPG对应的id
         for (Integer id : request.getUserId()) {
             if (!userRoleService.checkUserRoleExistByUserIdAndRoleId(id, roleId)) {
                 UserRole userRole = new UserRole();
                 userRole.setUserId(id);
                 userRole.setRoleId(roleId);
+                userRole.setProjectId(projectId);
                 userRoleMapper.insert(userRole);
             }
         }

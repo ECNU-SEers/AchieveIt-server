@@ -1,5 +1,7 @@
 package pretty.april.achieveitserver.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -31,5 +33,14 @@ public class ProjectMemberService extends ServiceImpl<ProjectMemberMapper, Proje
 		queryWrapper.lambda().eq(ProjectMember::getProjectId, projectId).eq(ProjectMember::getUserId, userId);
 		int row = this.baseMapper.selectCount(queryWrapper);
 		return row > 0;
+	}
+	
+	/**
+	 * 
+	 * @param userId 用户ID
+	 * @return
+	 */
+	public List<Integer> selectProjectIdByUserId(Integer userId) {
+		return this.baseMapper.selectProjectIdByUserId(userId);
 	}
 }
