@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author mybatis-plus
- * @since 2020-03-23
+ * @since 2020-03-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -30,6 +30,8 @@ public class LaborHour implements Serializable {
 
     private Integer userId;
 
+    private Integer projectId;
+
     private Integer activityId;
 
     private Integer functionId;
@@ -41,6 +43,8 @@ public class LaborHour implements Serializable {
     private LocalTime endTime;
 
     private LocalDateTime submissionDate;
+
+    private String state;
 
 
 }

@@ -37,7 +37,7 @@ public class LoginAuthProvider implements AuthenticationProvider {
 
         SecurityUser su = userService.getSecurityUserByUsername(username);
         if (su == null) {
-            throw new UsernameNotFoundException("Cannot find user: " + username);
+            throw new BadCredentialsException("Cannot find user: " + username);
         }
 
         if (!encoder.matches(password, su.getPassword())) {
@@ -45,7 +45,7 @@ public class LoginAuthProvider implements AuthenticationProvider {
         }
 
         if (su.getAuthorities() == null) {
-            throw new InsufficientAuthenticationException("User has no authorities");
+            throw new BadCredentialsException("User has no authorities");
         }
 
         List<GrantedAuthority> authorities = su.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());

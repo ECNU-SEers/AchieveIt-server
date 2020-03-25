@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author mybatis-plus
- * @since 2020-03-23
+ * @since 2020-03-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,6 +28,8 @@ public class ProjectFunction implements Serializable {
     private Integer projectId;
 
     private String name;
+
+    private String description;
 
     private Integer parentId;
 

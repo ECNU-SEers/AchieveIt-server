@@ -19,6 +19,7 @@ import pretty.april.achieveitserver.request.project.*;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,6 +79,15 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
 
     @Autowired
     private ProcessManagementService processManagementService;
+    
+    @Autowired
+    private StateChangeMapper stateChangeMapper;
+    
+    @Autowired
+    private ProjectMemberService projectMemberService;
+    
+    @Autowired
+    private ProjectMemberMapper projectMemberMapper;
 
     /**
      * 创建项目：项目经理录入项目信息并自动申请立项
@@ -145,7 +155,17 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
                 processManagementService.handleActivityTask(task);
             }
         }
-
+        
+//      9.状态更新
+        StateChange stateChange = new StateChange();
+        stateChange.setProjectId(projectId);
+        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setLatterState(project.getState());
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        stateChange.setOperatorId(user.getId());
+        stateChangeMapper.insert(stateChange);
+        
         return project;
     }
 
@@ -179,23 +199,6 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
 
         return retrieveProject;
     }
-
-    /**
-     * 查询所有项目名称中包含某关键字的项目详情
-     *
-     * @param keyword
-     * @return 所有项目名称包含该关键字的项目的详情
-     */
-    public List<RetrieveProjectRequest> retrieveProjectWithNameIncludingKeyword(String keyword) {
-//		1.利用keyword找到所有项目名称中包含该keyword的所有项目
-        List<Project> projects = this.selectProjectByNameWithKeyword(keyword);
-//		2.得到所有项目的详细信息
-        List<RetrieveProjectRequest> projectsDetails = new ArrayList<RetrieveProjectRequest>();
-        for (Project project : projects) {
-            projectsDetails.add(this.retrieveProject(project.getOuterId()));
-        }
-        return projectsDetails;
-    }
     
     /**
      * 分页查询所有项目名称中包含某关键字的项目详情
@@ -204,27 +207,25 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param keyword
      * @return 所有项目名称包含该关键字的项目的详情
      */
-    public PageDTO<RetrieveProjectRequest> retrieveProjectsWithNameIncluingKeywordByPage(Integer pageNo, Integer pageSize, String keyword) {
-    	Page<Project> page = new Page<>(pageNo, pageSize);
-    	QueryWrapper<Project> queryWrapper = new QueryWrapper<Project>();
-    	queryWrapper.like("name", keyword);
-    	IPage<Project> projects = projectMapper.selectPage(page, queryWrapper);
+    public PageDTO<RetrieveProjectRequest> retrieveProjectsWithNameIncluingKeywordByPage(Integer pageNo, Integer pageSize, Integer userId, String keyword) {
+    	Page<Project> page = this.selectProjectByNameWithKeyword(userId, keyword, new Page<Project>(pageNo, pageSize));
     	List<RetrieveProjectRequest> projectsDetails = new ArrayList<RetrieveProjectRequest>();
-    	for (Project project : projects.getRecords()) {
-            projectsDetails.add(this.retrieveProject(project.getOuterId()));
+    	for (Project project : page.getRecords()) {
+    		projectsDetails.add(this.retrieveProject(project.getOuterId()));
         }
-    	return new PageDTO<RetrieveProjectRequest>(projects.getCurrent(), projects.getSize(), projects.getTotal(), projectsDetails);
+    	return new PageDTO<RetrieveProjectRequest>(page.getCurrent(), page.getSize(), page.getTotal(), projectsDetails);
     }
 
     /**
      * 搜索所有项目名称中包含某关键字的项目名称和项目ID
      *
+     * @param userId
      * @param keyword
      * @return 所有项目名称包含该关键字的项目名称和项目ID
      */
-    public List<SearchProjectRequest> searchProjectWithNameIncludingKeyword(String keyword) {
+    public List<SearchProjectRequest> searchProjectWithNameIncludingKeyword(Integer userId, String keyword) {
 //		1.利用keyword找到所有项目名称中包含该keyword的所有项目
-        List<Project> projects = this.selectProjectByNameWithKeyword(keyword);
+        List<Project> projects = this.selectProjectByNameWithKeyword(userId, keyword);
 //		2.得到所有项目的详细信息
         List<SearchProjectRequest> projectNameAndIds = new ArrayList<SearchProjectRequest>();
         SearchProjectRequest result = new SearchProjectRequest();
@@ -374,9 +375,22 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         milestone.setRecorderId(user.getId());
         milestoneMapper.insert(milestone);
 
+//      6.更新project_member表中的project_name
+        List<ProjectMember> projectMembers = projectMemberService.selectByProjectId(projectId);
+        for (ProjectMember projectMember: projectMembers) {
+        	projectMember.setProjectName(validator.getName());
+        	projectMemberMapper.updateById(projectMember);
+        }
+        
         return project;
     }
 
+    /**
+     * 因项目驳回而更新项目（只可调用一次）
+     * @param validator
+     * @return
+     * @throws Exception
+     */
     public Project updateProjectInfoDuringProjectApproval(UpdateProjectRequest validator) throws Exception {
         Project project = this.updateProjectInfo(validator);
 
@@ -417,13 +431,19 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     }
 
     /**
-     * 查询所有项目名称中包含某关键字的项目
+     * 查询还用户参与的所有项目名称中包含某关键字的项目
      *
+     * @param userId
      * @param keyword
+     * @param page
      * @return 所有项目名称中包含某关键字的项目
      */
-    public List<Project> selectProjectByNameWithKeyword(String keyword) {
-        return this.baseMapper.selectByNameLikeKeyword(keyword);
+    public Page<Project> selectProjectByNameWithKeyword(Integer userId, String keyword, Page<Project> page) {
+        return page.setRecords(this.baseMapper.selectByNameLikeKeyword(userId, keyword, page));
+    }
+    
+    public List<Project> selectProjectByNameWithKeyword(Integer userId, String keyword) {
+        return this.baseMapper.selectByNameLikeKeyword(userId, keyword);
     }
 
     /**
@@ -456,6 +476,16 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
                 processManagementService.handleActivityTask(task, variable);
             }
         }
+//      4.状态更新
+        StateChange stateChange = new StateChange();
+        stateChange.setProjectId(projectInfo.getProject().getId());
+        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setFormerState(projectInfo.getProject().getState());
+        stateChange.setLatterState(project.getState());
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        stateChange.setOperatorId(user.getId());
+        stateChangeMapper.insert(stateChange);
 
         return approveProject;
     }
@@ -490,7 +520,17 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
                 processManagementService.handleActivityTask(task, variable);
             }
         }
-
+//      4.状态更新
+        StateChange stateChange = new StateChange();
+        stateChange.setProjectId(projectInfo.getProject().getId());
+        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setFormerState(projectInfo.getProject().getState());
+        stateChange.setLatterState(project.getState());
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        stateChange.setOperatorId(user.getId());
+        stateChangeMapper.insert(stateChange);
+        
         return approveProject;
     }
 
@@ -632,8 +672,20 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         if (project.getState().equals("结束") || project.getState().equals("已归档")) {
             throw new Exception("The project already expires, cannot be updated, please choose a new one.");
         }
+        StateChange stateChange = new StateChange();
+        stateChange.setFormerState(project.getState());
+        
         project.setState("结束");
         projectMapper.updateById(project);
+        
+        stateChange.setProjectId(project.getId());
+        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setLatterState(project.getState());
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        stateChange.setOperatorId(user.getId());
+        stateChangeMapper.insert(stateChange);
+        
         return project;
     }
 
@@ -645,8 +697,20 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      */
     public Project acceptArchive(String outerId) {
         Project project = this.getProjectByOuterId(outerId);
+        StateChange stateChange = new StateChange();
+        stateChange.setFormerState(project.getState());
+        
         project.setState("已归档");
         projectMapper.updateById(project);
+        
+        stateChange.setProjectId(project.getId());
+        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setLatterState(project.getState());
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        stateChange.setOperatorId(user.getId());
+        stateChangeMapper.insert(stateChange);
+        
         return project;
     }
 
@@ -659,6 +723,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     public Project setConfigInfo(String outerId) {
 //		1.改变project表的git_assigned
         Project project = this.getProjectByOuterId(outerId);
+        StateChange stateChange = new StateChange();
+        stateChange.setFormerState(project.getState());
+        
         project.setState("进行中");
         projectMapper.updateById(project);
 
@@ -670,7 +737,39 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
                 processManagementService.handleActivityTask(task);
             }
         }
+//      4.状态更新
+        stateChange.setProjectId(project.getId());
+        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setLatterState(project.getState());
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        stateChange.setOperatorId(user.getId());
+        stateChangeMapper.insert(stateChange);
 
+        return project;
+    }
+    
+    /**
+     * 项目经理交付项目
+     * @param outerId
+     * @return
+     */
+    public Project projectDelivery(String outerId) {
+    	Project project = this.getProjectByOuterId(outerId);
+    	StateChange stateChange = new StateChange();
+        stateChange.setFormerState(project.getState());
+        
+        project.setState("已交付");
+        projectMapper.updateById(project);
+        
+        stateChange.setProjectId(project.getId());
+        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setLatterState(project.getState());
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        stateChange.setOperatorId(user.getId());
+        stateChangeMapper.insert(stateChange);
+        
         return project;
     }
 }

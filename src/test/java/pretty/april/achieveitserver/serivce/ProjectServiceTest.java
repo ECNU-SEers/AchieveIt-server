@@ -109,8 +109,9 @@ public class ProjectServiceTest {
     @Test
     public void retrieveProjectsWithNameIncluingKeywordByPageTest() {
     	String keyword = "ch";
-    	PageDTO<RetrieveProjectRequest> page = projectService.retrieveProjectsWithNameIncluingKeywordByPage(1, 5, keyword);
-    	System.out.println(page.getItems());
+    	Integer userId = 1;
+    	PageDTO<RetrieveProjectRequest> page = projectService.retrieveProjectsWithNameIncluingKeywordByPage(1, 5, userId, keyword);
+    	System.out.println(page.getTotal());
     }
 
 //	@Test

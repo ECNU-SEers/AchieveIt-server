@@ -79,7 +79,7 @@ public class JwtTokenHelper {
         try {
             return jwtParser.parseClaimsJws(token);
         } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException | SignatureException | ExpiredJwtException e) {
-            throw new BadCredentialsException("Invalid jwt token: ", e);
+            throw new InvalidTokenException("Invalid jwt token");
         }
     }
 

@@ -32,7 +32,7 @@ public class ProjectDeviceController {
 	 * @param projectId 项目表ID
 	 * @return 设备ID中包含关键字的所有设备ID
 	 */
-	@GetMapping("/searchDevice")
+	@GetMapping("/search")
 	public Response<List<String>> searchDeviceUsingKeyword(@RequestParam(value="keyword") String keyword,
 														   @RequestParam(value="projectId") Integer projectId) {
 		return ResponseUtils.successResponse(projectDeviceService.searchProjectDeviceWithOuterIdIncludingKeyword(keyword, projectId));
@@ -44,7 +44,7 @@ public class ProjectDeviceController {
 	 * @param projectId 项目表ID
 	 * @return 设备信息列表
 	 */
-	@GetMapping("/showList")
+	@GetMapping("/show/detail")
 	public Response<ShowProjectDeviceListRequest> showProjectDeviceList(@RequestParam(value="outerId") String outerId, 
 																		@RequestParam(value="projectId") Integer projectId) {
 		return ResponseUtils.successResponse(projectDeviceService.showProjectDeviceList(outerId, projectId));
@@ -56,7 +56,7 @@ public class ProjectDeviceController {
 	 * @return
 	 * @throws Exception
 	 */
-	@PostMapping("/createDevice")
+	@PostMapping("/create")
 	public Response<?> createProjectDevice(@RequestBody CreateOrUpdateProjectDeviceRequest request) throws Exception {
 		projectDeviceService.createProjectDevice(request);
 		return ResponseUtils.successResponse();
@@ -69,7 +69,7 @@ public class ProjectDeviceController {
 	 * @param projectId 项目表ID
 	 * @return 该项目的所有设备信息
 	 */
-	@GetMapping("/showDevices")
+	@GetMapping("/show/all/details")
 	public Response<PageDTO<ShowProjectDeviceListRequest>> showDevices(@RequestParam(value="pageNo") Integer pageNo,
 													 @RequestParam(value="pageSize") Integer pageSize,
 													 @RequestParam(value="projectId") Integer projectId) {
@@ -77,23 +77,23 @@ public class ProjectDeviceController {
 	}
 	
 	/**
-	 * 不分页展示某个设备的所有检查（01080302）
+	 * 不分页展示某个设备的所有检查信息（01080302）
 	 * @param deviceId 设备表ID
 	 * @return 该设备的所有检查信息
 	 */
-	@GetMapping("/showDeviceInspection")
+	@GetMapping("/inspect")
 	public Response<List<RetrieveDeviceInspectionRequest>> retrieveDeviceInspection(@RequestParam(value="deviceId") Integer deviceId) {
 		return ResponseUtils.successResponse(projectDeviceService.retrieveDeviceInspection(deviceId));
 	}
 	
 	/**
-	 * 分页展示某个设备的所有检查（01080302）
+	 * 分页展示某个设备的所有检查信息（01080302）
 	 * @param pageNo
 	 * @param pageSize
 	 * @param deviceId 设备表ID
 	 * @return 该设备的所有检查信息
 	 */
-	@GetMapping("/showDeviceInspectionByPage")
+	@GetMapping("/inspect/by/page")
 	public Response<PageDTO<RetrieveDeviceInspectionRequest>> retrieveDeviceInspectionByPage(@RequestParam(value="pageNo") Integer pageNo,
 													 @RequestParam(value="pageSize") Integer pageSize,
 													 @RequestParam(value="deviceId") Integer deviceId) {
@@ -106,7 +106,7 @@ public class ProjectDeviceController {
 	 * @return
 	 * @throws Exception
 	 */
-	@PutMapping("/updateDevice")
+	@PutMapping("/update")
 	public Response<?> updateProjectDevice(@RequestBody CreateOrUpdateProjectDeviceRequest request) throws Exception {
 		projectDeviceService.updateProjectDeviceInfo(request);
 		return ResponseUtils.successResponse();
@@ -118,7 +118,7 @@ public class ProjectDeviceController {
 	 * @return
 	 * @throws Exception
 	 */
-//	@PutMapping("/removeDevice")
+//	@PutMapping("/remove")
 //	public Response<?> removeProjectDevice(@RequestParam(value="outerId") String outerId) throws Exception {
 //		projectDeviceService.removeProjectDevice(outerId);
 //		return ResponseUtils.successResponse();

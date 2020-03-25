@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author mybatis-plus
- * @since 2020-03-23
+ * @since 2020-03-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -30,4 +30,6 @@ public class UserRole implements Serializable {
     private Integer roleId;
 
     private Integer projectId;
+
+
 }

@@ -21,6 +21,15 @@ public class ProjectMemberService extends ServiceImpl<ProjectMemberMapper, Proje
 	public int selectCountByProjectId(Integer projectId) {
 		return this.baseMapper.selectCountByProjectId(projectId);
 	}
+	
+	/**
+	 * 利用project表id查询某个project的所有成员记录
+	 * @param projectId
+	 * @return
+	 */
+	public List<ProjectMember> selectByProjectId(Integer projectId) {
+		return this.baseMapper.selectByProjectId(projectId);
+	}
 
 	/**
 	 * 利用project表id和用户id查询某个project的所有成员个数
