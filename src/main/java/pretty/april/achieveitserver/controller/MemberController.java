@@ -1,10 +1,7 @@
 package pretty.april.achieveitserver.controller;
 
 import org.springframework.web.bind.annotation.*;
-import pretty.april.achieveitserver.dto.MemberDTO;
-import pretty.april.achieveitserver.dto.PageDTO;
-import pretty.april.achieveitserver.dto.Response;
-import pretty.april.achieveitserver.dto.SimpleMemberDTO;
+import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.request.AddProjectMemberRequest;
 import pretty.april.achieveitserver.request.EditMemberRequest;
 import pretty.april.achieveitserver.service.MemberService;
@@ -33,6 +30,11 @@ public class MemberController {
     @GetMapping("/project/{projectId}/members/simple")
     public Response<List<SimpleMemberDTO>> getSimpleMembers(@PathVariable Integer projectId) {
         return ResponseUtils.successResponse(memberService.getSimpleMembers(projectId));
+    }
+
+    @GetMapping("/project/{projectId}/members/search")
+    public Response<List<SearchableDTO>> getSimpleMembers(@PathVariable Integer projectId, @RequestParam String name) {
+        return ResponseUtils.successResponse(memberService.searchMembers(projectId, name));
     }
 
     @GetMapping("/project/{projectId}/members")

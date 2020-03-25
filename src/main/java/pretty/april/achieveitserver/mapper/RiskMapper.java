@@ -11,6 +11,6 @@ import java.util.List;
 @Mapper
 public interface RiskMapper extends BaseMapper<ProjectRisk> {
 
-    @Select("select id,name from project_risk where project_id = #{projectId} name like concat('%',#{name},'%')")
+    @Select("select id,name from project_risk where project_id = #{projectId} and name like concat('%',#{name},'%')")
     List<Searchable> selectLikeName(Integer projectId, String name);
 }

@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import pretty.april.achieveitserver.dto.FullFunctionDTO;
 import pretty.april.achieveitserver.dto.FunctionDTO;
+import pretty.april.achieveitserver.dto.SearchableDTO;
 import pretty.april.achieveitserver.dto.SimpleFunctionDTO;
 import pretty.april.achieveitserver.entity.ProjectFunction;
 import pretty.april.achieveitserver.mapper.ProjectFunctionMapper;
+import pretty.april.achieveitserver.model.Searchable;
 import pretty.april.achieveitserver.request.AddFunctionRequest;
 import pretty.april.achieveitserver.request.EditFunctionRequest;
 
@@ -79,6 +81,11 @@ public class FunctionService {
         List<ProjectFunction> functions = projectFunctionMapper.selectList(new QueryWrapper<ProjectFunction>()
                 .eq("project_id", projectId));
         return functions.stream().map(o -> new SimpleFunctionDTO(o.getId(), o.getName())).collect(Collectors.toList());
+    }
+
+    public List<SearchableDTO> searchFunctions(Integer projectId, String name) {
+        List<Searchable> searchables = projectFunctionMapper.selectLikeName(projectId, name);
+        return searchables.stream().map(o -> new SearchableDTO(o.getId(), o.getName())).collect(Collectors.toList());
     }
 
     public FullFunctionDTO getFullFunction(Integer projectId, Integer functionId) {
