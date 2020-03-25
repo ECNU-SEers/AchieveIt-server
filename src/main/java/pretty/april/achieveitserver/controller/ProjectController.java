@@ -31,12 +31,14 @@ public class ProjectController {
 	
 	/**
 	 * 利用关键字搜索（010101）
+	 * @param userId
 	 * @param keyword
 	 * @return 包含关键字的项目ID和项目名称
 	 */
-	@GetMapping("/searchProject")
-	public Response<List<SearchProjectRequest>> searchProjectUsingKeyword(@RequestParam(value="keyword") String keyword) {
-		return ResponseUtils.successResponse(projectService.searchProjectWithNameIncludingKeyword(keyword));
+	@GetMapping("/search")
+	public Response<List<SearchProjectRequest>> searchProjectUsingKeyword(@RequestParam(value="userId") Integer userId, 
+																		@RequestParam(value="keyword") String keyword) {
+		return ResponseUtils.successResponse(projectService.searchProjectWithNameIncludingKeyword(userId, keyword));
 	}
 	
 	/**
@@ -44,23 +46,24 @@ public class ProjectController {
 	 * @param outerId 项目ID
 	 * @return 项目列表
 	 */
-	@GetMapping("/showList")
+	@GetMapping("/show/list")
 	public Response<ShowProjectListRequest> showProjectList(@RequestParam(value="outerId") String outerId) {
 		return ResponseUtils.successResponse(projectService.showProjectList(outerId));
 	}
 	
 	/**
-	 * 展示所有项目名称中包含某关键字的项目基本信息
+	 * 展示某个用户参与的所有项目名称中包含某关键字的项目基本信息
 	 * @param pageNo
 	 * @param pageSize
 	 * @param keyword
-	 * @return 所有项目名称中包含某关键字的项目基本信息
+	 * @return 某个用户参与的所有项目名称中包含某关键字的项目基本信息
 	 */
-	@GetMapping("/showAllInfo")
+	@GetMapping("/retrieve/all/keyword")
 	public Response<PageDTO<RetrieveProjectRequest>> retrieveProjectInfoWithNameIncluingKeyword(@RequestParam(value="pageNo") Integer pageNo,
 			 																					@RequestParam(value="pageSize") Integer pageSize,
+			 																					@RequestParam(value="userId") Integer userId,
 			 																					@RequestParam(value="keyword") String keyword) {
-		return ResponseUtils.successResponse(projectService.retrieveProjectsWithNameIncluingKeywordByPage(pageNo, pageSize, keyword));
+		return ResponseUtils.successResponse(projectService.retrieveProjectsWithNameIncluingKeywordByPage(pageNo, pageSize, userId, keyword));
 	}
 	
 	/**
@@ -69,7 +72,7 @@ public class ProjectController {
 	 * @return
 	 * @throws Exception 
 	 */
-	@PostMapping("/createProject")
+	@PostMapping("/create")
 	public Response<?> createProject(@RequestBody CreateProjectRequest request) throws Exception {
 		projectService.createProject(request);
 		return ResponseUtils.successResponse();	
@@ -82,7 +85,7 @@ public class ProjectController {
 	 * @param userId 用户ID
 	 * @return
 	 */
-	@GetMapping("showProjects")
+	@GetMapping("show/all/projects")
 	public Response<PageDTO<ShowProjectListRequest>> showProjects(@RequestParam(value="pageNo") Integer pageNo,
 													 @RequestParam(value="pageSize") Integer pageSize,
 													 @RequestParam(value="userId") Integer userId) {
@@ -96,7 +99,7 @@ public class ProjectController {
 	 * @return
 	 * @throws Exception
 	 */
-	@PutMapping("/endProject")
+	@PutMapping("/end")
 	public Response<?> endProject(@RequestParam(value="outerId") String outerId) throws Exception {
 		projectService.endProject(outerId);
 		return ResponseUtils.successResponse();	
@@ -107,7 +110,7 @@ public class ProjectController {
 	 * @param outerId 项目ID
 	 * @return
 	 */
-//	@PutMapping("/approveArchive")
+//	@PutMapping("/approve/archive")
 //	public Response<?> approveArchive(@RequestParam(value="outerId") String outerId) {
 //		projectService.acceptArchive(outerId);
 //		return ResponseUtils.successResponse();	
@@ -118,7 +121,7 @@ public class ProjectController {
 	 * @param request
 	 * @return
 	 */
-	@PutMapping("/assignConfig")
+	@PutMapping("/assign/config")
 	public Response<?> assignConfig(@RequestParam(value="outerId") String outerId) {
 		projectService.assignConfig(outerId);
 		return ResponseUtils.successResponse();	
@@ -129,7 +132,7 @@ public class ProjectController {
 	 * @param request
 	 * @return
 	 */
-	@PutMapping("/assignQA")
+	@PutMapping("/assign/qa")
 	public Response<?> assignQA(@RequestBody AssignRoleRequest request) {
 		projectService.assignQA(request);
 		return ResponseUtils.successResponse();	
@@ -140,7 +143,7 @@ public class ProjectController {
 	 * @param request
 	 * @return
 	 */
-	@PutMapping("/assignEPG")
+	@PutMapping("/assign/epg")
 	public Response<?> assignEPG(@RequestBody AssignRoleRequest request) {
 		projectService.assignEPG(request);
 		return ResponseUtils.successResponse();	
@@ -152,7 +155,7 @@ public class ProjectController {
 	 * @return
 	 * @throws Exception 
 	 */
-	@PutMapping("/acceptProject")
+	@PutMapping("/accept")
 	public Response<?> acceptProject(@RequestBody RetrieveProjectRequest request) throws Exception {
 		projectService.acceptProject(request);
 		return ResponseUtils.successResponse();	
@@ -164,7 +167,7 @@ public class ProjectController {
 	 * @return
 	 * @throws Exception 
 	 */
-	@PutMapping("/rejectProject")
+	@PutMapping("/reject")
 	public Response<?> rejectProject(@RequestBody RetrieveProjectRequest request) throws Exception {
 		projectService.rejectProject(request);
 		return ResponseUtils.successResponse();	
@@ -175,7 +178,7 @@ public class ProjectController {
 	 * @param outerId 项目ID
 	 * @return 项目信息
 	 */
-	@GetMapping("/retrieveProjectInfo")
+	@GetMapping("/retrieve")
 	public Response<RetrieveProjectRequest> retrieveProjectInfoByOuterId(@RequestParam(value="outerId") String outerId) {
 		return ResponseUtils.successResponse(projectService.retrieveProject(outerId));
 	}
@@ -186,7 +189,7 @@ public class ProjectController {
 	 * @return
 	 * @throws Exception
 	 */
-	@PutMapping("/updateProjectInfo")
+	@PutMapping("/update")
 	public Response<?> updateProject(@RequestBody UpdateProjectRequest request) throws Exception {
 		projectService.updateProjectInfo(request);
 		return ResponseUtils.successResponse();
@@ -198,7 +201,7 @@ public class ProjectController {
 	 * @return
 	 * @throws Exception
 	 */
-	@PutMapping("/updateProjectInfoDuringProjectApproval")
+	@PutMapping("/update/reject")
 	public Response<?> updateProjectDuringProjectApproval(@RequestBody UpdateProjectRequest request) throws Exception {
 		projectService.updateProjectInfoDuringProjectApproval(request);
 		return ResponseUtils.successResponse();
@@ -209,9 +212,20 @@ public class ProjectController {
 	 * @param outerId
 	 * @return
 	 */
-	@PutMapping("/setConfigInfo")
+	@PutMapping("/set/config")
 	public Response<?> setConfigInfo(@RequestParam(value="outerId") String outerId) {
 		projectService.setConfigInfo(outerId);
+		return ResponseUtils.successResponse();
+	}
+	
+	/**
+	 * 项目经理交付项目
+	 * @param outerId
+	 * @return
+	 */
+	@PutMapping("/deliver")
+	public Response<?> projectDelivery(@RequestParam(value="outerId") String outerId) {
+		projectService.projectDelivery(outerId);
 		return ResponseUtils.successResponse();
 	}
 }

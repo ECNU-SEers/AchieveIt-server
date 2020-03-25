@@ -13,13 +13,17 @@ import pretty.april.achieveitserver.service.BusinessAreaDictService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
 @RestController
-@RequestMapping("/api/businessAreaDict")
+@RequestMapping("/api/business/area")
 public class BusinessAreaDictController {
 
 	@Autowired
 	private BusinessAreaDictService businessAreaDictService;
 	
-	@GetMapping("/allBusinessAreas")
+	/**
+	 * 所有的业务领域ID和名字
+	 * @return
+	 */
+	@GetMapping("/all")
 	public Response<List<BusinessAreaDict>> getAllBusinessAreas() {
 		return ResponseUtils.successResponse(businessAreaDictService.getAllBusinessAreas());
 	}

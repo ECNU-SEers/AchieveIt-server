@@ -13,13 +13,17 @@ import pretty.april.achieveitserver.service.SkillDictService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
 @RestController
-@RequestMapping("/api/skillDict")
+@RequestMapping("/api/skill")
 public class SkillDictController {
 	
 	@Autowired
 	private SkillDictService skillDictService;
 	
-	@GetMapping("/allSkills")
+	/**
+	 * 所有的项目技术
+	 * @return
+	 */
+	@GetMapping("/all")
 	public Response<List<SkillDict>> getAllSkills() {
 		return ResponseUtils.successResponse(skillDictService.getAllSkills());
 	}

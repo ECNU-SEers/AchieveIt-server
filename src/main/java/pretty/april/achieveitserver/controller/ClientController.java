@@ -19,7 +19,11 @@ public class ClientController {
 	@Autowired
 	private ClientService clientService;
 	
-	@GetMapping("/allClients")
+	/**
+	 * 所有的客户
+	 * @return
+	 */
+	@GetMapping("/all")
 	public Response<List<RetrieveClientInfoRequest>> getAllOuterIdAndCompany() {
 		return ResponseUtils.successResponse(clientService.getAllOuterIdAndCompany());
 	}

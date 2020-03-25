@@ -28,8 +28,11 @@ public interface ProjectMapper extends BaseMapper<Project> {
      * @param keyword
      * @return
      */
-    @Select("SELECT * FROM project WHERE name LIKE \"%\"#{keyword}\"%\"")
-    List<Project> selectByNameLikeKeyword(String keyword);
+    @Select("SELECT project.* FROM project, project_member WHERE project_member.user_id = #{userId} AND project.id = project_member.project_id AND project.name LIKE \"%\"#{keyword}\"%\"")
+    List<Project> selectByNameLikeKeyword(@Param("userId")Integer userId, @Param("keyword")String keyword, Page<Project> page);
+    
+    @Select("SELECT project.* FROM project, project_member WHERE project_member.user_id = #{userId} AND project.id = project_member.project_id AND project.name LIKE \"%\"#{keyword}\"%\"")
+    List<Project> selectByNameLikeKeyword(@Param("userId")Integer userId, @Param("keyword")String keyword);
     
     /**
      * 查询QA经理参与的所有项目

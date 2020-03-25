@@ -104,4 +104,8 @@ public class FunctionService {
                 .map(o -> new FunctionDTO(o.getId(), o.getName(), o.getDescription())).collect(Collectors.toList()));
         return fullFunctionDTO;
     }
+    
+    public ProjectFunction getById(Integer id) {
+    	return projectFunctionMapper.selectById(id);
+    }
 }
