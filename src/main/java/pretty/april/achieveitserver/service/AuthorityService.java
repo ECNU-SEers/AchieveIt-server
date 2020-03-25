@@ -46,8 +46,8 @@ public class AuthorityService {
         this.authorityConverter = authorityConverter;
     }
 
-    public List<PermissionDTO> getPermissions(Integer pageNo, Integer pageSize, Integer total) {
-        Page<Permission> page = new Page<>(pageNo, pageSize, total);
+    public List<PermissionDTO> getPermissions(Integer pageNo, Integer pageSize) {
+        Page<Permission> page = new Page<>(pageNo, pageSize);
         IPage<Permission> permissionIPage = permissionMapper.selectPage(page, new QueryWrapper<>());
         return authorityConverter.toPermissionDTOList(permissionIPage.getRecords());
     }

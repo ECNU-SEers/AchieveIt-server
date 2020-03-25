@@ -58,8 +58,13 @@ public class RiskController {
         return ResponseUtils.successResponse(riskService.getRisk(projectId, riskId));
     }
 
-    @PostMapping("/project/{projectId}/risk/import")
-    public Response<List<Integer>> importRisks(@PathVariable Integer projectId, @RequestBody @Valid ImportRiskRequest request) {
-        return ResponseUtils.successResponse(riskService.importRisks(projectId, request));
+    @PostMapping("/project/{projectId}/risk/import/other")
+    public Response<List<Integer>> importRisksFromOtherProject(@PathVariable Integer projectId, @RequestBody @Valid ImportRiskRequest request) {
+        return ResponseUtils.successResponse(riskService.importRisksFromOtherProject(projectId, request));
+    }
+
+    @PostMapping("/project/{projectId}/risk/import/std")
+    public Response<List<Integer>> importRisksFromStdLib(@PathVariable Integer projectId) {
+        return ResponseUtils.successResponse(riskService.importRisksFromStdLib(projectId));
     }
 }

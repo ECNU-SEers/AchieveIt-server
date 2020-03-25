@@ -35,9 +35,8 @@ public class AuthorityController {
 
     @GetMapping("/permissions")
     public Response<List<PermissionDTO>> getPermissions(@RequestParam Integer pageSize,
-                                                        @RequestParam Integer pageNo,
-                                                        @RequestParam Integer total) {
-        return ResponseUtils.successResponse(authorityService.getPermissions(pageNo, pageSize, total));
+                                                        @RequestParam Integer pageNo) {
+        return ResponseUtils.successResponse(authorityService.getPermissions(pageNo, pageSize));
     }
 
     @GetMapping("/roles")

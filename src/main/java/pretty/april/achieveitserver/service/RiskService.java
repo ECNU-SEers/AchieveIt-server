@@ -11,10 +11,12 @@ import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.dto.RiskDTO;
 import pretty.april.achieveitserver.dto.SearchableDTO;
 import pretty.april.achieveitserver.dto.UsernameDTO;
+import pretty.april.achieveitserver.entity.OrgStdRisk;
 import pretty.april.achieveitserver.entity.ProjectRisk;
 import pretty.april.achieveitserver.entity.RiskRelatedPerson;
 import pretty.april.achieveitserver.enums.RiskState;
 import pretty.april.achieveitserver.enums.RiskType;
+import pretty.april.achieveitserver.mapper.OrgStdRiskMapper;
 import pretty.april.achieveitserver.mapper.RiskMapper;
 import pretty.april.achieveitserver.mapper.RiskRelatedPersonMapper;
 import pretty.april.achieveitserver.mapper.UserMapper;
@@ -36,6 +38,8 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
     private UserMapper userMapper;
 
     private RiskRelatedPersonMapper riskRelatedPersonMapper;
+
+    private OrgStdRiskMapper orgStdRiskMapper;
 
     public RiskService(RiskMapper riskMapper, UserMapper userMapper, RiskRelatedPersonMapper riskRelatedPersonMapper) {
         this.riskMapper = riskMapper;
@@ -113,7 +117,7 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
         return riskDTO;
     }
 
-    public List<Integer> importRisks(Integer projectId, ImportRiskRequest request) {
+    public List<Integer> importRisksFromOtherProject(Integer projectId, ImportRiskRequest request) {
         List<ProjectRisk> risks = riskMapper.selectList(new QueryWrapper<ProjectRisk>()
                 .eq("project_id", request.getProjectId()));
         for (ProjectRisk risk : risks) {
@@ -126,5 +130,23 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
         }
         this.saveBatch(risks);
         return risks.stream().map(ProjectRisk::getId).collect(Collectors.toList());
+    }
+
+    public List<Integer> importRisksFromStdLib(Integer projectId) {
+        List<OrgStdRisk> orgStdRisks = orgStdRiskMapper.selectList(new QueryWrapper<>());
+        List<ProjectRisk> projectRisks = new ArrayList<>();
+        for (OrgStdRisk orgStdRisk : orgStdRisks) {
+            ProjectRisk risk = new ProjectRisk();
+            BeanUtils.copyProperties(orgStdRisk, risk);
+            risk.setId(null);
+            risk.setProjectId(projectId);
+            risk.setState(RiskState.STILL_EXISTS.getValue());
+            risk.setOwnerId(null);
+            risk.setOwnerName(null);
+            risk.setSource(RiskType.IMPORT_FROM_ORG_STD_RISK_LIB.getValue());
+            projectRisks.add(risk);
+        }
+        this.saveBatch(projectRisks);
+        return projectRisks.stream().map(ProjectRisk::getId).collect(Collectors.toList());
     }
 }
