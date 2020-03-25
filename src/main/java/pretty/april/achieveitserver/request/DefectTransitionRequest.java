@@ -3,20 +3,19 @@ package pretty.april.achieveitserver.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 @Data
-public class AssignDefectRequest {
+public class DefectTransitionRequest {
 
-    @NotNull
-    private Integer handlerId;
+    @Pattern(regexp = "^assign$|^fix$|^close$|^reopen$")
+    private String action;
 
-    @NotBlank
-    private String handlerName;
+    private Integer assigneeId;
 
-    @NotNull
+    private String assigneeName;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime due;
 }

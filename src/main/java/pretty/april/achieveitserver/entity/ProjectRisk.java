@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author mybatis-plus
- * @since 2020-03-24
+ * @since 2020-03-25
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -25,25 +25,29 @@ public class ProjectRisk implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    private String name;
+
     private Integer projectId;
 
     private String type;
 
     private String description;
 
-    private String level;
+    private Integer level;
 
-    private String impact;
+    private Integer impact;
 
     private String strategy;
 
-    private String state;
+    private Integer state;
 
     private Integer ownerId;
 
-    private String trackingFreq;
+    private String ownerName;
 
-    private String source;
+    private Integer trackingFreq;
+
+    private Integer source;
 
 
 }

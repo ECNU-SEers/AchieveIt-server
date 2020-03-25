@@ -1,22 +1,19 @@
 package pretty.april.achieveitserver.controller;
 
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pretty.april.achieveitserver.dto.DefectDTO;
 import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.entity.User;
-import pretty.april.achieveitserver.request.AssignDefectRequest;
 import pretty.april.achieveitserver.request.CreateDefectRequest;
+import pretty.april.achieveitserver.request.DefectTransitionRequest;
 import pretty.april.achieveitserver.request.EditDefectRequest;
 import pretty.april.achieveitserver.service.DefectService;
 import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -31,47 +28,29 @@ public class DefectController {
         this.defectService = defectService;
     }
 
-    @PostMapping("/defect")
-    public Response<Integer> createDefect(@Valid @RequestBody CreateDefectRequest createDefectRequest) {
+    @PostMapping("/project/{projectId}/defect")
+    public Response<Integer> createDefect(@PathVariable Integer projectId, @Valid @RequestBody CreateDefectRequest createDefectRequest) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
-        Integer defectId = defectService.addDefect(createDefectRequest, user.getId(), username);
+        Integer defectId = defectService.addDefect(createDefectRequest, user.getId(), username, projectId);
         return ResponseUtils.successResponse(defectId);
     }
 
-    @PutMapping("/defect/{defectId}")
-    public Response<?> editDefect(@PathVariable Integer defectId, @RequestBody @Valid EditDefectRequest editDefectRequest) {
-        defectService.updateDefect(editDefectRequest, defectId);
+    @PutMapping("/project/{projectId}/defect/{defectId}")
+    public Response<?> editDefect(@PathVariable Integer projectId, @PathVariable Integer defectId, @RequestBody @Valid EditDefectRequest editDefectRequest) {
+        defectService.updateDefect(editDefectRequest, defectId, projectId);
         return ResponseUtils.successResponse();
     }
 
-    @PutMapping("/defect/{defectId}/assign")
-    public Response<?> assignDefect(@PathVariable Integer defectId, @RequestBody AssignDefectRequest assignDefectRequest) {
-        defectService.assignDefect(assignDefectRequest, defectId);
+    @PutMapping("/project/{projectId}/defect/{defectId}/transition")
+    public Response<?> transition(@PathVariable Integer projectId, @PathVariable Integer defectId, @RequestBody @Valid DefectTransitionRequest request) {
+        defectService.transition(defectId, projectId, request);
         return ResponseUtils.successResponse();
     }
 
-    @PutMapping("/defect/{defectId}/fix")
-    public Response<?> fix(@PathVariable Integer defectId) {
-        defectService.fix(defectId);
-        return ResponseUtils.successResponse();
-    }
-
-    @PutMapping("/defect/{defectId}/close")
-    public Response<?> close(@PathVariable Integer defectId) {
-        defectService.close(defectId);
-        return ResponseUtils.successResponse();
-    }
-
-    @PutMapping("/defect/{defectId}/reopen")
-    public Response<?> reopen(@PathVariable Integer defectId) {
-        defectService.reopen(defectId);
-        return ResponseUtils.successResponse();
-    }
-
-    @DeleteMapping("/defect/{defectId}")
-    public Response<?> delete(@PathVariable Integer defectId) {
-        defectService.delete(defectId);
+    @DeleteMapping("/project/{projectId}/defect/{defectId}")
+    public Response<?> delete(@PathVariable Integer projectId, @PathVariable Integer defectId) {
+        defectService.delete(defectId, projectId);
         return ResponseUtils.successResponse();
     }
 
@@ -82,6 +61,6 @@ public class DefectController {
                                                    @RequestParam(required = false) Integer state,
                                                    @RequestParam(required = false) Integer level,
                                                    @RequestParam(required = false) Integer type) {
-        return ResponseUtils.successResponse(defectService.queryDefects(page, pageSize,projectId, type, level, state));
+        return ResponseUtils.successResponse(defectService.queryDefects(page, pageSize, projectId, type, level, state));
     }
 }
