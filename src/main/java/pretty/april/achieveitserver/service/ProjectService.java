@@ -17,7 +17,6 @@ import pretty.april.achieveitserver.entity.*;
 import pretty.april.achieveitserver.mapper.*;
 import pretty.april.achieveitserver.request.project.*;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -159,7 +158,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
 //      9.状态更新
         StateChange stateChange = new StateChange();
         stateChange.setProjectId(projectId);
-        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
@@ -369,7 +368,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         Milestone milestone = new Milestone();
         milestone.setProjectId(projectId);
         milestone.setProgress(validator.getMilestone());
-        milestone.setRecordDate(LocalDate.now(Clock.systemUTC()));
+        milestone.setRecordDate(LocalDate.now());
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
         milestone.setRecorderId(user.getId());
@@ -443,7 +442,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     }
     
     public List<Project> selectProjectByNameWithKeyword(Integer userId, String keyword) {
-        return this.baseMapper.selectByNameLikeKeyword(userId, keyword);
+        return this.baseMapper.selectByNameLikeKeyword1(userId, keyword);
     }
 
     /**
@@ -479,7 +478,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
 //      4.状态更新
         StateChange stateChange = new StateChange();
         stateChange.setProjectId(projectInfo.getProject().getId());
-        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setFormerState(projectInfo.getProject().getState());
         stateChange.setLatterState(project.getState());
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -523,7 +522,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
 //      4.状态更新
         StateChange stateChange = new StateChange();
         stateChange.setProjectId(projectInfo.getProject().getId());
-        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setFormerState(projectInfo.getProject().getState());
         stateChange.setLatterState(project.getState());
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -679,7 +678,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         projectMapper.updateById(project);
         
         stateChange.setProjectId(project.getId());
-        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
@@ -704,7 +703,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         projectMapper.updateById(project);
         
         stateChange.setProjectId(project.getId());
-        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
@@ -739,7 +738,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         }
 //      4.状态更新
         stateChange.setProjectId(project.getId());
-        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
@@ -763,7 +762,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         projectMapper.updateById(project);
         
         stateChange.setProjectId(project.getId());
-        stateChange.setChangeDate(LocalDateTime.now(Clock.systemUTC()));
+        stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);

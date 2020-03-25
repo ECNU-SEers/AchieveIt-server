@@ -13,6 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RetrieveLaborHourRequest {
 
+	private Integer id;
+	
 	private LocalDate date;
 	
 	private String functionName;

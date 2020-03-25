@@ -32,6 +32,7 @@ public class ShowProjectListRequest {
 	private int participantCounter;
 	private String qaAssigned;
 	private String epgAssigned;
+	private String state;
 	
 	/**
 	 * 项目立项中项目上级的审核结果

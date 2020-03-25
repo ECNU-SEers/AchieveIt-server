@@ -9,6 +9,7 @@ import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.entity.UserSysRole;
 import pretty.april.achieveitserver.mapper.UserMapper;
 import pretty.april.achieveitserver.mapper.UserSysRoleMapper;
+import pretty.april.achieveitserver.model.Username;
 import pretty.april.achieveitserver.request.AddUserRequest;
 import pretty.april.achieveitserver.security.SecurityUser;
 
@@ -69,5 +70,9 @@ public class UserService {
     public List<SimpleEmployeeDTO> getEmployees() {
         List<User> users = userMapper.selectList(new QueryWrapper<User>().ne(true, "id", 1));
         return users.stream().map(u -> new SimpleEmployeeDTO(u.getId(), u.getUsername())).collect(Collectors.toList());
+    }
+    
+    public List<Username> getAllSupervisors() {
+    	return userMapper.selectUsernameByPosition();
     }
 }

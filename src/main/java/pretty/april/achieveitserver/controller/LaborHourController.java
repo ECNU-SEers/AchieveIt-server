@@ -16,6 +16,7 @@ import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.request.laborhour.CreateLaborHourRequest;
 import pretty.april.achieveitserver.request.laborhour.RetrieveLaborHourRequest;
 import pretty.april.achieveitserver.request.laborhour.ShowLaborHourListRequest;
+import pretty.april.achieveitserver.request.laborhour.ShowSubordinateLaborHourListRequest;
 import pretty.april.achieveitserver.request.laborhour.UpdateLaborHourRequest;
 import pretty.april.achieveitserver.service.LaborHourService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
@@ -101,6 +102,42 @@ public class LaborHourController {
 		return ResponseUtils.successResponse(laborHourService.retrieveLaborHourOfSubordinate(pageNo, pageSize, startDate, endDate, userId));
 	}
 	
-	
+	/**
+	 * 列表展示某个用户的所有下属的工时信息（03020201）
+	 * @param pageNo
+	 * @param pageSize
+	 * @param userId
+	 * @return
+	 */
+	@GetMapping("/show/subordinate/list")
+	public Response<PageDTO<ShowSubordinateLaborHourListRequest>> showSubordinateList(@RequestParam(value="pageNo") Integer pageNo,
+																					  @RequestParam(value="pageSize") Integer pageSize,
+																					  @RequestParam(value="userId") Integer userId) {
+		return ResponseUtils.successResponse(laborHourService.showSubordinateLists(pageNo, pageSize, userId));
+	}
 
+	/**
+	 * 审核工时信息
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@PutMapping("/accept")
+	public Response<?> acceptLaborHourInfo(@RequestBody RetrieveLaborHourRequest request) throws Exception {
+		laborHourService.acceptLaborHourInfo(request);
+		return ResponseUtils.successResponse();
+	}
+	
+	/**
+	 * 退回工时信息
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@PutMapping("/return")
+	public Response<?> returnLaborHourInfo(@RequestBody RetrieveLaborHourRequest request) throws Exception {
+		laborHourService.returnLaborHourInfo(request);
+		return ResponseUtils.successResponse();
+	}
+	
 }

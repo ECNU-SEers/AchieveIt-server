@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class ShowLaborHourListRequest {
+public class ShowSubordinateLaborHourListRequest {
 
 	private Integer id;
 	
@@ -40,4 +40,8 @@ public class ShowLaborHourListRequest {
     private LocalDateTime submissionDate;
     
     private String state;
+    
+    private String submitterName;
+    
+    private String projectName;
 }
