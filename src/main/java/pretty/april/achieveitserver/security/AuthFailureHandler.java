@@ -27,14 +27,16 @@ public class AuthFailureHandler implements AuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        httpServletResponse.setStatus(HttpStatus.OK.value());
         httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         if (e instanceof BadCredentialsException) {
+            httpServletResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             objectMapper.writeValue(httpServletResponse.getWriter(), ResponseUtils.errorResponseWithMessage(ErrorCode.INVALID_USERNAME_PASSWORD, e.getMessage()));
         } else if (e instanceof InvalidTokenException) {
+            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             objectMapper.writeValue(httpServletResponse.getWriter(), ResponseUtils.errorResponseWithMessage(ErrorCode.AUTHENTICATION_FAILED, e.getMessage()));
         } else {
+            httpServletResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             objectMapper.writeValue(httpServletResponse.getWriter(), ResponseUtils.errorResponse(ErrorCode.AUTHENTICATION_FAILED));
         }
     }

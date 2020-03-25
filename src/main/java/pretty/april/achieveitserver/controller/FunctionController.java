@@ -1,10 +1,7 @@
 package pretty.april.achieveitserver.controller;
 
 import org.springframework.web.bind.annotation.*;
-import pretty.april.achieveitserver.dto.FullFunctionDTO;
-import pretty.april.achieveitserver.dto.FunctionDTO;
-import pretty.april.achieveitserver.dto.Response;
-import pretty.april.achieveitserver.dto.SimpleFunctionDTO;
+import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.request.AddFunctionRequest;
 import pretty.april.achieveitserver.request.EditFunctionRequest;
 import pretty.april.achieveitserver.service.FunctionService;
@@ -53,6 +50,11 @@ public class FunctionController {
     @GetMapping("/project/{projectId}/functions/simple")
     public Response<List<SimpleFunctionDTO>> getSimpleFunctions(@PathVariable Integer projectId) {
         return ResponseUtils.successResponse(functionService.getSimpleFunctions(projectId));
+    }
+
+    @GetMapping("/project/{projectId}/functions/search")
+    public Response<List<SearchableDTO>> getSimpleFunctions(@PathVariable Integer projectId, @RequestParam String name) {
+        return ResponseUtils.successResponse(functionService.searchFunctions(projectId, name));
     }
 
     @GetMapping("/project/{projectId}/functions/{functionId}")

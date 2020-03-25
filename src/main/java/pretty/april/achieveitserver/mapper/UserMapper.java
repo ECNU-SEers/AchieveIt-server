@@ -2,6 +2,7 @@ package pretty.april.achieveitserver.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.model.Username;
@@ -13,7 +14,7 @@ public interface UserMapper extends BaseMapper<User> {
 
     @Select("<script>" +
             "select id,username from user where id in " +
-            "<foreach collections='ids' item='id' open='(' close=')' separator=','>" +
+            "<foreach collection='ids' item='id' open='(' close=')' separator=','>" +
             "#{id}" +
             "</foreach>" +
             "</script>")
@@ -21,4 +22,7 @@ public interface UserMapper extends BaseMapper<User> {
     
     @Select("SELECT id, username FROM user WHERE position = \"主管\"")
     List<Username> selectUsernameByPosition();
+
+//    List<Username> selectUsernameBatch(@Param("ids") List<Integer> ids);
+
 }

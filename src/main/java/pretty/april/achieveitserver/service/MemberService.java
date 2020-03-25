@@ -7,12 +7,14 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import pretty.april.achieveitserver.dto.MemberDTO;
 import pretty.april.achieveitserver.dto.PageDTO;
+import pretty.april.achieveitserver.dto.SearchableDTO;
 import pretty.april.achieveitserver.dto.SimpleMemberDTO;
 import pretty.april.achieveitserver.entity.Project;
 import pretty.april.achieveitserver.entity.ProjectMember;
 import pretty.april.achieveitserver.entity.UserRole;
 import pretty.april.achieveitserver.mapper.*;
 import pretty.april.achieveitserver.model.MemberDetails;
+import pretty.april.achieveitserver.model.Searchable;
 import pretty.april.achieveitserver.request.AddProjectMemberRequest;
 import pretty.april.achieveitserver.request.EditMemberRequest;
 
@@ -132,5 +134,10 @@ public class MemberService {
         projectMemberMapper.delete(new QueryWrapper<ProjectMember>()
                 .eq("user_id", memberId)
                 .eq("project_id", projectId));
+    }
+
+    public List<SearchableDTO> searchMembers(Integer projectId, String name) {
+        List<Searchable> searchables = projectMemberMapper.selectLikeName(projectId, name);
+        return searchables.stream().map(o -> new SearchableDTO(o.getId(), o.getName())).collect(Collectors.toList());
     }
 }
