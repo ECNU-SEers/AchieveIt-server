@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import pretty.april.achieveitserver.dto.PageDTO;
@@ -83,5 +82,25 @@ public class LaborHourController {
 		laborHourService.updateLaborHour(request);
 		return ResponseUtils.successResponse();
 	}
+	
+	/**
+	 * 用户查询一段时间内其下属的工时信息（030201）
+	 * @param pageNo
+	 * @param pageSize
+	 * @param startDate
+	 * @param endDate
+	 * @param userId
+	 * @return
+	 */
+	@GetMapping("/search/subordinate")
+	public Response<PageDTO<RetrieveLaborHourRequest>> retrieveLaborHourOfSubordinate(@RequestParam(value="pageNo") Integer pageNo,
+																					  @RequestParam(value="pageSize") Integer pageSize,
+																					  @RequestParam(value="startDate") LocalDate startDate,
+																					  @RequestParam(value="endDate") LocalDate endDate,
+																					  @RequestParam(value="userId") Integer userId) {
+		return ResponseUtils.successResponse(laborHourService.retrieveLaborHourOfSubordinate(pageNo, pageSize, startDate, endDate, userId));
+	}
+	
+	
 
 }

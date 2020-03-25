@@ -2,8 +2,9 @@ package pretty.april.achieveitserver.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+
 import java.time.LocalDateTime;
+import java.io.Serializable;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -36,5 +37,5 @@ public class StateChange implements Serializable {
     private String latterState;
     
     private Integer operatorId;
-    
+
 }

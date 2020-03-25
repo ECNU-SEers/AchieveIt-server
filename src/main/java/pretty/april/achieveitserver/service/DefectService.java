@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import pretty.april.achieveitserver.converter.DefectConverter;
 import pretty.april.achieveitserver.dto.DefectDTO;
 import pretty.april.achieveitserver.dto.PageDTO;
@@ -14,13 +15,12 @@ import pretty.april.achieveitserver.enums.DefectState;
 import pretty.april.achieveitserver.exception.UserNotFoundException;
 import pretty.april.achieveitserver.mapper.DefectMapper;
 import pretty.april.achieveitserver.mapper.UserMapper;
-import pretty.april.achieveitserver.request.AssignDefectRequest;
 import pretty.april.achieveitserver.request.CreateDefectRequest;
+import pretty.april.achieveitserver.request.DefectTransitionRequest;
 import pretty.april.achieveitserver.request.EditDefectRequest;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -38,9 +38,10 @@ public class DefectService {
         this.userMapper = userMapper;
     }
 
-    public Integer addDefect(CreateDefectRequest request, Integer creatorId, String creatorName) {
+    public Integer addDefect(CreateDefectRequest request, Integer creatorId, String creatorName, Integer projectId) {
         Defect defect = new Defect();
         BeanUtils.copyProperties(request, defect);
+        defect.setProjectId(projectId);
         if (request.getHandlerId() != null) {
             User user = userMapper.selectById(request.getHandlerId());
             if (user == null) {
@@ -61,8 +62,9 @@ public class DefectService {
         return defect.getId();
     }
 
-    public void updateDefect(EditDefectRequest request, Integer defectId) {
-        if (defectMapper.selectById(defectId) == null) {
+    public void updateDefect(EditDefectRequest request, Integer defectId, Integer projectId) {
+        if (defectMapper.selectOne(new QueryWrapper<Defect>()
+                .eq("id", defectId).eq("project_id", projectId)) == null) {
             throw new IllegalArgumentException("Cannot find defect.");
         }
         Defect defect = new Defect();
@@ -73,52 +75,43 @@ public class DefectService {
         defectMapper.updateById(defect);
     }
 
-    public void assignDefect(AssignDefectRequest assignDefectRequest, Integer defectId) {
-        if (defectMapper.selectById(defectId) == null) {
-            throw new IllegalArgumentException("Cannot find defect.");
-        }
-        Defect defect = new Defect();
-        BeanUtils.copyProperties(assignDefectRequest, defect);
-        defect.setId(defectId);
-        defect.setState(DefectState.ASSIGNED.getValue());
-        defect.setUpdatedAt(LocalDateTime.now());
-        defectMapper.updateById(defect);
-    }
-
-    public void fix(Integer defectId) {
-        if (defectMapper.selectById(defectId) == null) {
+    public void transition(Integer defectId, Integer projectId, DefectTransitionRequest request) {
+        if (defectMapper.selectOne(new QueryWrapper<Defect>()
+                .eq("id", defectId).eq("project_id", projectId)) == null) {
             throw new IllegalArgumentException("Cannot find defect.");
         }
         Defect defect = new Defect();
         defect.setId(defectId);
-        defect.setState(DefectState.FIXED.getValue());
-        defect.setUpdatedAt(LocalDateTime.now());
+        switch (request.getAction()) {
+            case "assign":
+                if (request.getAssigneeId() == null || StringUtils.isEmpty(request.getAssigneeName()) || request.getDue() == null) {
+                    throw new IllegalArgumentException("Bad assign");
+                }
+                defect.setHandlerId(request.getAssigneeId());
+                defect.setHandlerName(request.getAssigneeName());
+                defect.setDue(request.getDue());
+                defect.setState(DefectState.ASSIGNED.getValue());
+                break;
+            case "fix":
+                defect.setState(DefectState.FIXED.getValue());
+                break;
+            case "close":
+                defect.setState(DefectState.CLOSED.getValue());
+                break;
+            case "reopen":
+                defect.setState(DefectState.OPEN.getValue());
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid transition action");
+        }
         defectMapper.updateById(defect);
     }
 
-    public void close(Integer defectId) {
-        if (defectMapper.selectById(defectId) == null) {
+    public void delete(Integer defectId, Integer projectId) {
+        if (defectMapper.selectOne(new QueryWrapper<Defect>()
+                .eq("id", defectId).eq("project_id", projectId)) == null) {
             throw new IllegalArgumentException("Cannot find defect.");
         }
-        Defect defect = new Defect();
-        defect.setId(defectId);
-        defect.setState(DefectState.CLOSED.getValue());
-        defect.setUpdatedAt(LocalDateTime.now());
-        defectMapper.updateById(defect);
-    }
-
-    public void reopen(Integer defectId) {
-        if (defectMapper.selectById(defectId) == null) {
-            throw new IllegalArgumentException("Cannot find defect.");
-        }
-        Defect defect = new Defect();
-        defect.setId(defectId);
-        defect.setState(DefectState.OPEN.getValue());
-        defect.setUpdatedAt(LocalDateTime.now());
-        defectMapper.updateById(defect);
-    }
-
-    public void delete(Integer defectId) {
         defectMapper.deleteById(defectId);
     }
 

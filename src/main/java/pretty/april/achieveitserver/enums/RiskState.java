@@ -3,15 +3,13 @@ package pretty.april.achieveitserver.enums;
 import lombok.Getter;
 
 @Getter
-public enum DefectState {
-    OPEN(1),
-    ASSIGNED(2),
-    FIXED(3),
-    CLOSED(4);
+public enum RiskState {
+    STILL_EXISTS(1),
+    ALREADY_EXCLUDED(2);
 
     private int value;
 
-    DefectState(int value) {
+    RiskState(int value) {
         this.value = value;
     }
 }

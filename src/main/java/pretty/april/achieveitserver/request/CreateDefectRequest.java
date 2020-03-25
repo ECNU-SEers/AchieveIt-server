@@ -24,9 +24,6 @@ public class CreateDefectRequest {
 
     private Integer handlerId;
 
-    @NotNull
-    private Integer projectId;
-
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime due;
 }

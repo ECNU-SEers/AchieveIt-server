@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.entity.LaborHour;
+import pretty.april.achieveitserver.entity.Project;
 import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.mapper.ActivityMapper;
 import pretty.april.achieveitserver.mapper.LaborHourMapper;
@@ -158,4 +159,40 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 		this.baseMapper.updateById(laborHour);
 		return laborHour;
 	}
+	
+	/**
+	 * 查询某个领导的所有项目下级的工时记录
+	 * @param startDate
+	 * @param endDate
+	 * @param userId
+	 * @param page
+	 * @return
+	 */
+	public Page<LaborHour> getLaborHourOfSubordinate(LocalDate startDate, LocalDate endDate, Integer userId, Page<LaborHour> page) {
+		return page.setRecords(this.baseMapper.selectByLeaderId(startDate, endDate, userId, page));
+	}
+	
+	/**
+	 * 按照开始日期和结束日期查询某个用户的下属的工时信息
+	 * @param pageNo
+	 * @param pageSize
+	 * @param startDate
+	 * @param endDate
+	 * @param userId
+	 * @return
+	 */
+	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourOfSubordinate(Integer pageNo, Integer pageSize, LocalDate startDate, LocalDate endDate, Integer userId) {
+		Page<LaborHour> page = this.getLaborHourOfSubordinate(startDate, endDate, userId, new Page<LaborHour>(pageNo, pageSize));
+		List<RetrieveLaborHourRequest> laborHourDetails = new ArrayList<RetrieveLaborHourRequest>();
+		for (LaborHour laborHour: page.getRecords()) {
+			RetrieveLaborHourRequest request = new RetrieveLaborHourRequest();
+			BeanUtils.copyProperties(laborHour, request);
+			request.setFunctionName(functionService.getById(laborHour.getFunctionId()).getName());
+			request.setActivityName(activityService.getById(laborHour.getActivityId()).getName());
+			laborHourDetails.add(request);
+		}
+		return new PageDTO<RetrieveLaborHourRequest>(page.getCurrent(), page.getSize(), page.getTotal(), laborHourDetails);
+	}
+	
+	
 }
