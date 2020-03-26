@@ -9,11 +9,14 @@ import org.springframework.util.StringUtils;
 import pretty.april.achieveitserver.converter.DefectConverter;
 import pretty.april.achieveitserver.dto.DefectDTO;
 import pretty.april.achieveitserver.dto.PageDTO;
+import pretty.april.achieveitserver.dto.TypeDTO;
 import pretty.april.achieveitserver.entity.Defect;
+import pretty.april.achieveitserver.entity.DefectType;
 import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.enums.DefectState;
 import pretty.april.achieveitserver.exception.UserNotFoundException;
 import pretty.april.achieveitserver.mapper.DefectMapper;
+import pretty.april.achieveitserver.mapper.DefectTypeMapper;
 import pretty.april.achieveitserver.mapper.UserMapper;
 import pretty.april.achieveitserver.request.CreateDefectRequest;
 import pretty.april.achieveitserver.request.DefectTransitionRequest;
@@ -21,7 +24,9 @@ import pretty.april.achieveitserver.request.EditDefectRequest;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DefectService {
@@ -32,10 +37,13 @@ public class DefectService {
 
     private UserMapper userMapper;
 
-    public DefectService(DefectMapper defectMapper, DefectConverter defectConverter, UserMapper userMapper) {
+    private DefectTypeMapper defectTypeMapper;
+
+    public DefectService(DefectMapper defectMapper, DefectConverter defectConverter, UserMapper userMapper, DefectTypeMapper defectTypeMapper) {
         this.defectMapper = defectMapper;
         this.defectConverter = defectConverter;
         this.userMapper = userMapper;
+        this.defectTypeMapper = defectTypeMapper;
     }
 
     public Integer addDefect(CreateDefectRequest request, Integer creatorId, String creatorName, Integer projectId) {
@@ -128,5 +136,10 @@ public class DefectService {
                         .orderByDesc("created_at"));
         return new PageDTO<>(defects.getCurrent(), defects.getSize(), defects.getTotal(),
                 defectConverter.defectDTOList(defects.getRecords()));
+    }
+
+    public List<TypeDTO> getDefectTypes() {
+        List<DefectType> defectTypes = defectTypeMapper.selectList(new QueryWrapper<>());
+        return defectTypes.stream().map(o -> new TypeDTO(o.getId(), o.getName(), o.getRemark())).collect(Collectors.toList());
     }
 }

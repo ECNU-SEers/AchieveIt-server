@@ -77,13 +77,14 @@ public class MemberService {
 
     public PageDTO<MemberDTO> getMembers(Integer pageNo, Integer pageSize, Integer projectId) {
         Long count = (long) projectMemberMapper.selectMemberCountByProjectId(projectId);
-        List<MemberDetails> memberDetailsList = projectMemberMapper.selectMemberDetailsByProjectId(projectId, (pageNo - 1) * pageSize, pageSize);
+        List<MemberDetails> memberDetailsList = projectMemberMapper.selectMemberDetailsByProjectId(projectId, pageSize, pageSize * (pageNo - 1));
         List<MemberDTO> memberDTOList = new ArrayList<>();
         for (MemberDetails md : memberDetailsList) {
             MemberDTO memberDTO = new MemberDTO();
             BeanUtils.copyProperties(md, memberDTO);
             memberDTO.setWorkingHours(workingHourMapper.selectWorkingHour(md.getUserId(), projectId));
             memberDTO.setRoles(userRoleMapper.selectRoleNamesByUserIdAndProjectId(md.getUserId(), projectId));
+            memberDTOList.add(memberDTO);
         }
         return new PageDTO<>((long) pageNo, (long) pageSize, count, memberDTOList);
     }

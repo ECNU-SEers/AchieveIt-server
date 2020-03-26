@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import pretty.april.achieveitserver.dto.DefectDTO;
 import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.dto.Response;
+import pretty.april.achieveitserver.dto.TypeDTO;
 import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.request.CreateDefectRequest;
 import pretty.april.achieveitserver.request.DefectTransitionRequest;
@@ -14,6 +15,7 @@ import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -62,5 +64,10 @@ public class DefectController {
                                                    @RequestParam(required = false) Integer level,
                                                    @RequestParam(required = false) Integer type) {
         return ResponseUtils.successResponse(defectService.queryDefects(page, pageSize, projectId, type, level, state));
+    }
+
+    @GetMapping("/defect/type")
+    public Response<List<TypeDTO>> getDefectTypes() {
+        return ResponseUtils.successResponse(defectService.getDefectTypes());
     }
 }

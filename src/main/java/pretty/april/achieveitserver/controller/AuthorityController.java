@@ -17,6 +17,7 @@ import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -35,13 +36,13 @@ public class AuthorityController {
 
     @GetMapping("/permissions")
     public Response<List<PermissionDTO>> getPermissions(@RequestParam Integer pageSize,
-                                                        @RequestParam Integer pageNo) {
+                                                        @RequestParam @Min(1) Integer pageNo) {
         return ResponseUtils.successResponse(authorityService.getPermissions(pageNo, pageSize));
     }
 
     @GetMapping("/roles")
     public Response<PageDTO<RoleDTO>> getRoles(@RequestParam Integer pageSize,
-                                               @RequestParam Integer page) {
+                                               @RequestParam @Min(1) Integer page) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
         return ResponseUtils.successResponse(authorityService.getRoles(page, pageSize, user.getId()));

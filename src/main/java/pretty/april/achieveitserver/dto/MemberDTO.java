@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class MemberDTO {
-    private String userId;
+    private Integer userId;
     private String username;
     private String realName;
     private String email;

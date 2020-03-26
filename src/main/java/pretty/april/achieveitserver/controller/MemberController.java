@@ -8,6 +8,7 @@ import pretty.april.achieveitserver.service.MemberService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class MemberController {
 
     @GetMapping("/project/{projectId}/members")
     public Response<PageDTO<MemberDTO>> getMembers(@PathVariable Integer projectId,
-                                                   @RequestParam Integer page,
+                                                   @RequestParam @Min(1) Integer page,
                                                    @RequestParam Integer pageSize) {
         return ResponseUtils.successResponse(memberService.getMembers(page, pageSize, projectId));
     }
