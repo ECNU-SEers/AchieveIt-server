@@ -9,22 +9,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import pretty.april.achieveitserver.model.Username;
-import pretty.april.achieveitserver.service.ProjectIdService;
 import pretty.april.achieveitserver.service.UserService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ProjectIdServiceTest {
-
+public class UserServiceTest {
+	
 	@Autowired
-	private ProjectIdService projectIdService;
+	private UserService userService;
 	
 	@Test
-	public void getAllProjectIdsTest() {
-		List<String> projectIds = projectIdService.getAllProjectIds();
-		for (String projectId: projectIds) {
-			System.out.println("id = "+ projectId);
+	public void getAllSupervisorTest() {
+		List<Username> allUsers = userService.getAllSupervisors();
+		for (Username user: allUsers) {
+			System.out.println(""+user.getId());
+			System.out.println(""+user.getUsername());
 		}
 	}
-	
 }

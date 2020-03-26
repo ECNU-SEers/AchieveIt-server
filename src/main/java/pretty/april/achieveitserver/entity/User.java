@@ -36,6 +36,8 @@ public class User implements Serializable {
     private String phoneNumber;
 
     private String realName;
+    
+    private String position;
 
 
 }
