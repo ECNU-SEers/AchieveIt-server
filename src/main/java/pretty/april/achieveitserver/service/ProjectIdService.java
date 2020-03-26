@@ -12,7 +12,7 @@ import pretty.april.achieveitserver.mapper.ProjectIdMapper;
 @Service
 public class ProjectIdService extends ServiceImpl<ProjectIdMapper, ProjectId> {
 
-	public List<ProjectId> getAllProjectIds() {
+	public List<String> getAllProjectIds() {
 		return this.baseMapper.selectAllProjectId();
 	}
 }

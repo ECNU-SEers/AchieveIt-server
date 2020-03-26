@@ -24,7 +24,7 @@ public class ProjectIdController {
 	 * @return
 	 */
 	@GetMapping("/all")
-	public Response<List<ProjectId>> getAllProjectIds() {
+	public Response<List<String>> getAllProjectIds() {
 		return ResponseUtils.successResponse(projectIdService.getAllProjectIds());
 	}
 }

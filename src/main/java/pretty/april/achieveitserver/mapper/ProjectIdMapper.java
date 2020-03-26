@@ -12,6 +12,6 @@ import pretty.april.achieveitserver.entity.ProjectId;
 @Mapper
 public interface ProjectIdMapper extends BaseMapper<ProjectId> {
 
-	@Select("SELECT * FROM project_id WHERE isfree = true")
-	List<ProjectId> selectAllProjectId();
+	@Select("SELECT outer_id FROM project_id WHERE isfree = true")
+	List<String> selectAllProjectId();
 }
