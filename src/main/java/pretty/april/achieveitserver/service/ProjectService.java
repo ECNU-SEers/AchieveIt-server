@@ -245,10 +245,12 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     public ShowProjectListRequest showProjectList(String outerId) {
 //		1.利用outerId得到project表中的所有信息
         Project project = this.getProjectByOuterId(outerId);
-//		2.利用project表中的client_id得到client表中的company
+//		2.利用project表中的client_id得到client表中的outer_id和company
+        String clientOuterId = clientService.getById(project.getClientId()).getOuterId();
         String company = clientService.getCompanyById(project.getClientId());
         ShowProjectListRequest projectList = new ShowProjectListRequest();
         BeanUtils.copyProperties(project, projectList);
+        projectList.setClientOuterId(clientOuterId);
         projectList.setCompany(company);
         projectList.setParticipantCounter(memberService.selectCountByProjectId(project.getId()));
         if (project.getQaAssigned()) {
@@ -317,6 +319,39 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     	}
     	return new PageDTO<ShowProjectListRequest>(page.getCurrent(), page.getSize(), page.getTotal(), projectLists);
     }
+    
+    @Transactional
+    /**
+     * 更新项目：修改项目信息（不包括里程碑、项目技术和业务领域）
+     * @param validator 更新项目信息校验器
+     * @return 被更新的项目
+     */
+    public Project updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(UpdateProjectInfoRequest validator) throws Exception {
+//		1.利用projectId找到待修改的project，判断项目是否“结束”或“已归档”
+        Project primaryProject = this.getProjectByOuterId(validator.getOuterId());
+        if (primaryProject.getState().equals("结束") || primaryProject.getState().equals("已归档")) {
+            throw new Exception("The project already expires, cannot be updated, please choose a new one.");
+        }
+//		2.更新project表
+        Project project = new Project();
+        BeanUtils.copyProperties(validator, project);
+        Integer projectId = primaryProject.getId();
+        project.setId(projectId);
+        project.setState(primaryProject.getState());
+        project.setClientId(clientService.getIdByOuterIdAndCompany(validator.getClientOuterId(), validator.getCompany()));
+        project.setManagerId(primaryProject.getManagerId());
+        project.setManagerName(primaryProject.getManagerName());
+        projectMapper.updateById(project);
+
+//      3.更新project_member表中的project_name
+        List<ProjectMember> projectMembers = projectMemberService.selectByProjectId(projectId);
+        for (ProjectMember projectMember: projectMembers) {
+        	projectMember.setProjectName(validator.getName());
+        	projectMemberMapper.updateProjectNameByUserIdAndProjectId(projectMember.getProjectName(), projectMember.getProjectId());
+        }
+        
+        return project;
+    }
 
     @Transactional
     /**
@@ -378,7 +413,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         List<ProjectMember> projectMembers = projectMemberService.selectByProjectId(projectId);
         for (ProjectMember projectMember: projectMembers) {
         	projectMember.setProjectName(validator.getName());
-        	projectMemberMapper.updateById(projectMember);
+        	projectMemberMapper.updateProjectNameByUserIdAndProjectId(projectMember.getProjectName(), projectMember.getProjectId());
         }
         
         return project;

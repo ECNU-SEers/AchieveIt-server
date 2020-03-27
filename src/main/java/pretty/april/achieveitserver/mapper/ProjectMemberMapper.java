@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
 import pretty.april.achieveitserver.entity.ProjectMember;
 import pretty.april.achieveitserver.model.MemberDetails;
 import pretty.april.achieveitserver.model.Searchable;
@@ -30,6 +32,15 @@ public interface ProjectMemberMapper extends BaseMapper<ProjectMember> {
      */
     @Select("SELECT * FROM project_member WHERE project_id = #{projectId}")
     List<ProjectMember> selectByProjectId(Integer projectId);
+    
+    /**
+     * 更新项目内容时更新成员表中的project_member
+     * @param projectName
+     * @param projectId
+     * @return
+     */
+    @Update("UPDATE project_member SET project_name = #{projectName} WHERE project_id = #{projectId}")
+    int updateProjectNameByUserIdAndProjectId(@Param("projectName") String projectName, @Param("projectId") Integer projectId);
 
     @Select("select user.id user_id,user.username,real_name,email,department,phone_number,leader_id,leader_name " +
             "from project_member inner join user on project_member.user_id = user.id " +

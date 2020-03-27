@@ -1,6 +1,7 @@
 package pretty.april.achieveitserver.request.project;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class ShowProjectListRequest {
+public class UpdateProjectInfoRequest {
 	
 	private String outerId;
 	private String name;
@@ -28,15 +29,5 @@ public class ShowProjectListRequest {
 	private LocalDate endDate;
 	private int supervisorId;
 	private String supervisorName;
-	private int managerId;
-	private String managerName;
-	private int participantCounter;
-	private String qaAssigned;
-	private String epgAssigned;
-	private String state;
-	
-	/**
-	 * 项目立项中项目上级的审核结果
-	 */
-	private boolean reviewResult;
+
 }

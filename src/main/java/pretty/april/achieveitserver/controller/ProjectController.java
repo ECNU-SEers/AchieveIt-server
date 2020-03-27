@@ -18,6 +18,7 @@ import pretty.april.achieveitserver.request.project.CreateProjectRequest;
 import pretty.april.achieveitserver.request.project.RetrieveProjectRequest;
 import pretty.april.achieveitserver.request.project.SearchProjectRequest;
 import pretty.april.achieveitserver.request.project.ShowProjectListRequest;
+import pretty.april.achieveitserver.request.project.UpdateProjectInfoRequest;
 import pretty.april.achieveitserver.request.project.UpdateProjectRequest;
 import pretty.april.achieveitserver.service.ProjectService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
@@ -184,7 +185,19 @@ public class ProjectController {
 	}
 	
 	/**
-	 * 更新项目信息（01010304 & 010202）
+	 * 更新项目信息（01010304）（修改内容不包括里程碑、技术和业务领域）
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@PutMapping("/update/less")
+	public Response<?> updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(@RequestBody UpdateProjectInfoRequest request) throws Exception {
+		projectService.updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(request);
+		return ResponseUtils.successResponse();
+	}
+	
+	/**
+	 * 更新项目信息（010202）
 	 * @param request
 	 * @return
 	 * @throws Exception
