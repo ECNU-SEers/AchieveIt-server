@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.dto.SimpleEmployeeDTO;
+import pretty.april.achieveitserver.model.Supervisor;
 import pretty.april.achieveitserver.model.Username;
 import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
@@ -31,7 +32,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/supervisors")
-    public Response<List<Username>> getAllSupervisors() {
+    public Response<List<Supervisor>> getAllSupervisors() {
     	return ResponseUtils.successResponse(userService.getAllSupervisors());
     }
 }

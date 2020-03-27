@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import pretty.april.achieveitserver.model.Supervisor;
 import pretty.april.achieveitserver.model.Username;
 import pretty.april.achieveitserver.service.UserService;
 
@@ -20,10 +21,11 @@ public class UserServiceTest {
 	
 	@Test
 	public void getAllSupervisorTest() {
-		List<Username> allUsers = userService.getAllSupervisors();
-		for (Username user: allUsers) {
-			System.out.println(""+user.getId());
-			System.out.println(""+user.getUsername());
+		List<Supervisor> allUsers = userService.getAllSupervisors();
+		for (Supervisor user: allUsers) {
+			System.out.println("id = "+user.getId());
+			System.out.println("username = "+user.getUsername());
+			System.out.println("realname = "+user.getRealName());
 		}
 	}
 }

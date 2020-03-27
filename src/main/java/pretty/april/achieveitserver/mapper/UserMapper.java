@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import pretty.april.achieveitserver.entity.User;
+import pretty.april.achieveitserver.model.Supervisor;
 import pretty.april.achieveitserver.model.Username;
 
 import java.util.List;
@@ -20,8 +21,8 @@ public interface UserMapper extends BaseMapper<User> {
             "</script>")
     List<Username> selectUsernameBatch(List<Integer> ids);
     
-    @Select("SELECT id, username FROM user WHERE position = \"主管\"")
-    List<Username> selectUsernameByPosition();
+    @Select("SELECT id, username, real_name FROM user WHERE position = \"主管\"")
+    List<Supervisor> selectUsernameByPosition();
 
 //    List<Username> selectUsernameBatch(@Param("ids") List<Integer> ids);
 
