@@ -131,8 +131,26 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
             projectBusinessArea.setBusinessAreaName(validator.getBusinessAreaName());
             projectBusinessAreaMapper.insert(projectBusinessArea);
         }
+        
+//      5.把manager和supervisor加入project_member中
+        ProjectMember manager = new ProjectMember();
+        manager.setProjectId(projectId);
+        manager.setUserId(validator.getManagerId());
+        manager.setUsername(validator.getManagerName());
+        manager.setProjectName(validator.getName());
+        manager.setLeaderId(validator.getSupervisorId());
+        manager.setLeaderName(validator.getSupervisorName());
+        projectMemberMapper.insert(manager);
+        
+        ProjectMember supervisor = new ProjectMember();
+        supervisor.setProjectId(projectId);
+        supervisor.setUserId(validator.getSupervisorId());
+        supervisor.setUsername(validator.getSupervisorName());
+        supervisor.setProjectName(validator.getName());
+//      supervisor的leader为null
+        projectMemberMapper.insert(supervisor);
 
-//		5.启动流程实例
+//		6.启动流程实例
         Map<String, Object> map = new HashMap();
         String projectOuterId = validator.getOuterId();
         map.put("projectManager", projectOuterId + "manager");
@@ -142,20 +160,20 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         map.put("QAManager", projectOuterId + "qa_manager");
         ProcessInstance processInstanceWithBusinessKey = processManagementService.startProcessInstance("projectApproval", this.getProjectByOuterId(validator.getOuterId()).getId().toString(), map);
 
-//		6.设置项目流程实例ID
+//		7.设置项目流程实例ID
         project.setInstanceId(processInstanceWithBusinessKey.getId());
         projectMapper.updateById(project);
 
-//		7.查询该执行人名下所有的task
+//		8.查询该执行人名下所有的task
         List<Task> taskList = processManagementService.queryActivityTask("projectApproval", projectOuterId + "manager");
-//		8.执行当前流程实例下的第一个task
+//		9.执行当前流程实例下的第一个task
         for (Task task : taskList) {
             if (task.getProcessInstanceId().equals(processInstanceWithBusinessKey.getId())) {
                 processManagementService.handleActivityTask(task);
             }
         }
         
-//      9.状态更新
+//      10.状态更新
         StateChange stateChange = new StateChange();
         stateChange.setProjectId(projectId);
         stateChange.setChangeDate(LocalDateTime.now());
