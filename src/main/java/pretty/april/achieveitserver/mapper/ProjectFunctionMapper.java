@@ -23,4 +23,7 @@ public interface ProjectFunctionMapper extends BaseMapper<ProjectFunction> {
 
 	@Select("select id,name from project_function where project_id = #{projectId} and name like concat('%',#{name},'%')")
 	List<Searchable> selectLikeName(Integer projectId, String name);
+
+	@Select("select count(*) from project_function where parent_id = #{parentId}")
+	Integer selectCountSubFunction(Integer parentId);
 }

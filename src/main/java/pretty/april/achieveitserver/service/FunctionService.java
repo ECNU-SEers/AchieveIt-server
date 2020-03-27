@@ -54,7 +54,8 @@ public class FunctionService {
         IPage<ProjectFunction> functions = projectFunctionMapper.selectPage(page,
                 new QueryWrapper<ProjectFunction>().eq("project_id", projectId).isNull("parent_id"));
         return functions.getRecords().stream()
-                .map(o -> new FunctionDTO(o.getId(), o.getName(), o.getDescription())).collect(Collectors.toList());
+                .map(o -> new FunctionDTO(o.getId(), o.getName(), o.getDescription(), projectFunctionMapper.selectCountSubFunction(o.getId())))
+                .collect(Collectors.toList());
     }
 
     public List<FunctionDTO> getSubFunctions(Integer projectId, Integer functionId) {
@@ -66,7 +67,7 @@ public class FunctionService {
         IPage<ProjectFunction> functions = projectFunctionMapper.selectPage(page, new QueryWrapper<ProjectFunction>()
                 .eq("project_id", projectId).eq("parent_id", functionId));
         return functions.getRecords().stream()
-                .map(o -> new FunctionDTO(o.getId(), o.getName(), o.getDescription())).collect(Collectors.toList());
+                .map(o -> new FunctionDTO(o.getId(), o.getName(), o.getDescription(), 0)).collect(Collectors.toList());
     }
 
     public void deleteFunction(Integer projectId, Integer functionId) {
@@ -101,11 +102,11 @@ public class FunctionService {
         fullFunctionDTO.setName(function.getName());
         fullFunctionDTO.setDescription(function.getDescription());
         fullFunctionDTO.setSubFunctions(subFunctions.stream()
-                .map(o -> new FunctionDTO(o.getId(), o.getName(), o.getDescription())).collect(Collectors.toList()));
+                .map(o -> new FunctionDTO(o.getId(), o.getName(), o.getDescription(), 0)).collect(Collectors.toList()));
         return fullFunctionDTO;
     }
-    
+
     public ProjectFunction getById(Integer id) {
-    	return projectFunctionMapper.selectById(id);
+        return projectFunctionMapper.selectById(id);
     }
 }
