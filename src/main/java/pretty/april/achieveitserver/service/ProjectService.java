@@ -87,6 +87,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     
     @Autowired
     private ProjectMemberMapper projectMemberMapper;
+    
+    @Autowired
+    private ProjectIdMapper projectIdMapper;
 
     /**
      * 创建项目：项目经理录入项目信息并自动申请立项
@@ -149,6 +152,12 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         supervisor.setProjectName(validator.getName());
 //      supervisor的leader为null
         projectMemberMapper.insert(supervisor);
+        
+//      6.修改project_id的状态
+        ProjectId pid = new ProjectId();
+        pid.setProjectId(validator.getOuterId());
+        pid.setIsfree(false);
+        projectIdMapper.updateIsFreeByProjectId(validator.getOuterId());
 
 //		6.启动流程实例
         Map<String, Object> map = new HashMap();

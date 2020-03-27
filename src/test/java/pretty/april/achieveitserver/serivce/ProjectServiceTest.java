@@ -29,28 +29,28 @@ public class ProjectServiceTest {
     @Autowired
     private ProjectService projectService;
 
-//	@Test
-//	public void createProjectTest() throws Exception {
-//		CreateProjectRequest project = new CreateProjectRequest();
-//		List<String> skillNames = new ArrayList<String>();
-//		skillNames.add("tech1");
-//		skillNames.add("tech2");
-//		
-//		project.setOuterId("2020-0327-D-pp");
-//		project.setName("AchieveIt");
-//		project.setStartDate(LocalDate.now());
-//		project.setEndDate(LocalDate.now().plusDays(50));
-//		project.setClientOuterId("20200316test");
-//		project.setCompany("April");
-//		project.setSupervisorId(4);
-//		project.setSupervisorName("zhangsan");
-//		project.setManagerId(3);
-//		project.setManagerName("lisi");
-//		project.setSkillNames(skillNames);
-//		project.setBusinessAreaName("area1");
-//		
-//		projectService.createProject(project);
-//	}
+	@Test
+	public void createProjectTest() throws Exception {
+		CreateProjectRequest project = new CreateProjectRequest();
+		List<String> skillNames = new ArrayList<String>();
+		skillNames.add("tech1");
+		skillNames.add("tech2");
+		
+		project.setOuterId("2020-ECNU-D-00");
+		project.setName("AchieveIt");
+		project.setStartDate(LocalDate.now());
+		project.setEndDate(LocalDate.now().plusDays(50));
+		project.setClientOuterId("20200316test");
+		project.setCompany("April");
+		project.setSupervisorId(4);
+		project.setSupervisorName("zhangsan");
+		project.setManagerId(3);
+		project.setManagerName("lisi");
+		project.setSkillNames(skillNames);
+		project.setBusinessAreaName("area1");
+		
+		projectService.createProject(project);
+	}
 //
 //	@Test
 //	public void retrieveProjectTest() {
@@ -151,17 +151,17 @@ public class ProjectServiceTest {
 //		System.out.println("clientOuterId="+projectList.getClientOuterId());
 //	}
 //	
-    @Test
-	public void showProjectsTest() {
-		PageDTO<ShowProjectListRequest> page = projectService.showProjects(1, 5, 3);
-		System.out.println("items:\n"+page.getItems());
-		System.out.println("total = "+ page.getTotal());
-		for (ShowProjectListRequest request: page.getItems()) {
-			System.out.println("outerId = "+request.getOuterId());
-			System.out.println("name = "+request.getName());
-		}
-		
-	}
+//    @Test
+//	public void showProjectsTest() {
+//		PageDTO<ShowProjectListRequest> page = projectService.showProjects(1, 5, 3);
+//		System.out.println("items:\n"+page.getItems());
+//		System.out.println("total = "+ page.getTotal());
+//		for (ShowProjectListRequest request: page.getItems()) {
+//			System.out.println("outerId = "+request.getOuterId());
+//			System.out.println("name = "+request.getName());
+//		}
+//		
+//	}
 //
 //    @Test
 //    public void acceptProjectTest() throws Exception {
