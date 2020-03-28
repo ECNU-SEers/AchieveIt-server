@@ -254,8 +254,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         List<Project> projects = this.selectProjectByNameWithKeyword(userId, keyword);
 //		2.得到所有项目的详细信息
         List<SearchProjectRequest> projectNameAndIds = new ArrayList<SearchProjectRequest>();
-        SearchProjectRequest result = new SearchProjectRequest();
         for (Project project : projects) {
+        	SearchProjectRequest result = new SearchProjectRequest();
             result.setOuterId(project.getOuterId());
             result.setName(project.getName());
             projectNameAndIds.add(result);
@@ -368,6 +368,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         project.setClientId(clientService.getIdByOuterIdAndCompany(validator.getClientOuterId(), validator.getCompany()));
         project.setManagerId(primaryProject.getManagerId());
         project.setManagerName(primaryProject.getManagerName());
+        project.setSupervisorId(primaryProject.getSupervisorId());
+        project.setSupervisorName(primaryProject.getSupervisorName());
         projectMapper.updateById(project);
 
 //      3.更新project_member表中的project_name
@@ -401,6 +403,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         project.setClientId(clientService.getIdByOuterIdAndCompany(validator.getClientOuterId(), validator.getCompany()));
         project.setManagerId(primaryProject.getManagerId());
         project.setManagerName(primaryProject.getManagerName());
+        project.setSupervisorId(primaryProject.getSupervisorId());
+        project.setSupervisorName(primaryProject.getSupervisorName());
         projectMapper.updateById(project);
 
 //		3.更新project_skill表：删掉旧的，添加新的

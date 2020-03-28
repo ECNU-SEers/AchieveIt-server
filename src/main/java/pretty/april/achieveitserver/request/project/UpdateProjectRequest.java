@@ -27,8 +27,6 @@ public class UpdateProjectRequest {
 	private String company;
 	private LocalDate startDate;
 	private LocalDate endDate;
-	private int supervisorId;
-	private String supervisorName;
 	private String milestone;
 	private List<String> skillNames;
 	private String businessAreaName;

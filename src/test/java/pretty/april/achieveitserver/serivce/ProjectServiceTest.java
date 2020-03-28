@@ -29,28 +29,28 @@ public class ProjectServiceTest {
     @Autowired
     private ProjectService projectService;
 
-	@Test
-	public void createProjectTest() throws Exception {
-		CreateProjectRequest project = new CreateProjectRequest();
-		List<String> skillNames = new ArrayList<String>();
-		skillNames.add("tech1");
-		skillNames.add("tech2");
-		
-		project.setOuterId("2020-ECNU-D-00");
-		project.setName("AchieveIt");
-		project.setStartDate(LocalDate.now());
-		project.setEndDate(LocalDate.now().plusDays(50));
-		project.setClientOuterId("20200316test");
-		project.setCompany("April");
-		project.setSupervisorId(4);
-		project.setSupervisorName("zhangsan");
-		project.setManagerId(3);
-		project.setManagerName("lisi");
-		project.setSkillNames(skillNames);
-		project.setBusinessAreaName("area1");
-		
-		projectService.createProject(project);
-	}
+//	@Test
+//	public void createProjectTest() throws Exception {
+//		CreateProjectRequest project = new CreateProjectRequest();
+//		List<String> skillNames = new ArrayList<String>();
+//		skillNames.add("tech1");
+//		skillNames.add("tech2");
+//		
+//		project.setOuterId("2020-ECNU-D-00");
+//		project.setName("AchieveIt");
+//		project.setStartDate(LocalDate.now());
+//		project.setEndDate(LocalDate.now().plusDays(50));
+//		project.setClientOuterId("20200316test");
+//		project.setCompany("April");
+//		project.setSupervisorId(4);
+//		project.setSupervisorName("zhangsan");
+//		project.setManagerId(3);
+//		project.setManagerName("lisi");
+//		project.setSkillNames(skillNames);
+//		project.setBusinessAreaName("area1");
+//		
+//		projectService.createProject(project);
+//	}
 //
 //	@Test
 //	public void retrieveProjectTest() {
@@ -121,15 +121,25 @@ public class ProjectServiceTest {
 //		projectService.updateProjectInfoDuringProjectApproval(project);
 //	}
 //
-//	@Test
-//	public void searchProjectTest() {
-//		String keyword = "ch";
-//		Integer userId = 1;
-//		List<Project> projects = projectService.selectProjectByNameWithKeyword(userId, keyword);
-//		System.out.println(projects.size());
-//		List<SearchProjectRequest> results = projectService.searchProjectWithNameIncludingKeyword(userId, keyword);
-//		System.out.println(results.size());
-//	}
+	@Test
+	public void searchProjectTest() {
+		String keyword = "ch";
+		Integer userId = 1;
+		List<Project> projects = projectService.selectProjectByNameWithKeyword(userId, keyword);
+		System.out.println(projects.size());
+		for (Project p: projects) {
+			System.out.println("projectOuterId = " + p.getOuterId());
+			System.out.println("name"+p.getName());
+			System.out.println("------------");
+		}
+		List<SearchProjectRequest> results = projectService.searchProjectWithNameIncludingKeyword(userId, keyword);
+		System.out.println(results.size());
+		for (SearchProjectRequest r: results) {
+			System.out.println("projectOuterId = "+r.getOuterId());
+			System.out.println("name"+r.getName());
+			System.out.println("======================================");
+		}
+	}
 //    
 //
 //    @Test

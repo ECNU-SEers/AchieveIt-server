@@ -1,5 +1,7 @@
 package pretty.april.achieveitserver.controller;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.dto.Response;
+import pretty.april.achieveitserver.entity.Project;
+import pretty.april.achieveitserver.request.project.ApproveProjectRequest;
 import pretty.april.achieveitserver.request.project.AssignRoleRequest;
 import pretty.april.achieveitserver.request.project.CreateProjectRequest;
 import pretty.april.achieveitserver.request.project.RetrieveProjectRequest;
@@ -29,6 +33,9 @@ public class ProjectController {
 	
 	@Autowired
 	private ProjectService projectService;
+	
+	@Autowired
+	private ExternalSystemController externalSystemController;
 	
 	/**
 	 * 利用关键字搜索（010101）
@@ -75,7 +82,8 @@ public class ProjectController {
 	 */
 	@PostMapping("/create")
 	public Response<?> createProject(@RequestBody CreateProjectRequest request) throws Exception {
-		projectService.createProject(request);
+		Project project = projectService.createProject(request);
+		externalSystemController.sendmail("申请立项", project.getSupervisorId());
 		return ResponseUtils.successResponse();	
 	}
 	
@@ -111,11 +119,11 @@ public class ProjectController {
 	 * @param outerId 项目ID
 	 * @return
 	 */
-//	@PutMapping("/approve/archive")
-//	public Response<?> approveArchive(@RequestParam(value="outerId") String outerId) {
-//		projectService.acceptArchive(outerId);
-//		return ResponseUtils.successResponse();	
-//	}
+	@PutMapping("/approve/archive")
+	public Response<?> approveArchive(@RequestParam(value="outerId") String outerId) {
+		projectService.acceptArchive(outerId);
+		return ResponseUtils.successResponse();	
+	}
 	
 	/**
 	 * 分配配置库（01010307）
@@ -124,7 +132,10 @@ public class ProjectController {
 	 */
 	@PutMapping("/assign/config")
 	public Response<?> assignConfig(@RequestParam(value="outerId") String outerId) {
-		projectService.assignConfig(outerId);
+		Project project = projectService.assignConfig(outerId);
+		List<String> roles = new ArrayList<String>();
+		externalSystemController.git(project.getOuterId(), 1, roles, LocalDateTime.now(), LocalDateTime.now().plusDays(100), "repository");
+		externalSystemController.sendmail("已建立配置库", project.getManagerId());
 		return ResponseUtils.successResponse();	
 	}
 	
@@ -135,7 +146,8 @@ public class ProjectController {
 	 */
 	@PutMapping("/assign/qa")
 	public Response<?> assignQA(@RequestBody AssignRoleRequest request) {
-		projectService.assignQA(request);
+		Project project = projectService.assignQA(request);
+		externalSystemController.sendmail("已分配QA", project.getManagerId());
 		return ResponseUtils.successResponse();	
 	}
 	
@@ -146,7 +158,8 @@ public class ProjectController {
 	 */
 	@PutMapping("/assign/epg")
 	public Response<?> assignEPG(@RequestBody AssignRoleRequest request) {
-		projectService.assignEPG(request);
+		Project project = projectService.assignEPG(request);
+		externalSystemController.sendmail("已分配EPG", project.getManagerId());
 		return ResponseUtils.successResponse();	
 	}
 	
@@ -158,7 +171,15 @@ public class ProjectController {
 	 */
 	@PutMapping("/accept")
 	public Response<?> acceptProject(@RequestBody RetrieveProjectRequest request) throws Exception {
-		projectService.acceptProject(request);
+		ApproveProjectRequest project = projectService.acceptProject(request);
+		externalSystemController.sendmail("立项成功", 1);
+		externalSystemController.sendmail("立项成功", 2);
+		externalSystemController.sendmail("立项成功", 3);
+		List<String> roles = new ArrayList<String>();
+		String projectOuterId = project.getProjectInfo().getProject().getOuterId();
+		externalSystemController.git(projectOuterId, 1, roles, LocalDateTime.now(), LocalDateTime.now().plusDays(100), "repository");
+		externalSystemController.mail(projectOuterId, 1, roles, LocalDateTime.now(), LocalDateTime.now().plusDays(100), "mailList");
+		externalSystemController.file(projectOuterId, 1, roles, LocalDateTime.now(), LocalDateTime.now().plusDays(100), "fileServerContent");
 		return ResponseUtils.successResponse();	
 	}
 	
