@@ -3,6 +3,7 @@ package pretty.april.achieveitserver.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -22,7 +23,7 @@ public interface ProjectFunctionMapper extends BaseMapper<ProjectFunction> {
 	List<ProjectFunction> selectProjectFunctionByProjectId(Integer projectId);
 
 	@Select("select id,name from project_function where project_id = #{projectId} and name like concat('%',#{name},'%')")
-	List<Searchable> selectLikeName(Integer projectId, String name);
+	List<Searchable> selectLikeName(@Param("projectId") Integer projectId, @Param("name") String name);
 
 	@Select("select count(*) from project_function where parent_id = #{parentId}")
 	Integer selectCountSubFunction(Integer parentId);
