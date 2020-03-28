@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import pretty.april.achieveitserver.converter.DefectConverter;
 import pretty.april.achieveitserver.dto.DefectDTO;
 import pretty.april.achieveitserver.dto.PageDTO;
+import pretty.april.achieveitserver.dto.SearchableDTO;
 import pretty.april.achieveitserver.dto.TypeDTO;
 import pretty.april.achieveitserver.entity.Defect;
 import pretty.april.achieveitserver.entity.DefectType;
@@ -18,6 +19,7 @@ import pretty.april.achieveitserver.exception.UserNotFoundException;
 import pretty.april.achieveitserver.mapper.DefectMapper;
 import pretty.april.achieveitserver.mapper.DefectTypeMapper;
 import pretty.april.achieveitserver.mapper.UserMapper;
+import pretty.april.achieveitserver.model.Searchable;
 import pretty.april.achieveitserver.request.CreateDefectRequest;
 import pretty.april.achieveitserver.request.DefectTransitionRequest;
 import pretty.april.achieveitserver.request.EditDefectRequest;
@@ -141,5 +143,10 @@ public class DefectService {
     public List<TypeDTO> getDefectTypes() {
         List<DefectType> defectTypes = defectTypeMapper.selectList(new QueryWrapper<>());
         return defectTypes.stream().map(o -> new TypeDTO(o.getId(), o.getName(), o.getRemark())).collect(Collectors.toList());
+    }
+
+    public List<SearchableDTO> searchDefects(Integer projectId, String name) {
+        List<Searchable> searchables = defectMapper.selectLikeName(projectId, name);
+        return searchables.stream().map(o -> new SearchableDTO(o.getId(), o.getName())).collect(Collectors.toList());
     }
 }

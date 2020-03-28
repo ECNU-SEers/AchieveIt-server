@@ -19,7 +19,7 @@ public interface UserMapper extends BaseMapper<User> {
             "#{id}" +
             "</foreach>" +
             "</script>")
-    List<Username> selectUsernameBatch(List<Integer> ids);
+    List<Username> selectUsernameBatch(@Param("ids") List<Integer> ids);
     
     @Select("SELECT id, username, real_name FROM user WHERE position = \"主管\"")
     List<Supervisor> selectUsernameByPosition();

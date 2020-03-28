@@ -29,9 +29,6 @@ public class AddRiskRequest {
 
     private Integer trackingFreq;
 
-    @NotNull
-    private String source;
-
     @NotBlank
     private String description;
 

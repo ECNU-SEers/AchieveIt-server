@@ -28,4 +28,6 @@ public class EditRiskRequest {
     private String description;
 
     private List<Integer> relatedPersons;
+
+    private Integer state;
 }

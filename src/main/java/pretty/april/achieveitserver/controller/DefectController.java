@@ -2,10 +2,7 @@ package pretty.april.achieveitserver.controller;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import pretty.april.achieveitserver.dto.DefectDTO;
-import pretty.april.achieveitserver.dto.PageDTO;
-import pretty.april.achieveitserver.dto.Response;
-import pretty.april.achieveitserver.dto.TypeDTO;
+import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.request.CreateDefectRequest;
 import pretty.april.achieveitserver.request.DefectTransitionRequest;
@@ -69,5 +66,10 @@ public class DefectController {
     @GetMapping("/defect/type")
     public Response<List<TypeDTO>> getDefectTypes() {
         return ResponseUtils.successResponse(defectService.getDefectTypes());
+    }
+
+    @GetMapping("/project/{projectId}/defects/search")
+    public Response<List<SearchableDTO>> searchDefects(@RequestParam String name, @PathVariable Integer projectId) {
+        return ResponseUtils.successResponse(defectService.searchDefects(projectId, name));
     }
 }
