@@ -154,7 +154,8 @@ public class ProjectDeviceService extends ServiceImpl<ProjectDeviceMapper, Proje
 	 * @param deviceId
 	 * @return 某设备的所有检查记录
 	 */
-	public List<RetrieveDeviceInspectionRequest> retrieveDeviceInspection(Integer deviceId) {
+	public List<RetrieveDeviceInspectionRequest> retrieveDeviceInspection(String deviceOuterId, Integer projectId) {
+		Integer deviceId = projectDeviceMapper.selectByOuterIdAndProjectId(deviceOuterId, projectId).getId();
 		List<DeviceInspection> deviceInspections = deviceInspectionMapper.selectInfoByDeviceId(deviceId);
 		List<RetrieveDeviceInspectionRequest> deviceInspectionInfo = new ArrayList<>();
 		for (DeviceInspection deviceInspection: deviceInspections) {
@@ -182,7 +183,8 @@ public class ProjectDeviceService extends ServiceImpl<ProjectDeviceMapper, Proje
 	 * @param deviceId 项目设备表ID
 	 * @return 该设备的所有检查记录
 	 */
-	public PageDTO<RetrieveDeviceInspectionRequest> retrieveDeviceInspectionByPage(Integer pageNo, Integer pageSize, Integer deviceId) {
+	public PageDTO<RetrieveDeviceInspectionRequest> retrieveDeviceInspectionByPage(Integer pageNo, Integer pageSize, String deviceOuterId, Integer projectId) {
+		Integer deviceId = projectDeviceMapper.selectByOuterIdAndProjectId(deviceOuterId, projectId).getId();
 		Page<DeviceInspection> page = new Page<>(pageNo, pageSize);
 		QueryWrapper<DeviceInspection> queryWrapper = new QueryWrapper<DeviceInspection>();
 		queryWrapper.eq("device_id", deviceId).orderByAsc("inspect_date");

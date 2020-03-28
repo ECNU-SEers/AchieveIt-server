@@ -59,18 +59,29 @@ public class ProjectDeviceServiceTest {
 //		System.out.println("state = "+request.getState());
 //		System.out.println("returnDate = "+request.getReturnDate());
 //	}
-	
+//	
 	@Test
 	public void showDevicesTest() {
 		Integer projectId = 1;
 		PageDTO<ShowProjectDeviceListRequest> page = projectDeviceService.showDevices(1, 3, projectId);
 		System.out.println(page.getTotal());
+		for (ShowProjectDeviceListRequest request: page.getItems()) {
+			System.out.println("outerId = "+request.getOuterId());
+			System.out.println("type = "+request.getType());
+			System.out.println("managerId = "+request.getManagerId());
+			System.out.println("managerName = "+request.getManagerName());
+			System.out.println("startDate = "+request.getStartDate());
+			System.out.println("endDate = "+request.getDueDate());
+			System.out.println("returnDate = "+request.getReturnDate());
+			System.out.println("-------------------------------------");
+		}
 	}
-	
+//	
 //	@Test
 //	public void retrieveDeviceInspectionTest() {
-//		Integer deviceId = 1;
-//		List<RetrieveDeviceInspectionRequest> request = projectDeviceService.retrieveDeviceInspection(deviceId);
+//		String deviceOuterId = "device001";
+//		Integer projectId = 1;
+//		List<RetrieveDeviceInspectionRequest> request = projectDeviceService.retrieveDeviceInspection(deviceOuterId, projectId);
 //		System.out.println("size = "+request.size());
 //		for (RetrieveDeviceInspectionRequest info: request) {
 //			System.out.println("inspectDate = "+info.getInspectDate());

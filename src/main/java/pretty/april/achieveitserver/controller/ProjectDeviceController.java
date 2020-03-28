@@ -82,8 +82,9 @@ public class ProjectDeviceController {
 	 * @return 该设备的所有检查信息
 	 */
 	@GetMapping("/inspect")
-	public Response<List<RetrieveDeviceInspectionRequest>> retrieveDeviceInspection(@RequestParam(value="deviceId") Integer deviceId) {
-		return ResponseUtils.successResponse(projectDeviceService.retrieveDeviceInspection(deviceId));
+	public Response<List<RetrieveDeviceInspectionRequest>> retrieveDeviceInspection(@RequestParam(value="deviceOuterId") String deviceOuterId, 
+																					@RequestParam(value="projectId") Integer projectId) {
+		return ResponseUtils.successResponse(projectDeviceService.retrieveDeviceInspection(deviceOuterId, projectId));
 	}
 	
 	/**
@@ -96,8 +97,9 @@ public class ProjectDeviceController {
 	@GetMapping("/inspect/by/page")
 	public Response<PageDTO<RetrieveDeviceInspectionRequest>> retrieveDeviceInspectionByPage(@RequestParam(value="pageNo") Integer pageNo,
 													 @RequestParam(value="pageSize") Integer pageSize,
-													 @RequestParam(value="deviceId") Integer deviceId) {
-		return ResponseUtils.successResponse(projectDeviceService.retrieveDeviceInspectionByPage(pageNo, pageSize, deviceId));
+													 @RequestParam(value="deviceOuterId") String deviceOuterId, 
+													 @RequestParam(value="projectId") Integer projectId) {
+		return ResponseUtils.successResponse(projectDeviceService.retrieveDeviceInspectionByPage(pageNo, pageSize, deviceOuterId, projectId));
 	}
 	
 	/**

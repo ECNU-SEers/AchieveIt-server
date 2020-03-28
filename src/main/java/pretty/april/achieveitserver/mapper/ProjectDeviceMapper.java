@@ -23,6 +23,15 @@ public interface ProjectDeviceMapper extends BaseMapper<ProjectDevice> {
 	int selectCountByOuterIdAndProjectId(@Param("outerId")String outerId, @Param("projectId")Integer projectId);
 	
 	/**
+	 * 利用设备ID和项目表ID查询设备
+	 * @param outerId
+	 * @param projectId
+	 * @return
+	 */
+	@Select("SELECT * FROM project_device WHERE outer_id = #{outerId} AND project_id = #{projectId}")
+	ProjectDevice selectByOuterIdAndProjectId(@Param("outerId")String outerId, @Param("projectId")Integer projectId);
+	
+	/**
 	 * 利用设备ID查看该设备的所有历史状态
 	 * @param outerId
 	 * @return 所有状态
