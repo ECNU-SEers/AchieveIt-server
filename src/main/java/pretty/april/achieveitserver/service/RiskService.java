@@ -41,10 +41,11 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
 
     private OrgStdRiskMapper orgStdRiskMapper;
 
-    public RiskService(RiskMapper riskMapper, UserMapper userMapper, RiskRelatedPersonMapper riskRelatedPersonMapper) {
+    public RiskService(RiskMapper riskMapper, UserMapper userMapper, RiskRelatedPersonMapper riskRelatedPersonMapper, OrgStdRiskMapper orgStdRiskMapper) {
         this.riskMapper = riskMapper;
         this.userMapper = userMapper;
         this.riskRelatedPersonMapper = riskRelatedPersonMapper;
+        this.orgStdRiskMapper = orgStdRiskMapper;
     }
 
     public Integer addRisk(Integer projectId, AddRiskRequest request) {
@@ -52,6 +53,7 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
         BeanUtils.copyProperties(request, risk);
         risk.setState(1);
         risk.setProjectId(projectId);
+        risk.setSource(RiskType.SELF_IDENTIFY.getValue());
         riskMapper.insert(risk);
         if (!CollectionUtils.isEmpty(request.getRelatedPersons())) {
             List<Username> usernames = userMapper.selectUsernameBatch(request.getRelatedPersons());
