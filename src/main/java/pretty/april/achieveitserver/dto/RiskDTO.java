@@ -31,7 +31,7 @@ public class RiskDTO {
 
     private Integer trackingFreq;
 
-    private String source;
+    private Integer source;
 
     private List<UsernameDTO> riskRelatedPeople;
 }
