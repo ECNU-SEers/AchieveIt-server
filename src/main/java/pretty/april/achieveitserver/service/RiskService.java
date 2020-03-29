@@ -66,7 +66,7 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
 
     public void editRisk(Integer projectId, Integer riskId, EditRiskRequest request) {
         if (riskMapper.selectOne(new QueryWrapper<ProjectRisk>()
-                .eq("project_id", projectId).eq("risk_id", riskId)) == null) {
+                .eq("project_id", projectId).eq("id", riskId)) == null) {
             throw new IllegalArgumentException("Cannot find risk");
         }
         ProjectRisk risk = new ProjectRisk();
@@ -78,7 +78,7 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
 
     public void deleteRisk(Integer projectId, Integer riskId) {
         if (riskMapper.selectOne(new QueryWrapper<ProjectRisk>()
-                .eq("project_id", projectId).eq("risk_id", riskId)) == null) {
+                .eq("project_id", projectId).eq("id", riskId)) == null) {
             throw new IllegalArgumentException("Cannot find risk");
         }
         riskMapper.deleteById(riskId);

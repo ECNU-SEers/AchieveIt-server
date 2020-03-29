@@ -8,10 +8,9 @@ import pretty.april.achieveitserver.dto.PermissionDTO;
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.dto.RoleDTO;
 import pretty.april.achieveitserver.entity.User;
-import pretty.april.achieveitserver.request.AssignRoleRequest;
+import pretty.april.achieveitserver.request.AssignRevokeRoleRequest;
 import pretty.april.achieveitserver.request.CreateRoleRequest;
 import pretty.april.achieveitserver.request.EditRoleRequest;
-import pretty.april.achieveitserver.request.RevokeRoleRequest;
 import pretty.april.achieveitserver.service.AuthorityService;
 import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
@@ -61,15 +60,34 @@ public class AuthorityController {
         return ResponseUtils.successResponse();
     }
 
-    @PostMapping("/role/{roleId}/assign")
-    public Response<?> assignRole(@PathVariable Integer roleId, @RequestBody @Valid AssignRoleRequest request) {
-        authorityService.assignRole(request, roleId);
+    @GetMapping("/role/{roleId}/permissions")
+    public Response<List<PermissionDTO>> getRolePermissions(@PathVariable Integer roleId) {
+        return ResponseUtils.successResponse(authorityService.getRolePermissions(roleId));
+    }
+
+    @PostMapping("/project/{projectId}/role/{roleId}/assign")
+    public Response<?> assignRole(@PathVariable Integer roleId, @PathVariable Integer projectId, @RequestBody @Valid AssignRevokeRoleRequest request) {
+        authorityService.assignRole(request, roleId, projectId);
         return ResponseUtils.successResponse();
     }
 
-    @PutMapping("/role/{roleId}/revoke")
-    public Response<?> revokeRole(@PathVariable Integer roleId, @RequestBody @Valid RevokeRoleRequest request) {
-        authorityService.revokeRole(request, roleId);
+    @PutMapping("/project/{projectId}/role/{roleId}/revoke")
+    public Response<?> revokeRole(@PathVariable Integer roleId, @PathVariable Integer projectId, @RequestBody @Valid AssignRevokeRoleRequest request) {
+        authorityService.revokeRole(request, roleId, projectId);
         return ResponseUtils.successResponse();
+    }
+
+    @GetMapping("/project/{projectId}/permissions/me")
+    public Response<List<PermissionDTO>> getMyPermissions(@PathVariable Integer projectId) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        return ResponseUtils.successResponse(authorityService.getMyPermissions(projectId, user.getId()));
+    }
+
+    @GetMapping("/project/{projectId}/roles/me")
+    public Response<List<RoleDTO>> getMyRoles(@PathVariable Integer projectId) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        return ResponseUtils.successResponse(authorityService.getMyRoles(projectId, user.getId()));
     }
 }

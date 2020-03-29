@@ -17,10 +17,9 @@ import pretty.april.achieveitserver.mapper.PermissionMapper;
 import pretty.april.achieveitserver.mapper.RoleMapper;
 import pretty.april.achieveitserver.mapper.RolePermissionMapper;
 import pretty.april.achieveitserver.mapper.UserRoleMapper;
-import pretty.april.achieveitserver.request.AssignRoleRequest;
+import pretty.april.achieveitserver.request.AssignRevokeRoleRequest;
 import pretty.april.achieveitserver.request.CreateRoleRequest;
 import pretty.april.achieveitserver.request.EditRoleRequest;
-import pretty.april.achieveitserver.request.RevokeRoleRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -109,7 +108,7 @@ public class AuthorityService {
         }
     }
 
-    public void assignRole(AssignRoleRequest request, Integer roleId) {
+    public void assignRole(AssignRevokeRoleRequest request, Integer roleId, Integer projectId) {
         Role r = roleMapper.selectById(roleId);
         if (r == null) {
             throw new IllegalArgumentException("Role not exists");
@@ -123,25 +122,44 @@ public class AuthorityService {
         UserRole userRole = new UserRole();
         userRole.setRoleId(roleId);
         userRole.setUserId(request.getAssigneeId());
-        userRole.setProjectId(request.getProjectId());
+        userRole.setProjectId(projectId);
         userRoleMapper.insert(userRole);
     }
 
-    public void revokeRole(RevokeRoleRequest request, Integer roleId) {
+    public void revokeRole(AssignRevokeRoleRequest request, Integer roleId, Integer projectId) {
         Role r = roleMapper.selectById(roleId);
         if (r == null) {
             throw new IllegalArgumentException("Role not exists");
         }
         UserRole ur = userRoleMapper.selectOne(new QueryWrapper<UserRole>()
-                .eq(true, "user_id", request.getUserId())
+                .eq(true, "user_id", request.getAssigneeId())
                 .eq(true, "role_id", roleId)
-                .eq(true, "project_id", request.getProjectId()));
+                .eq(true, "project_id", projectId));
         if (ur == null) {
             return;
         }
         userRoleMapper.delete(new QueryWrapper<UserRole>()
-                .eq(true, "user_id", request.getUserId())
+                .eq(true, "user_id", request.getAssigneeId())
                 .eq(true, "role_id", roleId)
-                .eq(true, "project_id", request.getProjectId()));
+                .eq(true, "project_id", projectId));
+    }
+
+    public List<PermissionDTO> getMyPermissions(Integer projectId, Integer userId) {
+        List<Permission> permissions = permissionMapper.getByUserIdAndProjectId(userId, projectId);
+        return permissions.stream()
+                .map(o -> new PermissionDTO(o.getId(), o.getName(), o.getModule(), o.getRemark()))
+                .collect(Collectors.toList());
+    }
+
+    public List<RoleDTO> getMyRoles(Integer projectId, Integer userId) {
+        List<Role> roles = userRoleMapper.getByProjectIdAndUserId(projectId, userId);
+        return roles.stream().map(o -> new RoleDTO(o.getId(), o.getName(), o.getRemark())).collect(Collectors.toList());
+    }
+
+    public List<PermissionDTO> getRolePermissions(Integer roleId) {
+        List<Permission> modulePermissions = permissionMapper.getByRoleId(roleId);
+        return modulePermissions.stream()
+                .map(o -> new PermissionDTO(o.getId(), o.getName(), o.getModule(), o.getRemark()))
+                .collect(Collectors.toList());
     }
 }

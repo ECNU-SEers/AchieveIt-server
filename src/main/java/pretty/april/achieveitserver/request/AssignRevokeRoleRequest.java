@@ -5,11 +5,8 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class AssignRoleRequest {
+public class AssignRevokeRoleRequest {
 
     @NotNull
     private Integer assigneeId;
-
-    @NotNull
-    private Integer projectId;
 }
