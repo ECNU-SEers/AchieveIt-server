@@ -26,23 +26,23 @@ public class LaborHourServiceTest {
 	@Autowired
 	private LaborHourService laborHourService;
 	
-	@Test
-	public void retrieveLaborHourByDatesTest() {
-		LocalDate date1 = LocalDate.of(2020, 3, 22);
-		LocalDate date2 = LocalDate.of(2020, 3, 27);
-		Long startDateTimestamp = date1.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		Long endDateTimestamp = date2.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		PageDTO<RetrieveLaborHourRequest> request = laborHourService.retrieveLaborHourByDates(1, 10, startDateTimestamp, endDateTimestamp);
-		System.out.println("size = "+request.getTotal());
-		for (RetrieveLaborHourRequest r: request.getItems()) {
-			System.out.println("id = "+r.getId());
-			System.out.println("functionName = "+r.getFunctionName());
-			System.out.println("activityName = "+r.getActivityName());
-			System.out.println("state = "+r.getState());
-			System.out.println("---------------------------------------------");
-		}
-	}
-	
+//	@Test
+//	public void retrieveLaborHourByDatesTest() {
+//		LocalDate date1 = LocalDate.of(2020, 3, 22);
+//		LocalDate date2 = LocalDate.of(2020, 3, 27);
+//		Long startDateTimestamp = date1.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+//		Long endDateTimestamp = date2.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+//		PageDTO<RetrieveLaborHourRequest> request = laborHourService.retrieveLaborHourByDates(1, 10, startDateTimestamp, endDateTimestamp);
+//		System.out.println("size = "+request.getTotal());
+//		for (RetrieveLaborHourRequest r: request.getItems()) {
+//			System.out.println("id = "+r.getId());
+//			System.out.println("functionName = "+r.getFunctionName());
+//			System.out.println("activityName = "+r.getActivityName());
+//			System.out.println("state = "+r.getState());
+//			System.out.println("---------------------------------------------");
+//		}
+//	}
+//	
 //	@Test
 //	public void createLaborHourTest() throws Exception {
 //		CreateLaborHourRequest request = new CreateLaborHourRequest();
@@ -114,20 +114,20 @@ public class LaborHourServiceTest {
 //		}
 //	}
 //	
-//	@Test
-//	public void showSubordinateListsTest() {
-//		PageDTO<ShowSubordinateLaborHourListRequest> request = laborHourService.showSubordinateLists(1, 10);
-//		System.out.println("size = "+request.getTotal());
-//		for (ShowSubordinateLaborHourListRequest r: request.getItems()) {
-//			System.out.println("id = "+r.getId());
-//			System.out.println("functionName = "+r.getFunctionName());
-//			System.out.println("subfunctionName = "+r.getSubfunctionName());
-//			System.out.println("activityName = "+r.getActivityName());
-//			System.out.println("subactivityName = "+r.getSubactivityName());
-//			System.out.println("state = "+r.getState());
-//			System.out.println("---------------------------------------------");
-//		}
-//	}
+	@Test
+	public void showSubordinateListsTest() {
+		PageDTO<ShowSubordinateLaborHourListRequest> request = laborHourService.showSubordinateLists(1, 10);
+		System.out.println("size = "+request.getTotal());
+		for (ShowSubordinateLaborHourListRequest r: request.getItems()) {
+			System.out.println("id = "+r.getId());
+			System.out.println("functionName = "+r.getFunctionName());
+			System.out.println("subfunctionName = "+r.getSubfunctionName());
+			System.out.println("activityName = "+r.getActivityName());
+			System.out.println("subactivityName = "+r.getSubactivityName());
+			System.out.println("state = "+r.getState());
+			System.out.println("---------------------------------------------");
+		}
+	}
 	
 	
 }

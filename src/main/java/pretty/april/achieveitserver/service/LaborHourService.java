@@ -66,9 +66,9 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return 该用户在该时间范围内的所有工时信息
 	 */
 	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourByDates(Integer pageNo, Integer pageSize, Long startDateTimestamp, Long endDateTimestamp) {
-//		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        User user = userService.getByUsername(username);
-        Integer userId = 1;
+		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        Integer userId = user.getId();
         
         SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
         String start = sdf.format(new Date(Long.parseLong(String.valueOf(startDateTimestamp))));
@@ -86,6 +86,7 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 			BeanUtils.copyProperties(laborHour, request);
 			request.setFunctionName(functionService.getById(laborHour.getFunctionId()).getName());
 			request.setActivityName(activityService.getById(laborHour.getActivityId()).getName());
+			request.setSubmissionDate(laborHour.getSubmissionDate().toLocalDate());
 			laborHourList.add(request);
 		}
 		return new PageDTO<RetrieveLaborHourRequest>(laborHours.getCurrent(), laborHours.getSize(), laborHours.getTotal(), laborHourList);
@@ -185,6 +186,8 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 			request.setSubactivityId(subactivityId);
 			request.setSubactivityName(activityMapper.selectById(subactivityId).getName());
 			
+			request.setSubmissionDate(laborHour.getSubmissionDate().toLocalDate());
+			
 			laborHourList.add(request);
 		}
 		return new PageDTO<ShowLaborHourListRequest>(laborHours.getCurrent(), laborHours.getSize(), laborHours.getTotal(), laborHourList);
@@ -248,6 +251,7 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 			BeanUtils.copyProperties(laborHour, request);
 			request.setFunctionName(functionService.getById(laborHour.getFunctionId()).getName());
 			request.setActivityName(activityService.getById(laborHour.getActivityId()).getName());
+			request.setSubmissionDate(laborHour.getSubmissionDate().toLocalDate());
 			laborHourDetails.add(request);
 		}
 		return new PageDTO<RetrieveLaborHourRequest>(page.getCurrent(), page.getSize(), page.getTotal(), laborHourDetails);
@@ -297,6 +301,8 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 			
 			request.setSubmitterName(userService.getById(laborHour.getUserId()).getUsername());
 			request.setProjectName(projectService.getById(laborHour.getProjectId()).getName());
+			
+			request.setSubmissionDate(laborHour.getSubmissionDate().toLocalDate());
 			
 			laborHourDetails.add(request);
 		}
