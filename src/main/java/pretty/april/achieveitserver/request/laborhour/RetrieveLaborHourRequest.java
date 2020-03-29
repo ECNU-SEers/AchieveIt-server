@@ -25,7 +25,8 @@ public class RetrieveLaborHourRequest {
 
     private LocalTime endTime;
     
-    private LocalDateTime submissionDate;
+//    private LocalDateTime submissionDate;
+    private LocalDate submissionDate;
 
     private String state;
 }
