@@ -69,4 +69,7 @@ public interface ProjectMemberMapper extends BaseMapper<ProjectMember> {
 
     @Select("select name from project_member pm left join project p on pm.project_id = p.id where user_id = #{userId} and state = #{state}")
     List<String> selectProjectNamesByUserIdAndState(@Param("userId") Integer userId, @Param("state") String state);
+
+    @Select("select project_id id,name from project_member pm left join project p on pm.project_id = p.id where user_id = #{userId} and state = #{state}")
+    List<Searchable> selectProjectIdNameByUserIdAndState(@Param("userId") Integer userId, @Param("state") String state);
 }

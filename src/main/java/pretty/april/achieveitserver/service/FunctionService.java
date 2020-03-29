@@ -3,18 +3,20 @@ package pretty.april.achieveitserver.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.Data;
 import org.springframework.stereotype.Service;
-import pretty.april.achieveitserver.dto.FullFunctionDTO;
-import pretty.april.achieveitserver.dto.FunctionDTO;
-import pretty.april.achieveitserver.dto.SearchableDTO;
-import pretty.april.achieveitserver.dto.SimpleFunctionDTO;
+import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.entity.ProjectFunction;
 import pretty.april.achieveitserver.mapper.ProjectFunctionMapper;
+import pretty.april.achieveitserver.mapper.ProjectMemberMapper;
 import pretty.april.achieveitserver.model.Searchable;
 import pretty.april.achieveitserver.request.AddFunctionRequest;
 import pretty.april.achieveitserver.request.EditFunctionRequest;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,8 +24,11 @@ public class FunctionService {
 
     private ProjectFunctionMapper projectFunctionMapper;
 
-    public FunctionService(ProjectFunctionMapper projectFunctionMapper) {
+    private ProjectMemberMapper projectMemberMapper;
+
+    public FunctionService(ProjectFunctionMapper projectFunctionMapper, ProjectMemberMapper projectMemberMapper) {
         this.projectFunctionMapper = projectFunctionMapper;
+        this.projectMemberMapper = projectMemberMapper;
     }
 
     public Integer addFunction(AddFunctionRequest request, Integer projectId) {
@@ -108,5 +113,39 @@ public class FunctionService {
 
     public ProjectFunction getById(Integer id) {
         return projectFunctionMapper.selectById(id);
+    }
+
+    public List<ValueLabelChildren> getWorkHourFunctions(Integer userId) {
+        List<Searchable> searchables = projectMemberMapper.selectProjectIdNameByUserIdAndState(userId, "进行中");
+        List<ValueLabelChildren> prj = new ArrayList<>();
+        for (Searchable searchable : searchables) {
+            ValueLabelChildren vlc = new ValueLabelChildren();
+            vlc.setValue(searchable.getId());
+            vlc.setLabel(searchable.getName());
+            List<ProjectFunction> functions = projectFunctionMapper.selectList(new QueryWrapper<ProjectFunction>()
+                    .eq("project_id", searchable.getId()).isNull("parent_id"));
+            List<ValueLabelChildren> funcs = new ArrayList<>();
+            for (ProjectFunction function : functions) {
+                ValueLabelChildren func = new ValueLabelChildren();
+                func.setLabel(function.getName());
+                func.setValue(function.getId());
+
+                List<ValueLabelChildren> subFuncs = new ArrayList<>();
+                List<ProjectFunction> subFunctions = projectFunctionMapper.selectList(new QueryWrapper<ProjectFunction>()
+                        .eq("parent_id", function.getId()));
+                for (ProjectFunction subFunction : subFunctions) {
+                    ValueLabelChildren subFunc = new ValueLabelChildren();
+                    subFunc.setLabel(subFunction.getName());
+                    subFunc.setValue(subFunction.getId());
+                    subFuncs.add(subFunc);
+                }
+
+                func.setChildren(subFuncs);
+                funcs.add(func);
+            }
+            vlc.setChildren(funcs);
+            prj.add(vlc);
+        }
+        return prj;
     }
 }
