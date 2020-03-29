@@ -170,13 +170,12 @@ public class ProjectController {
 	 * @throws Exception 
 	 */
 	@PutMapping("/accept")
-	public Response<?> acceptProject(@RequestBody RetrieveProjectRequest request) throws Exception {
-		ApproveProjectRequest project = projectService.acceptProject(request);
+	public Response<?> acceptProject(@RequestParam(value="projectOuterId") String projectOuterId, @RequestParam(value="remark") String remark) throws Exception {
+		ApproveProjectRequest project = projectService.acceptProject(projectOuterId, remark);
 		externalSystemController.sendmail("立项成功", 1);
 		externalSystemController.sendmail("立项成功", 2);
 		externalSystemController.sendmail("立项成功", 3);
 		List<String> roles = new ArrayList<String>();
-		String projectOuterId = project.getProjectInfo().getProject().getOuterId();
 		externalSystemController.git(projectOuterId, 1, roles, LocalDateTime.now(), LocalDateTime.now().plusDays(100), "repository");
 		externalSystemController.mail(projectOuterId, 1, roles, LocalDateTime.now(), LocalDateTime.now().plusDays(100), "mailList");
 		externalSystemController.file(projectOuterId, 1, roles, LocalDateTime.now(), LocalDateTime.now().plusDays(100), "fileServerContent");
@@ -190,8 +189,8 @@ public class ProjectController {
 	 * @throws Exception 
 	 */
 	@PutMapping("/reject")
-	public Response<?> rejectProject(@RequestBody RetrieveProjectRequest request) throws Exception {
-		projectService.rejectProject(request);
+	public Response<?> rejectProject(@RequestParam(value="projectOuterId") String projectOuterId, @RequestParam(value="remark") String remark) throws Exception {
+		projectService.rejectProject(projectOuterId, remark);
 		return ResponseUtils.successResponse();	
 	}
 	

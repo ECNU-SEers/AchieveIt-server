@@ -13,11 +13,8 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class ApproveProjectRequest {
-
-	/**
-	 * 项目基本信息
-	 */
-	private RetrieveProjectRequest projectInfo;
+	
+	private String projectOuterId;
 	
 	/**
 	 * 项目立项中项目上级的审核结果

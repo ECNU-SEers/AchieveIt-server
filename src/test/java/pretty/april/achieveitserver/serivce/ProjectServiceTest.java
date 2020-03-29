@@ -121,25 +121,25 @@ public class ProjectServiceTest {
 //		projectService.updateProjectInfoDuringProjectApproval(project);
 //	}
 //
-	@Test
-	public void searchProjectTest() {
-		String keyword = "ch";
-		Integer userId = 1;
-		List<Project> projects = projectService.selectProjectByNameWithKeyword(userId, keyword);
-		System.out.println(projects.size());
-		for (Project p: projects) {
-			System.out.println("projectOuterId = " + p.getOuterId());
-			System.out.println("name"+p.getName());
-			System.out.println("------------");
-		}
-		List<SearchProjectRequest> results = projectService.searchProjectWithNameIncludingKeyword(userId, keyword);
-		System.out.println(results.size());
-		for (SearchProjectRequest r: results) {
-			System.out.println("projectOuterId = "+r.getOuterId());
-			System.out.println("name"+r.getName());
-			System.out.println("======================================");
-		}
-	}
+//	@Test
+//	public void searchProjectTest() {
+//		String keyword = "ch";
+//		Integer userId = 1;
+//		List<Project> projects = projectService.selectProjectByNameWithKeyword(userId, keyword);
+//		System.out.println(projects.size());
+//		for (Project p: projects) {
+//			System.out.println("projectOuterId = " + p.getOuterId());
+//			System.out.println("name"+p.getName());
+//			System.out.println("------------");
+//		}
+//		List<SearchProjectRequest> results = projectService.searchProjectWithNameIncludingKeyword(userId, keyword);
+//		System.out.println(results.size());
+//		for (SearchProjectRequest r: results) {
+//			System.out.println("projectOuterId = "+r.getOuterId());
+//			System.out.println("name"+r.getName());
+//			System.out.println("======================================");
+//		}
+//	}
 //    
 //
 //    @Test
@@ -175,27 +175,23 @@ public class ProjectServiceTest {
 //
 //    @Test
 //    public void acceptProjectTest() throws Exception {
-//        String outerId = "2020-0322-D-pp";
-//        RetrieveProjectRequest rpd = projectService.retrieveProject(outerId);
-//        rpd.getProject().setRemark("0322good job!");
-//        ApproveProjectRequest apd = projectService.acceptProject(rpd);
-//        System.out.println("state = " + apd.getProjectInfo().getProject().getState());
+//        String outerId = "2020-0327-D-pp";
+//        String remark = "acceptTest0329";
+//        ApproveProjectRequest apd = projectService.acceptProject(outerId, remark);
 //        if (apd.isReviewResult()) {
 //            System.out.println("yes");
 //        }
 //    }
 //
-//	@Test
-//	public void rejectProjectTest() throws Exception {
-//		String outerId = "2020-0322-D-pp";
-//		RetrieveProjectRequest rpd = projectService.retrieveProject(outerId);
-//		rpd.getProject().setRemark("0322bad job!");
-//		ApproveProjectRequest apd = projectService.rejectProject(rpd);
-//		System.out.println("state = "+apd.getProjectInfo().getProject().getState());
-//		if (apd.isReviewResult()) {
-//			System.out.println("yes");
-//		}
-//	}
+	@Test
+	public void rejectProjectTest() throws Exception {
+		String outerId = "2020-ECNU-D-00";
+		String remark = "rejectTest0329";
+		ApproveProjectRequest apd = projectService.rejectProject(outerId, remark);
+		if (apd.isReviewResult()) {
+			System.out.println("yes");
+		}
+	}
 //
 //	@Test
 //	public void assignEQGTest() {

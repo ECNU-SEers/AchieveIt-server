@@ -347,12 +347,12 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     	return new PageDTO<ShowProjectListRequest>(page.getCurrent(), page.getSize(), page.getTotal(), projectLists);
     }
     
-    @Transactional
     /**
      * 更新项目：修改项目信息（不包括里程碑、项目技术和业务领域）
      * @param validator 更新项目信息校验器
      * @return 被更新的项目
      */
+    @Transactional
     public Project updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(UpdateProjectInfoRequest validator) throws Exception {
 //		1.利用projectId找到待修改的project，判断项目是否“结束”或“已归档”
         Project primaryProject = this.getProjectByOuterId(validator.getOuterId());
@@ -381,13 +381,13 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         
         return project;
     }
-
-    @Transactional
+    
     /**
      * 更新项目：修改项目信息
      * @param validator 更新项目信息校验器
      * @return 被更新的项目
      */
+    @Transactional
     public Project updateProjectInfo(UpdateProjectRequest validator) throws Exception {
 //		1.利用projectId找到待修改的project，判断项目是否“结束”或“已归档”
         Project primaryProject = this.getProjectByOuterId(validator.getOuterId());
@@ -456,6 +456,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return
      * @throws Exception
      */
+    @Transactional
     public Project updateProjectInfoDuringProjectApproval(UpdateProjectRequest validator) throws Exception {
         Project project = this.updateProjectInfo(validator);
 
@@ -518,41 +519,43 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return 项目信息和审批结果（通过）
      * @throws Exception
      */
-    public ApproveProjectRequest acceptProject(RetrieveProjectRequest projectInfo) throws Exception {
-        if (!projectInfo.getProject().getState().equals("申请立项") && !projectInfo.getProject().getState().equals("立项驳回")) {
-            throw new Exception("The project is not in the state of applying for project approval.");
-        }
-        ApproveProjectRequest approveProject = new ApproveProjectRequest();
-        approveProject.setProjectInfo(projectInfo);
-        approveProject.setReviewResult(true);
-        Project project = new Project();
-        BeanUtils.copyProperties(projectInfo.getProject(), project);
-        project.setState("已立项");
-        projectMapper.updateById(project);
-
+    @Transactional
+    public ApproveProjectRequest acceptProject(String projectOuterId, String remark) throws Exception {
+    	Project primaryProject = this.getProjectByOuterId(projectOuterId);
+    	if (!primaryProject.getState().equals("申请立项") && !primaryProject.getState().equals("立项驳回")) {
+    		throw new Exception("The project is not in the state of applying for project approval.");
+    	}
+    	StateChange stateChange = new StateChange();
+    	stateChange.setFormerState(primaryProject.getState());
+    	
+//    	1.更新project的状态和备注
+    	primaryProject.setState("已立项");
+    	primaryProject.setRemark(remark);
+    	projectMapper.updateById(primaryProject);
+    	
 //		2.查询该执行人名下所有的task
         Map<String, Object> variable = new HashMap();
-        String projectOuterId = projectInfo.getProject().getOuterId();
         variable.put("review_result", true);
         List<Task> taskList = processManagementService.queryActivityTask("projectApproval", projectOuterId + "supervisor");
 //		3.执行当前流程实例下的第一个task
         for (Task task : taskList) {
-            if (task.getProcessInstanceId().equals(projectInfo.getProject().getInstanceId())) {
+            if (task.getProcessInstanceId().equals(primaryProject.getInstanceId())) {
                 processManagementService.handleActivityTask(task, variable);
             }
         }
 //      4.状态更新
-        StateChange stateChange = new StateChange();
-        stateChange.setProjectId(projectInfo.getProject().getId());
+        stateChange.setProjectId(primaryProject.getId());
         stateChange.setChangeDate(LocalDateTime.now());
-        stateChange.setFormerState(projectInfo.getProject().getState());
-        stateChange.setLatterState(project.getState());
+        stateChange.setLatterState(primaryProject.getState());
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
         stateChange.setOperatorId(user.getId());
         stateChangeMapper.insert(stateChange);
-
-        return approveProject;
+    	
+    	ApproveProjectRequest approveProject = new ApproveProjectRequest();
+    	approveProject.setProjectOuterId(projectOuterId);
+    	approveProject.setReviewResult(true);
+    	return approveProject;
     }
 
     /**
@@ -562,49 +565,52 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return 项目信息和审批结果（驳回）
      * @throws Exception
      */
-    public ApproveProjectRequest rejectProject(RetrieveProjectRequest projectInfo) throws Exception {
-        if (!projectInfo.getProject().getState().equals("申请立项") && !projectInfo.getProject().getState().equals("立项驳回")) {
-            throw new Exception("The project is not in the state of applying for project approval.");
-        }
-        ApproveProjectRequest approveProject = new ApproveProjectRequest();
-        approveProject.setProjectInfo(projectInfo);
-        approveProject.setReviewResult(false);
-        Project project = new Project();
-        BeanUtils.copyProperties(projectInfo.getProject(), project);
-        project.setState("立项驳回");
-        projectMapper.updateById(project);
-
+    @Transactional
+    public ApproveProjectRequest rejectProject(String projectOuterId, String remark) throws Exception {
+    	Project primaryProject = this.getProjectByOuterId(projectOuterId);
+    	if (!primaryProject.getState().equals("申请立项") && !primaryProject.getState().equals("立项驳回")) {
+    		throw new Exception("The project is not in the state of applying for project approval.");
+    	}
+    	StateChange stateChange = new StateChange();
+    	stateChange.setFormerState(primaryProject.getState());
+    	
+//    	1.更新project的状态和备注
+    	primaryProject.setState("立项驳回");
+    	primaryProject.setRemark(remark);
+    	projectMapper.updateById(primaryProject);
+    	
 //		2.查询该执行人名下所有的task
         Map<String, Object> variable = new HashMap();
-        String projectOuterId = projectInfo.getProject().getOuterId();
         variable.put("review_result", false);
         List<Task> taskList = processManagementService.queryActivityTask("projectApproval", projectOuterId + "supervisor");
 //		3.执行当前流程实例下的第一个task
         for (Task task : taskList) {
-            if (task.getProcessInstanceId().equals(projectInfo.getProject().getInstanceId())) {
+            if (task.getProcessInstanceId().equals(primaryProject.getInstanceId())) {
                 processManagementService.handleActivityTask(task, variable);
             }
         }
 //      4.状态更新
-        StateChange stateChange = new StateChange();
-        stateChange.setProjectId(projectInfo.getProject().getId());
+        stateChange.setProjectId(primaryProject.getId());
         stateChange.setChangeDate(LocalDateTime.now());
-        stateChange.setFormerState(projectInfo.getProject().getState());
-        stateChange.setLatterState(project.getState());
+        stateChange.setLatterState(primaryProject.getState());
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
         stateChange.setOperatorId(user.getId());
         stateChangeMapper.insert(stateChange);
-        
-        return approveProject;
+    	
+    	ApproveProjectRequest approveProject = new ApproveProjectRequest();
+    	approveProject.setProjectOuterId(projectOuterId);
+    	approveProject.setReviewResult(false);
+    	return approveProject;
     }
-
+    
     /**
      * 组织配置管理员为项目分配配置库
      *
      * @param request
      * @return 该项目
      */
+    @Transactional
     public Project assignConfig(String outerId) {
 //		1.改变project表的git_assigned
         Project project = this.getProjectByOuterId(outerId);
@@ -629,6 +635,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param request
      * @return 该项目
      */
+    @Transactional
     public Project assignQA(AssignRoleRequest request) {
 //		1.改变project表的qa_assigned
         Project project = this.getProjectByOuterId(request.getOuterId());
@@ -680,6 +687,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param request
      * @return 该项目
      */
+    @Transactional
     public Project assignEPG(AssignRoleRequest request) {
 //		1.改变project表的epg_assigned
         Project project = this.getProjectByOuterId(request.getOuterId());
@@ -732,6 +740,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return
      * @throws Exception
      */
+    @Transactional
     public Project endProject(String outerId) throws Exception {
         Project project = this.getProjectByOuterId(outerId);
         if (project.getState().equals("结束") || project.getState().equals("已归档")) {
@@ -760,6 +769,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param outerId 项目ID
      * @return
      */
+    @Transactional
     public Project acceptArchive(String outerId) {
         Project project = this.getProjectByOuterId(outerId);
         StateChange stateChange = new StateChange();
@@ -785,6 +795,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param outerId 项目ID
      * @return
      */
+    @Transactional
     public Project setConfigInfo(String outerId) {
 //		1.改变project表的git_assigned
         Project project = this.getProjectByOuterId(outerId);
@@ -819,6 +830,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param outerId
      * @return
      */
+    @Transactional
     public Project projectDelivery(String outerId) {
     	Project project = this.getProjectByOuterId(outerId);
     	StateChange stateChange = new StateChange();
