@@ -1,7 +1,5 @@
 package pretty.april.achieveitserver.controller;
 
-import java.time.LocalDate;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,10 +38,9 @@ public class LaborHourController {
 	@GetMapping("/search")
 	public Response<PageDTO<RetrieveLaborHourRequest>> retrieveLaborHourByDates(@RequestParam(value="pageNo") Integer pageNo,
 			 																	@RequestParam(value="pageSize") Integer pageSize,
-			 																	@RequestParam(value="startDate") LocalDate startDate,
-			 																	@RequestParam(value="endDate") LocalDate endDate,
-			 																	@RequestParam(value="userId") Integer userId) {
-		return ResponseUtils.successResponse(laborHourService.retrieveLaborHourByDates(pageNo, pageSize, startDate, endDate, userId));
+			 																	@RequestParam(value="startDateTimestamp") Long startDateTimestamp,
+			 																	@RequestParam(value="endDateTimestamp") Long endDateTimestamp) {
+		return ResponseUtils.successResponse(laborHourService.retrieveLaborHourByDates(pageNo, pageSize, startDateTimestamp, endDateTimestamp));
 	}
 	
 	/**
@@ -67,9 +64,8 @@ public class LaborHourController {
 	 */
 	@GetMapping("show/list")
 	public Response<PageDTO<ShowLaborHourListRequest>> showList(@RequestParam(value="pageNo") Integer pageNo,
-			 													@RequestParam(value="pageSize") Integer pageSize,
-			 													@RequestParam(value="userId") Integer userId) {
-		return ResponseUtils.successResponse(laborHourService.showList(pageNo, pageSize, userId));
+			 													@RequestParam(value="pageSize") Integer pageSize) {
+		return ResponseUtils.successResponse(laborHourService.showList(pageNo, pageSize));
 	}
 	
 	/**
@@ -96,10 +92,9 @@ public class LaborHourController {
 	@GetMapping("/search/subordinate")
 	public Response<PageDTO<RetrieveLaborHourRequest>> retrieveLaborHourOfSubordinate(@RequestParam(value="pageNo") Integer pageNo,
 																					  @RequestParam(value="pageSize") Integer pageSize,
-																					  @RequestParam(value="startDate") LocalDate startDate,
-																					  @RequestParam(value="endDate") LocalDate endDate,
-																					  @RequestParam(value="userId") Integer userId) {
-		return ResponseUtils.successResponse(laborHourService.retrieveLaborHourOfSubordinate(pageNo, pageSize, startDate, endDate, userId));
+																					  @RequestParam(value="startDateTimestamp") Long startDateTimestamp,
+																					  @RequestParam(value="endDateTimestamp") Long endDateTimestamp) {
+		return ResponseUtils.successResponse(laborHourService.retrieveLaborHourOfSubordinate(pageNo, pageSize, startDateTimestamp, endDateTimestamp));
 	}
 	
 	/**
@@ -111,9 +106,8 @@ public class LaborHourController {
 	 */
 	@GetMapping("/show/subordinate/list")
 	public Response<PageDTO<ShowSubordinateLaborHourListRequest>> showSubordinateList(@RequestParam(value="pageNo") Integer pageNo,
-																					  @RequestParam(value="pageSize") Integer pageSize,
-																					  @RequestParam(value="userId") Integer userId) {
-		return ResponseUtils.successResponse(laborHourService.showSubordinateLists(pageNo, pageSize, userId));
+																					  @RequestParam(value="pageSize") Integer pageSize) {
+		return ResponseUtils.successResponse(laborHourService.showSubordinateLists(pageNo, pageSize));
 	}
 
 	/**

@@ -1,9 +1,12 @@
 package pretty.april.achieveitserver.service;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +65,17 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @param userId 用户ID
 	 * @return 该用户在该时间范围内的所有工时信息
 	 */
-	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourByDates(Integer pageNo, Integer pageSize, LocalDate startDate, LocalDate endDate, Integer userId) {
+	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourByDates(Integer pageNo, Integer pageSize, Long startDateTimestamp, Long endDateTimestamp) {
+//		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User user = userService.getByUsername(username);
+        Integer userId = 1;
+        
+        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+        String start = sdf.format(new Date(Long.parseLong(String.valueOf(startDateTimestamp))));
+        LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String end = sdf.format(new Date(Long.parseLong(String.valueOf(endDateTimestamp))));
+        LocalDate endDate = LocalDate.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd"));      
+        
 		Page<LaborHour> page = new Page<>(pageNo, pageSize);
 		QueryWrapper<LaborHour> queryWrapper = new QueryWrapper<LaborHour>();
 		queryWrapper.lambda().eq(LaborHour::getUserId, userId).ge(LaborHour::getDate, startDate).le(LaborHour::getDate, endDate).orderByAsc(LaborHour::getDate);
@@ -145,7 +158,11 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @param userId
 	 * @return
 	 */
-	public PageDTO<ShowLaborHourListRequest> showList(Integer pageNo, Integer pageSize, Integer userId) {
+	public PageDTO<ShowLaborHourListRequest> showList(Integer pageNo, Integer pageSize) {
+		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        Integer userId = user.getId();
+		
 		Page<LaborHour> page = new Page<>(pageNo, pageSize);
 		QueryWrapper<LaborHour> queryWrapper = new QueryWrapper<LaborHour>();
 		queryWrapper.lambda().eq(LaborHour::getUserId, userId).orderByAsc(LaborHour::getDate);
@@ -213,7 +230,17 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @param userId
 	 * @return
 	 */
-	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourOfSubordinate(Integer pageNo, Integer pageSize, LocalDate startDate, LocalDate endDate, Integer userId) {
+	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourOfSubordinate(Integer pageNo, Integer pageSize, Long startDateTimestamp, Long endDateTimestamp) {
+		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        Integer userId = user.getId();
+        
+        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+        String start = sdf.format(new Date(Long.parseLong(String.valueOf(startDateTimestamp))));
+        LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String end = sdf.format(new Date(Long.parseLong(String.valueOf(endDateTimestamp))));
+        LocalDate endDate = LocalDate.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
+		
 		Page<LaborHour> page = this.getLaborHourOfSubordinate(startDate, endDate, userId, new Page<LaborHour>(pageNo, pageSize));
 		List<RetrieveLaborHourRequest> laborHourDetails = new ArrayList<RetrieveLaborHourRequest>();
 		for (LaborHour laborHour: page.getRecords()) {
@@ -243,7 +270,11 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @param userId
 	 * @return
 	 */
-	public PageDTO<ShowSubordinateLaborHourListRequest> showSubordinateLists(Integer pageNo, Integer pageSize, Integer userId) {
+	public PageDTO<ShowSubordinateLaborHourListRequest> showSubordinateLists(Integer pageNo, Integer pageSize) {
+		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        Integer userId = user.getId();
+		
 		Page<LaborHour> page = this.showSubordinateList(userId, new Page<LaborHour>(pageNo, pageSize));
 		List<ShowSubordinateLaborHourListRequest> laborHourDetails = new ArrayList<ShowSubordinateLaborHourListRequest>();
 		for (LaborHour laborHour: page.getRecords()) {
