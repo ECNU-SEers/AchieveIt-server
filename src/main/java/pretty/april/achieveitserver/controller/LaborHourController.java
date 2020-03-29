@@ -62,7 +62,7 @@ public class LaborHourController {
 	 * @param userId
 	 * @return
 	 */
-	@GetMapping("show/list")
+	@GetMapping("/show/list")
 	public Response<PageDTO<ShowLaborHourListRequest>> showList(@RequestParam(value="pageNo") Integer pageNo,
 			 													@RequestParam(value="pageSize") Integer pageSize) {
 		return ResponseUtils.successResponse(laborHourService.showList(pageNo, pageSize));
