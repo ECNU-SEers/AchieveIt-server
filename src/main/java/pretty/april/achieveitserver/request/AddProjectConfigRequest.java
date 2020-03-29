@@ -1,13 +1,12 @@
 package pretty.april.achieveitserver.request;
 
 import lombok.Data;
-import lombok.Getter;
 
 @Data
-public class EditConfigRequest {
+public class AddProjectConfigRequest {
+
+    private String fileServerDir;
     private String mail;
-    private String gitRepoAddress;
-    private Integer virtualMachineSpace;
     private Boolean isFileServerDirConfirmed;
     private Boolean isMailConfirmed;
 }

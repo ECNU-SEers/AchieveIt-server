@@ -9,4 +9,5 @@ public class ConfigDTO {
     private String mail;
     private Integer virtualMachineSpace;
     private Boolean isFileServerDirConfirmed;
+    private Boolean isMailConfirmed;
 }

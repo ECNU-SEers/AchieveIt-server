@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author mybatis-plus
- * @since 2020-03-25
+ * @since 2020-03-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -27,7 +27,7 @@ public class ViewPermission implements Serializable {
 
     private String name;
 
-    private Integer module;
+    private String module;
 
     private String remark;
 

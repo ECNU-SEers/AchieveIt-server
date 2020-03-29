@@ -2,6 +2,7 @@ package pretty.april.achieveitserver.controller;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import pretty.april.achieveitserver.dto.DetailedViewRoleDTO;
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.dto.ViewPermissionDTO;
 import pretty.april.achieveitserver.dto.ViewRoleDTO;
@@ -43,8 +44,8 @@ public class ViewPermissionController {
     }
 
     @GetMapping("/view/roles")
-    public Response<List<ViewRoleDTO>> getRoles() {
-        return ResponseUtils.successResponse(viewPermissionService.getRoles());
+    public Response<List<DetailedViewRoleDTO>> getRoles() {
+        return ResponseUtils.successResponse(viewPermissionService.getDetailedRoles());
     }
 
     @PostMapping("/view/role/{roleId}/assign")

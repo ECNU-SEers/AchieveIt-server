@@ -3,24 +3,22 @@ package pretty.april.achieveitserver.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import pretty.april.achieveitserver.dto.DetailedViewRoleDTO;
 import pretty.april.achieveitserver.dto.ViewPermissionDTO;
 import pretty.april.achieveitserver.dto.ViewRoleDTO;
 import pretty.april.achieveitserver.entity.UserViewRole;
+import pretty.april.achieveitserver.entity.ViewPermission;
 import pretty.april.achieveitserver.entity.ViewRole;
 import pretty.april.achieveitserver.entity.ViewRolePermission;
 import pretty.april.achieveitserver.mapper.UserViewRoleMapper;
 import pretty.april.achieveitserver.mapper.ViewPermissionMapper;
 import pretty.april.achieveitserver.mapper.ViewRoleMapper;
 import pretty.april.achieveitserver.mapper.ViewRolePermissionMapper;
-import pretty.april.achieveitserver.model.ViewModulePermission;
 import pretty.april.achieveitserver.request.AddViewRoleRequest;
 import pretty.april.achieveitserver.request.EditViewRoleRequest;
 import pretty.april.achieveitserver.request.UserViewRoleRequest;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,9 +46,9 @@ public class ViewPermissionService {
         List<UserViewRole> userViewRoles = userViewRoleMapper.selectList(new QueryWrapper<UserViewRole>()
                 .eq("user_id", userId));
         List<Integer> roles = userViewRoles.stream().map(UserViewRole::getRoleId).collect(Collectors.toList());
-        List<ViewModulePermission> viewModulePermissions = viewRolePermissionMapper.selectViewPermissionWithModuleByRoleIdIn(roles);
-        return viewModulePermissions.stream()
-                .map(o -> new ViewPermissionDTO(o.getPermissionId(), o.getName(), o.getModule()))
+        List<ViewPermission> viewPermissions = viewRolePermissionMapper.selectViewPermissionWithModuleByRoleIdIn(roles);
+        return viewPermissions.stream()
+                .map(o -> new ViewPermissionDTO(o.getId(), o.getName(), o.getModule()))
                 .collect(Collectors.groupingBy(ViewPermissionDTO::getModule));
     }
 
@@ -105,9 +103,27 @@ public class ViewPermissionService {
     }
 
     public List<ViewPermissionDTO> getAllPermissions() {
-        List<ViewModulePermission> viewModulePermissions = viewPermissionMapper.selectAllViewPermissionsWithModule();
-        return viewModulePermissions.stream()
-                .map(o -> new ViewPermissionDTO(o.getPermissionId(), o.getName(), o.getModule())).collect(Collectors.toList());
+        List<ViewPermission> viewPermissions = viewPermissionMapper.selectList(new QueryWrapper<>());
+        return viewPermissions.stream()
+                .map(o -> new ViewPermissionDTO(o.getId(), o.getName(), o.getModule())).collect(Collectors.toList());
+    }
+
+    public List<DetailedViewRoleDTO> getDetailedRoles() {
+        List<ViewRole> roles = viewRoleMapper.selectList(new QueryWrapper<>());
+        List<DetailedViewRoleDTO> detailedViewRoleDTOS = new ArrayList<>();
+        for (ViewRole viewRole : roles) {
+            DetailedViewRoleDTO detailedViewRoleDTO = new DetailedViewRoleDTO();
+            detailedViewRoleDTO.setId(viewRole.getId());
+            detailedViewRoleDTO.setName(viewRole.getName());
+            detailedViewRoleDTO.setCreator("系统");
+            detailedViewRoleDTO.setRemark(viewRole.getRemark());
+            List<ViewPermission> viewPermissions = viewPermissionMapper.selectByRoleId(viewRole.getId());
+            List<ViewPermissionDTO> viewPermissionDTOS = viewPermissions.stream()
+                    .map(o -> new ViewPermissionDTO(o.getId(), o.getName(), o.getModule())).collect(Collectors.toList());
+            detailedViewRoleDTO.setPermissions(viewPermissionDTOS);
+            detailedViewRoleDTOS.add(detailedViewRoleDTO);
+        }
+        return detailedViewRoleDTOS;
     }
 }
 

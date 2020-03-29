@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import pretty.april.achieveitserver.dto.ConfigDTO;
 import pretty.april.achieveitserver.entity.ProjectConfig;
 import pretty.april.achieveitserver.mapper.ProjectConfigMapper;
+import pretty.april.achieveitserver.request.AddProjectConfigRequest;
 import pretty.april.achieveitserver.request.EditConfigRequest;
 
 @Service
@@ -34,6 +35,16 @@ public class ConfigService {
         if (projectConfig.getIsFileServerDirConfirmed()) {
             config.setIsFileServerDirConfirmed(null);
         }
+        if (projectConfig.getIsMailConfirmed()) {
+            config.setIsMailConfirmed(null);
+        }
         projectConfigMapper.update(config, new QueryWrapper<ProjectConfig>().eq("project_id", projectId));
+    }
+
+    public void createConfig(Integer projectId, AddProjectConfigRequest request) {
+        ProjectConfig config = new ProjectConfig();
+        BeanUtils.copyProperties(request, config);
+        config.setProjectId(projectId);
+        projectConfigMapper.insert(config);
     }
 }
