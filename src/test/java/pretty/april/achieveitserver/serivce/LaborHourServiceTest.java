@@ -114,20 +114,21 @@ public class LaborHourServiceTest {
 //		}
 //	}
 //	
-	@Test
-	public void showSubordinateListsTest() {
-		PageDTO<ShowSubordinateLaborHourListRequest> request = laborHourService.showSubordinateLists(1, 10);
-		System.out.println("size = "+request.getTotal());
-		for (ShowSubordinateLaborHourListRequest r: request.getItems()) {
-			System.out.println("id = "+r.getId());
-			System.out.println("functionName = "+r.getFunctionName());
-			System.out.println("subfunctionName = "+r.getSubfunctionName());
-			System.out.println("activityName = "+r.getActivityName());
-			System.out.println("subactivityName = "+r.getSubactivityName());
-			System.out.println("state = "+r.getState());
-			System.out.println("---------------------------------------------");
-		}
-	}
+//	@Test
+//	public void showSubordinateListsTest() {
+//		PageDTO<ShowSubordinateLaborHourListRequest> request = laborHourService.showSubordinateLists(1, 10);
+//		System.out.println("size = "+request.getTotal());
+//		for (ShowSubordinateLaborHourListRequest r: request.getItems()) {
+//			System.out.println("id = "+r.getId());
+//			System.out.println("functionName = "+r.getFunctionName());
+//			System.out.println("subfunctionName = "+r.getSubfunctionName());
+//			System.out.println("activityName = "+r.getActivityName());
+//			System.out.println("subactivityName = "+r.getSubactivityName());
+//			System.out.println("submissionDate = "+r.getSubmissionDate());
+//			System.out.println("state = "+r.getState());
+//			System.out.println("---------------------------------------------");
+//		}
+//	}
 	
 	
 }
