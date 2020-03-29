@@ -1,6 +1,7 @@
 package pretty.april.achieveitserver.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -32,9 +33,10 @@ public interface ProjectMemberMapper extends BaseMapper<ProjectMember> {
      */
     @Select("SELECT * FROM project_member WHERE project_id = #{projectId}")
     List<ProjectMember> selectByProjectId(Integer projectId);
-    
+
     /**
      * 更新项目内容时更新成员表中的project_member
+     *
      * @param projectName
      * @param projectId
      * @return
@@ -64,4 +66,7 @@ public interface ProjectMemberMapper extends BaseMapper<ProjectMember> {
 
     @Select("select user_id id,username name from project_member where project_id = #{projectId} and username like concat('%',#{name},'%')")
     List<Searchable> selectLikeName(@Param("projectId") Integer projectId, @Param("name") String name);
+
+    @Select("select name from project_member pm left join project p on pm.project_id = p.id where user_id = #{userId} and state = #{state}")
+    List<String> selectProjectNamesByUserIdAndState(@Param("userId") Integer userId, @Param("state") String state);
 }
