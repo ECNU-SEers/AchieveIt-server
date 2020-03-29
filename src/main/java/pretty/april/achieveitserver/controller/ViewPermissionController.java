@@ -2,10 +2,7 @@ package pretty.april.achieveitserver.controller;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import pretty.april.achieveitserver.dto.DetailedViewRoleDTO;
-import pretty.april.achieveitserver.dto.Response;
-import pretty.april.achieveitserver.dto.ViewPermissionDTO;
-import pretty.april.achieveitserver.dto.ViewRoleDTO;
+import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.request.AddViewRoleRequest;
 import pretty.april.achieveitserver.request.EditViewRoleRequest;
@@ -15,6 +12,7 @@ import pretty.april.achieveitserver.service.ViewPermissionService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Map;
 
@@ -69,5 +67,17 @@ public class ViewPermissionController {
     @GetMapping("/view/permissions")
     public Response<List<ViewPermissionDTO>> getPermissions() {
         return ResponseUtils.successResponse(viewPermissionService.getAllPermissions());
+    }
+
+    @DeleteMapping("/view/role/{roleId}")
+    public Response<?> deleteViewRole(@PathVariable Integer roleId) {
+        viewPermissionService.deleteViewRole(roleId);
+        return ResponseUtils.successResponse();
+    }
+
+    @GetMapping("/users/view/permissions")
+    public Response<PageDTO<ViewPermissionUserDTO>> getViewPermissionUsers(@RequestParam Integer pageSize,
+                                                                           @RequestParam @Min(1) Integer page) {
+        return ResponseUtils.successResponse(viewPermissionService.getViewPermissionUsers(page, pageSize));
     }
 }

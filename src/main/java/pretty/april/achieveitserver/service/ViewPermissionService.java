@@ -1,19 +1,14 @@
 package pretty.april.achieveitserver.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import pretty.april.achieveitserver.dto.DetailedViewRoleDTO;
-import pretty.april.achieveitserver.dto.ViewPermissionDTO;
-import pretty.april.achieveitserver.dto.ViewRoleDTO;
-import pretty.april.achieveitserver.entity.UserViewRole;
-import pretty.april.achieveitserver.entity.ViewPermission;
-import pretty.april.achieveitserver.entity.ViewRole;
-import pretty.april.achieveitserver.entity.ViewRolePermission;
-import pretty.april.achieveitserver.mapper.UserViewRoleMapper;
-import pretty.april.achieveitserver.mapper.ViewPermissionMapper;
-import pretty.april.achieveitserver.mapper.ViewRoleMapper;
-import pretty.april.achieveitserver.mapper.ViewRolePermissionMapper;
+import pretty.april.achieveitserver.dto.*;
+import pretty.april.achieveitserver.entity.*;
+import pretty.april.achieveitserver.mapper.*;
 import pretty.april.achieveitserver.request.AddViewRoleRequest;
 import pretty.april.achieveitserver.request.EditViewRoleRequest;
 import pretty.april.achieveitserver.request.UserViewRoleRequest;
@@ -34,12 +29,18 @@ public class ViewPermissionService {
 
     private ViewPermissionMapper viewPermissionMapper;
 
-    public ViewPermissionService(ViewRoleMapper viewRoleMapper, ViewRolePermissionService viewRolePermissionService, ViewRolePermissionMapper viewRolePermissionMapper, UserViewRoleMapper userViewRoleMapper, ViewPermissionMapper viewPermissionMapper) {
+    private UserMapper userMapper;
+
+    private ProjectMemberMapper projectMemberMapper;
+
+    public ViewPermissionService(ViewRoleMapper viewRoleMapper, ViewRolePermissionService viewRolePermissionService, ViewRolePermissionMapper viewRolePermissionMapper, UserViewRoleMapper userViewRoleMapper, ViewPermissionMapper viewPermissionMapper, UserMapper userMapper, ProjectMapper projectMapper, ProjectMemberMapper projectMemberMapper) {
         this.viewRoleMapper = viewRoleMapper;
         this.viewRolePermissionService = viewRolePermissionService;
         this.viewRolePermissionMapper = viewRolePermissionMapper;
         this.userViewRoleMapper = userViewRoleMapper;
         this.viewPermissionMapper = viewPermissionMapper;
+        this.userMapper = userMapper;
+        this.projectMemberMapper = projectMemberMapper;
     }
 
     public Map<String, List<ViewPermissionDTO>> getViewPermissions(Integer userId) {
@@ -124,6 +125,31 @@ public class ViewPermissionService {
             detailedViewRoleDTOS.add(detailedViewRoleDTO);
         }
         return detailedViewRoleDTOS;
+    }
+
+    public void deleteViewRole(Integer roleId) {
+        userViewRoleMapper.delete(new QueryWrapper<UserViewRole>().eq("role_id", roleId));
+        viewRoleMapper.delete(new QueryWrapper<ViewRole>().eq("id", roleId));
+    }
+
+    public PageDTO<ViewPermissionUserDTO> getViewPermissionUsers(Integer pageNo, Integer pageSize) {
+        Page<User> userPage = new Page<>(pageNo, pageSize);
+        IPage<User> users = userMapper.selectPage(userPage, new QueryWrapper<>());
+        List<User> userList = users.getRecords();
+        List<ViewPermissionUserDTO> viewPermissionUserDTOS = new ArrayList<>();
+        for (User user : userList) {
+            ViewPermissionUserDTO userDTO = new ViewPermissionUserDTO();
+            BeanUtils.copyProperties(user, userDTO);
+            userDTO.setRoles(getUserViewRoles(user.getId()));
+            userDTO.setProjects(projectMemberMapper.selectProjectNamesByUserIdAndState(user.getId(), "进行中"));
+            viewPermissionUserDTOS.add(userDTO);
+        }
+        return new PageDTO<>(users.getCurrent(), users.getSize(), users.getTotal(), viewPermissionUserDTOS);
+    }
+
+    public List<ViewRoleDTO> getUserViewRoles(Integer userId) {
+        List<ViewRole> viewRoles = userViewRoleMapper.getViewRolesByUserId(userId);
+        return viewRoles.stream().map(o -> new ViewRoleDTO(o.getId(), o.getName(), o.getRemark())).collect(Collectors.toList());
     }
 }
 
