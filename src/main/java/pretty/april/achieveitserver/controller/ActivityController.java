@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.request.activity.RetrieveActivityRequest;
+import pretty.april.achieveitserver.request.activity.ValueLabelChildren;
 import pretty.april.achieveitserver.service.ActivityService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
@@ -25,7 +26,7 @@ public class ActivityController {
 	 * @return
 	 */
 	@GetMapping("/all")
-	public Response<Map<RetrieveActivityRequest, List<RetrieveActivityRequest>>> getAllActivities() {
+	public Response<List<ValueLabelChildren>> getAllActivities() {
 		return ResponseUtils.successResponse(activityService.getAllActivities());
 	}
 }

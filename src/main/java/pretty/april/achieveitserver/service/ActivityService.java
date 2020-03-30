@@ -1,5 +1,6 @@
 package pretty.april.achieveitserver.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import pretty.april.achieveitserver.entity.Activity;
 import pretty.april.achieveitserver.mapper.ActivityMapper;
 import pretty.april.achieveitserver.request.activity.RetrieveActivityRequest;
+import pretty.april.achieveitserver.request.activity.ValueLabelChildren;
 
 @Service
 public class ActivityService extends ServiceImpl<ActivityMapper, Activity> {
@@ -36,12 +38,25 @@ public class ActivityService extends ServiceImpl<ActivityMapper, Activity> {
 		return this.baseMapper.selectAllSecondLevelActivities(parentId);
 	}
 	
-	public Map<RetrieveActivityRequest, List<RetrieveActivityRequest>> getAllActivities() {
-		Map<RetrieveActivityRequest, List<RetrieveActivityRequest>> allActivities = new HashMap<RetrieveActivityRequest, List<RetrieveActivityRequest>>();
+//	public Map<RetrieveActivityRequest, List<RetrieveActivityRequest>> getAllActivities() {
+//		Map<RetrieveActivityRequest, List<RetrieveActivityRequest>> allActivities = new HashMap<RetrieveActivityRequest, List<RetrieveActivityRequest>>();
+//		List<RetrieveActivityRequest> firstLevelActivities = this.getFirstLevelActivity();
+//		for (RetrieveActivityRequest activity: firstLevelActivities) {
+//			List<RetrieveActivityRequest> secondLevelActivities = this.getSecondLevelActivity(activity.getId());
+//			allActivities.put(activity, secondLevelActivities);
+//		}
+//		return allActivities;
+//	}
+	
+	public List<ValueLabelChildren> getAllActivities() {
+		List<ValueLabelChildren> allActivities = new ArrayList<>();
 		List<RetrieveActivityRequest> firstLevelActivities = this.getFirstLevelActivity();
 		for (RetrieveActivityRequest activity: firstLevelActivities) {
-			List<RetrieveActivityRequest> secondLevelActivities = this.getSecondLevelActivity(activity.getId());
-			allActivities.put(activity, secondLevelActivities);
+			ValueLabelChildren firstActivity = new ValueLabelChildren();
+			firstActivity.setValue(activity.getId());
+			firstActivity.setLabel(activity.getName());
+			firstActivity.setChildren(this.getSecondLevelActivity(activity.getId()));
+			allActivities.add(firstActivity);
 		}
 		return allActivities;
 	}
