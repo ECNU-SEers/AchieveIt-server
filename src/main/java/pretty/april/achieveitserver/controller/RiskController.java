@@ -44,8 +44,9 @@ public class RiskController {
     @GetMapping("/project/{projectId}/risks")
     public Response<PageDTO<RiskDTO>> getRisks(@PathVariable Integer projectId,
                                                @RequestParam Integer page,
-                                               @RequestParam Integer pageSize) {
-        return ResponseUtils.successResponse(riskService.getRisks(projectId, page, pageSize));
+                                               @RequestParam Integer pageSize,
+                                               @RequestParam(required = false, defaultValue = "") String keyword) {
+        return ResponseUtils.successResponse(riskService.getRisks(projectId, page, pageSize, keyword));
     }
 
     @GetMapping("/project/{projectId}/risks/search")

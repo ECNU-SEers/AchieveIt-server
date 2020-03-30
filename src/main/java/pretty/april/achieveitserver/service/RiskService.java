@@ -84,9 +84,11 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
         riskMapper.deleteById(riskId);
     }
 
-    public PageDTO<RiskDTO> getRisks(Integer projectId, Integer pageNo, Integer pageSize) {
+    public PageDTO<RiskDTO> getRisks(Integer projectId, Integer pageNo, Integer pageSize, String keyword) {
         Page<ProjectRisk> page = new Page<>(pageNo, pageSize);
-        IPage<ProjectRisk> iPage = riskMapper.selectPage(page, new QueryWrapper<ProjectRisk>().eq("project_id", projectId));
+        IPage<ProjectRisk> iPage = riskMapper.selectPage(page, new QueryWrapper<ProjectRisk>()
+                .eq("project_id", projectId)
+                .like("name", keyword));
         List<RiskDTO> riskDTOS = new ArrayList<>((int) iPage.getSize());
         for (ProjectRisk risk : iPage.getRecords()) {
             riskDTOS.add(getRiskDTO(risk.getId()));

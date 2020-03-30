@@ -54,10 +54,11 @@ public class FunctionService {
         projectFunctionMapper.updateById(function);
     }
 
-    public List<FunctionDTO> getFunctions(Integer projectId) {
+    public List<FunctionDTO> getFunctions(Integer projectId, String keyword) {
         Page<ProjectFunction> page = new Page<>(1, 50);
-        IPage<ProjectFunction> functions = projectFunctionMapper.selectPage(page,
-                new QueryWrapper<ProjectFunction>().eq("project_id", projectId).isNull("parent_id"));
+        IPage<ProjectFunction> functions = projectFunctionMapper.selectPage(page, new QueryWrapper<ProjectFunction>()
+                .eq("project_id", projectId).isNull("parent_id")
+                .like("name", keyword));
         return functions.getRecords().stream()
                 .map(o -> new FunctionDTO(o.getId(), o.getName(), o.getDescription(), projectFunctionMapper.selectCountSubFunction(o.getId())))
                 .collect(Collectors.toList());

@@ -59,8 +59,9 @@ public class DefectController {
                                                    @RequestParam(required = false) Integer projectId,
                                                    @RequestParam(required = false) Integer state,
                                                    @RequestParam(required = false) Integer level,
-                                                   @RequestParam(required = false) Integer type) {
-        return ResponseUtils.successResponse(defectService.queryDefects(page, pageSize, projectId, type, level, state));
+                                                   @RequestParam(required = false) Integer type,
+                                                   @RequestParam(required = false, defaultValue = "") String keyword) {
+        return ResponseUtils.successResponse(defectService.queryDefects(page, pageSize, projectId, type, level, state, keyword));
     }
 
     @GetMapping("/defect/type")

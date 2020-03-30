@@ -75,14 +75,14 @@ public class MemberService {
         }
     }
 
-    public PageDTO<MemberDTO> getMembers(Integer pageNo, Integer pageSize, Integer projectId) {
+    public PageDTO<MemberDTO> getMembers(Integer pageNo, Integer pageSize, Integer projectId, String keyword) {
         Long count = (long) projectMemberMapper.selectMemberCountByProjectId(projectId);
-        List<MemberDetails> memberDetailsList = projectMemberMapper.selectMemberDetailsByProjectId(projectId, pageSize, pageSize * (pageNo - 1));
+        List<MemberDetails> memberDetailsList = projectMemberMapper.selectMemberDetailsByProjectIdAndNameKeyword(projectId, keyword, pageSize, pageSize * (pageNo - 1));
         List<MemberDTO> memberDTOList = new ArrayList<>();
         for (MemberDetails md : memberDetailsList) {
             MemberDTO memberDTO = new MemberDTO();
             BeanUtils.copyProperties(md, memberDTO);
-            memberDTO.setWorkingHours(workingHourMapper.selectWorkingHour(md.getUserId(), projectId));
+            memberDTO.setWorkingHours(workingHourMapper.selectWorkingHour(md.getUserId(), projectId) / 3600);
             memberDTO.setRoles(userRoleMapper.selectRoleNamesByUserIdAndProjectId(md.getUserId(), projectId));
             memberDTOList.add(memberDTO);
         }
