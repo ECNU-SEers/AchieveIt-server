@@ -38,23 +38,13 @@ public class ActivityService extends ServiceImpl<ActivityMapper, Activity> {
 		return this.baseMapper.selectAllSecondLevelActivities(parentId);
 	}
 	
-//	public Map<RetrieveActivityRequest, List<RetrieveActivityRequest>> getAllActivities() {
-//		Map<RetrieveActivityRequest, List<RetrieveActivityRequest>> allActivities = new HashMap<RetrieveActivityRequest, List<RetrieveActivityRequest>>();
-//		List<RetrieveActivityRequest> firstLevelActivities = this.getFirstLevelActivity();
-//		for (RetrieveActivityRequest activity: firstLevelActivities) {
-//			List<RetrieveActivityRequest> secondLevelActivities = this.getSecondLevelActivity(activity.getId());
-//			allActivities.put(activity, secondLevelActivities);
-//		}
-//		return allActivities;
-//	}
-	
 	public List<ValueLabelChildren> getAllActivities() {
 		List<ValueLabelChildren> allActivities = new ArrayList<>();
 		List<RetrieveActivityRequest> firstLevelActivities = this.getFirstLevelActivity();
 		for (RetrieveActivityRequest activity: firstLevelActivities) {
 			ValueLabelChildren firstActivity = new ValueLabelChildren();
-			firstActivity.setValue(activity.getId());
-			firstActivity.setLabel(activity.getName());
+			firstActivity.setId(activity.getId());
+			firstActivity.setName(activity.getName());
 			firstActivity.setChildren(this.getSecondLevelActivity(activity.getId()));
 			allActivities.add(firstActivity);
 		}

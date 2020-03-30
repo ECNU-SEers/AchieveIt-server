@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class ValueLabelChildren {
-    private Integer value;
-    private String label;
+    private Integer id;
+    private String name;
     private List<RetrieveActivityRequest> children;
 }

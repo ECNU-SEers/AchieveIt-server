@@ -24,7 +24,7 @@ public class ActivityServiceTest {
 	public void getBusinessAreaIdByBusinessAreaNameTest() { 
 		List<ValueLabelChildren> allActivities = activityService.getAllActivities();
 		for (ValueLabelChildren key: allActivities) {
-			System.out.println("1st id = "+key.getValue()+"  name = "+key.getLabel());
+			System.out.println("1st id = "+key.getId()+"  name = "+key.getName());
 			List<RetrieveActivityRequest> secondActivities = key.getChildren();
 			for (RetrieveActivityRequest r: secondActivities) {
 				System.out.println(r.getId()+"   "+r.getName());
