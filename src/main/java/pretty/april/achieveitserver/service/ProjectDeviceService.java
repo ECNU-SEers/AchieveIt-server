@@ -131,16 +131,16 @@ public class ProjectDeviceService extends ServiceImpl<ProjectDeviceMapper, Proje
 	}
 	
 	/**
-	 * 展示某个项目的所有设备
+	 * 展示某个项目的所有设备，利用关键字搜索某个设备的outerId
 	 * @param pageNo
 	 * @param pageSize
 	 * @param projectId 项目ID
 	 * @return 该项目的所有设备信息列表
 	 */
-	public PageDTO<ShowProjectDeviceListRequest> showDevices(Integer pageNo, Integer pageSize, Integer projectId) {
+	public PageDTO<ShowProjectDeviceListRequest> showDevices(Integer pageNo, Integer pageSize, Integer projectId, String keyword) {
 		Page<ProjectDevice> page = new Page<>(pageNo, pageSize);
 		QueryWrapper<ProjectDevice> queryWrapper = new QueryWrapper<ProjectDevice>();
-		queryWrapper.eq("project_id", projectId).orderByAsc("start_date");
+		queryWrapper.eq("project_id", projectId).like("outer_id", keyword).orderByAsc("start_date");
 		IPage<ProjectDevice> devices = projectDeviceMapper.selectPage(page, queryWrapper);
 		List<ShowProjectDeviceListRequest> deviceLists = new ArrayList<ShowProjectDeviceListRequest>();
 		for (ProjectDevice device: devices.getRecords()) {

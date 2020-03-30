@@ -63,7 +63,7 @@ public class ProjectDeviceController {
 	}
 	
 	/**
-	 * 展示某个项目的所有设备信息（01080301）
+	 * 展示某个项目的所有设备信息，并利用关键字搜索设备的outerId（01080301）
 	 * @param pageNo
 	 * @param pageSize
 	 * @param projectId 项目表ID
@@ -72,8 +72,9 @@ public class ProjectDeviceController {
 	@GetMapping("/show/all/details")
 	public Response<PageDTO<ShowProjectDeviceListRequest>> showDevices(@RequestParam(value="pageNo") Integer pageNo,
 													 @RequestParam(value="pageSize") Integer pageSize,
-													 @RequestParam(value="projectId") Integer projectId) {
-		return ResponseUtils.successResponse(projectDeviceService.showDevices(pageNo, pageSize, projectId));
+													 @RequestParam(value="projectId") Integer projectId,
+													 @RequestParam(value="keyword") String keyword) {
+		return ResponseUtils.successResponse(projectDeviceService.showDevices(pageNo, pageSize, projectId, keyword));
 	}
 	
 	/**

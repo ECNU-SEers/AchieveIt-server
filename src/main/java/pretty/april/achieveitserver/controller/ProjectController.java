@@ -88,7 +88,7 @@ public class ProjectController {
 	}
 	
 	/**
-	 * 展示项目列表 （01010301）
+	 * 展示项目列表，可利用关键字搜索项目名称 （01010301）
 	 * @param pageNo
 	 * @param pageSize
 	 * @param userId 用户ID
@@ -97,9 +97,10 @@ public class ProjectController {
 	@GetMapping("show/all/projects")
 	public Response<PageDTO<ShowProjectListRequest>> showProjects(@RequestParam(value="pageNo") Integer pageNo,
 													 @RequestParam(value="pageSize") Integer pageSize,
-													 @RequestParam(value="userId") Integer userId) {
+													 @RequestParam(value="userId") Integer userId,
+													 @RequestParam(value="keyword") String keyword) {
 		
-		return ResponseUtils.successResponse(projectService.showProjects(pageNo, pageSize, userId));
+		return ResponseUtils.successResponse(projectService.showProjects(pageNo, pageSize, userId, keyword));
 	}
 	
 	/**

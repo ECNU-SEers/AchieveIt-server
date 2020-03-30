@@ -298,8 +298,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param userId
      * @return 某个QA经理参与的所有项目
      */
-    public Page<Project> getProjectsOfQAManager(Integer userId, Page<Project> page) {
-    	return page.setRecords(this.baseMapper.selectProjectsOfQAManager(userId, page));
+    public Page<Project> getProjectsOfQAManager(Integer userId, String keyword, Page<Project> page) {
+    	return page.setRecords(this.baseMapper.selectProjectsOfQAManager(userId, keyword, page));
     }
     
     /**
@@ -307,8 +307,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param userId
      * @return 某个EPG_Leader参与的所有项目
      */
-    public Page<Project> getProjectsOfEPGLeader(Integer userId, Page<Project> page) {
-    	return page.setRecords(this.baseMapper.selectProjectsOfEPGLeader(userId, page));
+    public Page<Project> getProjectsOfEPGLeader(Integer userId, String keyword, Page<Project> page) {
+    	return page.setRecords(this.baseMapper.selectProjectsOfEPGLeader(userId, keyword, page));
     }
     
     /**
@@ -316,8 +316,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param userId
      * @return 某个用户参与的所有项目
      */
-    public Page<Project> getProjectsOfAUser(Integer userId, Page<Project> page) {
-    	return page.setRecords(this.baseMapper.selectProjectsOfAUser(userId, page));
+    public Page<Project> getProjectsOfAUser(Integer userId, String keyword, Page<Project> page) {
+    	return page.setRecords(this.baseMapper.selectProjectsOfAUser(userId, keyword, page));
     }
     
     /**
@@ -327,17 +327,17 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param userId 用户ID
      * @return 项目列表
      */
-    public PageDTO<ShowProjectListRequest> showProjects(Integer pageNo, Integer pageSize, Integer userId) {
+    public PageDTO<ShowProjectListRequest> showProjects(Integer pageNo, Integer pageSize, Integer userId, String keyword) {
     	Page<Project> page;
 //    	1.利用用户ID查找用户的角色
     	List<Integer> userRoles = userRoleService.getUserRoleByUserId(userId);
 //    	角色QA_MANAGER的id是3；角色EPG_LEADER的id是1
     	if (userRoles.contains(3)) {
-    		page = this.getProjectsOfQAManager(userId, new Page<Project>(pageNo, pageSize));
+    		page = this.getProjectsOfQAManager(userId, keyword, new Page<Project>(pageNo, pageSize));
     	} else if (userRoles.contains(1)) {
-    		page = this.getProjectsOfEPGLeader(userId, new Page<Project>(pageNo, pageSize));
+    		page = this.getProjectsOfEPGLeader(userId, keyword, new Page<Project>(pageNo, pageSize));
     	} else {
-    		page = this.getProjectsOfAUser(userId, new Page<Project>(pageNo, pageSize));
+    		page = this.getProjectsOfAUser(userId, keyword, new Page<Project>(pageNo, pageSize));
     	}
     	
     	List<ShowProjectListRequest> projectLists = new ArrayList<ShowProjectListRequest>();
