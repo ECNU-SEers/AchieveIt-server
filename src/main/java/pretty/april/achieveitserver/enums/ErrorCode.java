@@ -8,7 +8,8 @@ public enum ErrorCode {
     INVALID_TOKEN(1004, "Your token is invalid."),
     SYSTEM_ERROR(1005, "System error."),
     USER_NOT_FOUND(1006, "User not found."),
-    INVALID_ARGUMENT(1007,"Invalid argument.");
+    INVALID_ARGUMENT(1007,"Invalid argument."),
+	STATE_ERROR(1008, "State error");
 
     private final int code;
     private final String message;

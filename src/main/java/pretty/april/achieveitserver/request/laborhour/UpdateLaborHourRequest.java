@@ -15,8 +15,8 @@ public class UpdateLaborHourRequest {
 	
 	private Integer id;
 	
-	private LocalDate date;
-	
+//	private LocalDate date;
+	private Long date;
 	private Integer functionId;
 	
 	private String functionName;
@@ -33,7 +33,8 @@ public class UpdateLaborHourRequest {
 	
 	private String subactivityName;
 
-    private LocalTime startTime;
-
-    private LocalTime endTime;
+//    private LocalTime startTime;
+	private Long startTime;
+//    private LocalTime endTime;
+	private Long endTime;
 }

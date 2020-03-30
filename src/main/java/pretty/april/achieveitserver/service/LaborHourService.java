@@ -1,13 +1,15 @@
 package pretty.april.achieveitserver.service;
 
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Period;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -56,6 +58,18 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	@Autowired
 	private LaborHourMapper laborHourMapper;
 	
+	public LocalDate longToLocalDate(Long timestamp) {
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+	    String str = sdf.format(new Date(Long.parseLong(String.valueOf(timestamp))));
+		return LocalDate.parse(str, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	}
+	
+	public LocalTime longToLocalTime(Long timestamp) {
+		Date date = new Date(timestamp);
+		LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+		return localDateTime.toLocalTime();
+	}
+	
 	/**
 	 * 按照开始日期和结束日期查询某个用户的工时信息
 	 * @param pageNo
@@ -70,11 +84,8 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
         User user = userService.getByUsername(username);
         Integer userId = user.getId();
         
-        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
-        String start = sdf.format(new Date(Long.parseLong(String.valueOf(startDateTimestamp))));
-        LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String end = sdf.format(new Date(Long.parseLong(String.valueOf(endDateTimestamp))));
-        LocalDate endDate = LocalDate.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd"));      
+        LocalDate startDate = this.longToLocalDate(startDateTimestamp);
+        LocalDate endDate = this.longToLocalDate(endDateTimestamp);     
         
 		Page<LaborHour> page = new Page<>(pageNo, pageSize);
 		QueryWrapper<LaborHour> queryWrapper = new QueryWrapper<LaborHour>();
@@ -98,16 +109,13 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 * @throws Exception 
 	 */
-	public LaborHour createLaborHour(CreateLaborHourRequest request) {
+	public String createLaborHour(CreateLaborHourRequest request) {
 //		1.如果工时填写的日期在今天日期的3天之前，则不能提交
-//		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
-//        String dateString = sdf.format(new Date(Long.parseLong(String.valueOf(request.getDate()))));
-//        LocalDate localdate1 = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		LocalDate localdate1 = request.getDate();
+		LocalDate localdate1 = this.longToLocalDate(request.getDate());
 		LocalDate localdate2 = LocalDate.now();
 		Period period = Period.between(localdate1, localdate2);
 		if (period.getDays() > 3) {
-			throw new IllegalArgumentException("You can only submit your labor hour info with three days.");
+			return "You can only submit your labor hour info with three days.";
 		}
 		
 //		2.一天之内工时不超过24小时
@@ -115,31 +123,33 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
         User user = userService.getByUsername(username);
         Integer userId = user.getId();
 //      找到这个人在填写的工时日期（loacldate1）当天的工时总和
+        LocalTime startTime = this.longToLocalTime(request.getStartTime());
+        LocalTime endTime = this.longToLocalTime(request.getEndTime());
         List<LaborHour> dayRecords = this.baseMapper.selectByUserIdAndDate(userId, localdate1);
         long allSeconds = 0;
         for (LaborHour record: dayRecords) {
         	Duration duration = Duration.between(record.getStartTime(), record.getEndTime());
         	allSeconds = allSeconds + duration.getSeconds();
         }
-        allSeconds = allSeconds + Duration.between(request.getStartTime(), request.getEndTime()).getSeconds();
+        allSeconds = allSeconds + Duration.between(startTime, endTime).getSeconds();
 		if (allSeconds > 86400) {
-			throw new IllegalArgumentException("The extremity of labor hour is 24 hours.");
+			return "The extremity of labor hour is 24 hours.";
 		}
 		
 //		3.工时的开始到结束时间段不能重叠
 		boolean flag = true;
 		for (LaborHour record: dayRecords) {
-			if (request.getStartTime().compareTo(record.getStartTime())>0 && request.getStartTime().compareTo(record.getEndTime())<0) {
+			if (startTime.compareTo(record.getStartTime())>0 && startTime.compareTo(record.getEndTime())<0) {
 				flag = false;
 				break;
 			}
-			if (request.getEndTime().compareTo(record.getStartTime())>0 && request.getEndTime().compareTo(record.getEndTime())<0) {
+			if (endTime.compareTo(record.getStartTime())>0 && endTime.compareTo(record.getEndTime())<0) {
 				flag = false;
 				break;
 			}
 		}
 		if (!flag) {
-			throw new IllegalArgumentException("The time period cannot overlap.");
+			return "The time period cannot overlap.";
 		}
 		
 //		4.新建工时信息
@@ -149,10 +159,13 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 		laborHour.setProjectId(functionService.getById(request.getSubfunctionId()).getProjectId());
 		laborHour.setActivityId(request.getSubactivityId());
 		laborHour.setFunctionId(request.getSubfunctionId());
+		laborHour.setDate(localdate1);
+		laborHour.setStartTime(startTime);
+		laborHour.setEndTime(endTime);
 		laborHour.setSubmissionDate(LocalDateTime.now());
 		laborHour.setState("待审核");
 		this.baseMapper.insert(laborHour);
-		return laborHour;
+		return "success";
 	}
 	
 	/**
@@ -202,17 +215,23 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 * @throws Exception
 	 */
-	public LaborHour updateLaborHour(UpdateLaborHourRequest request) {
+	public String updateLaborHour(UpdateLaborHourRequest request) {
 		if (this.getById(request.getId()).getState().equals("已通过")) {
-			throw new IllegalArgumentException("You cannot update the info if passed.");
+			return "You cannot update the info if passed.";
 		}
 		LaborHour laborHour = this.baseMapper.selectById(request.getId());
 		BeanUtils.copyProperties(request, laborHour);
+		LocalDate date = this.longToLocalDate(request.getDate());
+		LocalTime startTime = this.longToLocalTime(request.getStartTime());
+		LocalTime endTime = this.longToLocalTime(request.getEndTime());
 		laborHour.setActivityId(request.getSubactivityId());
 		laborHour.setFunctionId(request.getSubfunctionId());
+		laborHour.setDate(date);
+		laborHour.setStartTime(startTime);
+		laborHour.setEndTime(endTime);
 		laborHour.setSubmissionDate(LocalDateTime.now());
 		this.baseMapper.updateById(laborHour);
-		return laborHour;
+		return "success";
 	}
 	
 	/**
@@ -241,12 +260,9 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
         User user = userService.getByUsername(username);
         Integer userId = user.getId();
         
-        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
-        String start = sdf.format(new Date(Long.parseLong(String.valueOf(startDateTimestamp))));
-        LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String end = sdf.format(new Date(Long.parseLong(String.valueOf(endDateTimestamp))));
-        LocalDate endDate = LocalDate.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
-		
+        LocalDate startDate = this.longToLocalDate(startDateTimestamp);
+        LocalDate endDate = this.longToLocalDate(endDateTimestamp);
+
 		Page<LaborHour> page = this.getLaborHourOfSubordinate(startDate, endDate, userId, new Page<LaborHour>(pageNo, pageSize));
 		List<RetrieveLaborHourRequest> laborHourDetails = new ArrayList<RetrieveLaborHourRequest>();
 		for (LaborHour laborHour: page.getRecords()) {
@@ -318,14 +334,15 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 * @throws Exception 
 	 */
-	public LaborHour acceptLaborHourInfo(RetrieveLaborHourRequest request) {
+	public String acceptLaborHourInfo(Integer id) {
+		LaborHour request = this.baseMapper.selectById(id);
 		if (request.getState().equals("已通过")) {
-			throw new IllegalArgumentException("The record has already been passed.");
+			return "The record has already been passed.";
 		}
 		LaborHour laborHour = this.baseMapper.selectById(request.getId());
 		laborHour.setState("已通过");
 		this.baseMapper.updateById(laborHour);
-		return  laborHour;
+		return "success";
 	}
 	
 	/**
@@ -334,14 +351,15 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 * @throws Exception
 	 */
-	public LaborHour returnLaborHourInfo(RetrieveLaborHourRequest request) {
+	public String returnLaborHourInfo(Integer id) {
+		LaborHour request = this.baseMapper.selectById(id);
 		if (request.getState().equals("已退回")) {
-			throw new IllegalArgumentException("The record has already been returned.");
+			return "The record has already been returned.";
 		}
 		LaborHour laborHour = this.baseMapper.selectById(request.getId());
 		laborHour.setState("已退回");
 		this.baseMapper.updateById(laborHour);
-		return  laborHour;
+		return "success";
 	}
 	
 }

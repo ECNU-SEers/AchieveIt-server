@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.dto.Response;
+import pretty.april.achieveitserver.enums.ErrorCode;
 import pretty.april.achieveitserver.request.laborhour.CreateLaborHourRequest;
 import pretty.april.achieveitserver.request.laborhour.RetrieveLaborHourRequest;
 import pretty.april.achieveitserver.request.laborhour.ShowLaborHourListRequest;
@@ -51,8 +52,12 @@ public class LaborHourController {
 	 */
 	@PostMapping("/create")
 	public Response<?> createProject(@RequestBody CreateLaborHourRequest request) throws Exception {
-		laborHourService.createLaborHour(request);
-		return ResponseUtils.successResponse();
+		String result = laborHourService.createLaborHour(request);
+		if ("success".equals(result)) {
+			return ResponseUtils.successResponse();
+		} else {
+			return ResponseUtils.errorResponseWithMessage(ErrorCode.STATE_ERROR, result);
+		}
 	}
 	
 	/**
@@ -76,8 +81,12 @@ public class LaborHourController {
 	 */
 	@PutMapping("/update")
 	public Response<?> updateLaborHour(@RequestBody UpdateLaborHourRequest request) throws Exception {
-		laborHourService.updateLaborHour(request);
-		return ResponseUtils.successResponse();
+		String result = laborHourService.updateLaborHour(request);
+		if ("success".equals(result)) {
+			return ResponseUtils.successResponse();
+		} else {
+			return ResponseUtils.errorResponseWithMessage(ErrorCode.STATE_ERROR, result);
+		}
 	}
 	
 	/**
@@ -117,9 +126,13 @@ public class LaborHourController {
 	 * @throws Exception
 	 */
 	@PutMapping("/accept")
-	public Response<?> acceptLaborHourInfo(@RequestBody RetrieveLaborHourRequest request) throws Exception {
-		laborHourService.acceptLaborHourInfo(request);
-		return ResponseUtils.successResponse();
+	public Response<?> acceptLaborHourInfo(@RequestParam(value="id") Integer id) throws Exception {
+		String result = laborHourService.acceptLaborHourInfo(id);
+		if ("success".equals(result)) {
+			return ResponseUtils.successResponse();
+		} else {
+			return ResponseUtils.errorResponseWithMessage(ErrorCode.STATE_ERROR, result);
+		}
 	}
 	
 	/**
@@ -129,9 +142,13 @@ public class LaborHourController {
 	 * @throws Exception
 	 */
 	@PutMapping("/return")
-	public Response<?> returnLaborHourInfo(@RequestBody RetrieveLaborHourRequest request) throws Exception {
-		laborHourService.returnLaborHourInfo(request);
-		return ResponseUtils.successResponse();
+	public Response<?> returnLaborHourInfo(@RequestParam(value="id") Integer id) throws Exception {
+		String result = laborHourService.returnLaborHourInfo(id);
+		if ("success".equals(result)) {
+			return ResponseUtils.successResponse();
+		} else {
+			return ResponseUtils.errorResponseWithMessage(ErrorCode.STATE_ERROR, result);
+		}
 	}
 	
 }
