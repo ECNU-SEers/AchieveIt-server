@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.request.AddViewRoleRequest;
+import pretty.april.achieveitserver.request.EditUserRolesRequest;
 import pretty.april.achieveitserver.request.EditViewRoleRequest;
 import pretty.april.achieveitserver.request.UserViewRoleRequest;
 import pretty.april.achieveitserver.service.UserService;
@@ -75,9 +76,16 @@ public class ViewPermissionController {
         return ResponseUtils.successResponse();
     }
 
-    @GetMapping("/users/view/permissions")
-    public Response<PageDTO<ViewPermissionUserDTO>> getViewPermissionUsers(@RequestParam Integer pageSize,
-                                                                           @RequestParam @Min(1) Integer page) {
-        return ResponseUtils.successResponse(viewPermissionService.getViewPermissionUsers(page, pageSize));
+    @GetMapping("/users/view/roles")
+    public Response<PageDTO<ViewRoleUserDTO>> getViewPermissionUsers(@RequestParam Integer pageSize,
+                                                                     @RequestParam @Min(1) Integer page,
+                                                                     @RequestParam(required = false, defaultValue = "") String keyword) {
+        return ResponseUtils.successResponse(viewPermissionService.getViewRoleUsers(page, pageSize, keyword));
+    }
+
+    @PutMapping("/user/{userId}/view/roles")
+    public Response<?> editUserRoles(@PathVariable Integer userId, @RequestBody EditUserRolesRequest request) {
+        viewPermissionService.editUserRoles(userId, request);
+        return ResponseUtils.successResponse();
     }
 }

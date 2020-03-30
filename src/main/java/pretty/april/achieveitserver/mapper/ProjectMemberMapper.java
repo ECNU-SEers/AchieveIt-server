@@ -52,7 +52,7 @@ public interface ProjectMemberMapper extends BaseMapper<ProjectMember> {
     @Select({"select count(*) from project_member where project_id = #{projectId}"})
     Integer selectMemberCountByProjectId(Integer projectId);
 
-    @Select("select user.id,user.username,real_name,email,department,phone_number,leader_id,leader_name " +
+    @Select("select user.id user_id,user.username,real_name,email,department,phone_number,leader_id,leader_name " +
             "from project_member inner join user on project_member.user_id = user.id " +
             "where project_member.project_id = #{projectId} and project_member.user_id = #{memberId} ")
     MemberDetails selectMemberDetailsByProjectIdAndMemberId(@Param("projectId") Integer projectId, @Param("memberId") Integer memberId);

@@ -21,6 +21,12 @@ public class AdminController {
         this.userService = userService;
     }
 
+    /**
+     * 添加一个用户
+     *
+     * @param request
+     * @return
+     */
     @PostMapping("/user")
     public Response<?> addUser(@RequestBody AddUserRequest request) {
         userService.addUser(request);
