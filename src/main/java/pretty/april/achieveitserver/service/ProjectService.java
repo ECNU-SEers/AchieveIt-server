@@ -431,14 +431,16 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         }
 
 //		5.更新milestone表：insert一条新纪录
-        Milestone milestone = new Milestone();
-        milestone.setProjectId(projectId);
-        milestone.setProgress(validator.getMilestone());
-        milestone.setRecordDate(LocalDate.now());
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        milestone.setRecorderId(user.getId());
-        milestoneMapper.insert(milestone);
+        if (!"".equals(validator.getMilestone()) && validator.getMilestone()!=null) {
+        	Milestone milestone = new Milestone();
+            milestone.setProjectId(projectId);
+            milestone.setProgress(validator.getMilestone());
+            milestone.setRecordDate(LocalDate.now());
+            String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = userService.getByUsername(username);
+            milestone.setRecorderId(user.getId());
+            milestoneMapper.insert(milestone);
+        }
 
 //      6.更新project_member表中的project_name
         List<ProjectMember> projectMembers = projectMemberService.selectByProjectId(projectId);
