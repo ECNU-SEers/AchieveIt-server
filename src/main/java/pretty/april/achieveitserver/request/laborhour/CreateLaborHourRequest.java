@@ -14,7 +14,7 @@ import lombok.Setter;
 public class CreateLaborHourRequest {
 	
 	private LocalDate date;
-	
+//	private Long date;
 	private Integer functionId;
 	
 	private String functionName;
@@ -32,6 +32,7 @@ public class CreateLaborHourRequest {
 	private String subactivityName;
 
     private LocalTime startTime;
-
+//	private Long startTime;
     private LocalTime endTime;
+//	private Long endTime;
 }

@@ -20,6 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ShowProjectListRequest {
 	
+	private Integer id;
 	private String outerId;
 	private String name;
 	private String clientOuterId;

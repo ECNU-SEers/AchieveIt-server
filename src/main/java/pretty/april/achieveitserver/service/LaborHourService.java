@@ -98,13 +98,16 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 * @throws Exception 
 	 */
-	public LaborHour createLaborHour(CreateLaborHourRequest request) throws Exception {
+	public LaborHour createLaborHour(CreateLaborHourRequest request) {
 //		1.如果工时填写的日期在今天日期的3天之前，则不能提交
+//		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+//        String dateString = sdf.format(new Date(Long.parseLong(String.valueOf(request.getDate()))));
+//        LocalDate localdate1 = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		LocalDate localdate1 = request.getDate();
 		LocalDate localdate2 = LocalDate.now();
 		Period period = Period.between(localdate1, localdate2);
 		if (period.getDays() > 3) {
-			throw new Exception("You can only submit your labor hour info with three days.");
+			throw new IllegalArgumentException("You can only submit your labor hour info with three days.");
 		}
 		
 //		2.一天之内工时不超过24小时
@@ -120,7 +123,7 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
         }
         allSeconds = allSeconds + Duration.between(request.getStartTime(), request.getEndTime()).getSeconds();
 		if (allSeconds > 86400) {
-			throw new Exception("The extremity of labor hour is 24 hours.");
+			throw new IllegalArgumentException("The extremity of labor hour is 24 hours.");
 		}
 		
 //		3.工时的开始到结束时间段不能重叠
@@ -136,7 +139,7 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 			}
 		}
 		if (!flag) {
-			throw new Exception("The time period cannot overlap.");
+			throw new IllegalArgumentException("The time period cannot overlap.");
 		}
 		
 //		4.新建工时信息
@@ -199,9 +202,9 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 * @throws Exception
 	 */
-	public LaborHour updateLaborHour(UpdateLaborHourRequest request) throws Exception {
+	public LaborHour updateLaborHour(UpdateLaborHourRequest request) {
 		if (this.getById(request.getId()).getState().equals("已通过")) {
-			throw new Exception("You cannot update the info if passed.");
+			throw new IllegalArgumentException("You cannot update the info if passed.");
 		}
 		LaborHour laborHour = this.baseMapper.selectById(request.getId());
 		BeanUtils.copyProperties(request, laborHour);
@@ -275,9 +278,9 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 */
 	public PageDTO<ShowSubordinateLaborHourListRequest> showSubordinateLists(Integer pageNo, Integer pageSize) {
-//		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        User user = userService.getByUsername(username);
-        Integer userId = 1;
+		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        Integer userId = user.getId();
 		
 		Page<LaborHour> page = this.showSubordinateList(userId, new Page<LaborHour>(pageNo, pageSize));
 		List<ShowSubordinateLaborHourListRequest> laborHourDetails = new ArrayList<ShowSubordinateLaborHourListRequest>();
@@ -315,9 +318,9 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 * @throws Exception 
 	 */
-	public LaborHour acceptLaborHourInfo(RetrieveLaborHourRequest request) throws Exception {
+	public LaborHour acceptLaborHourInfo(RetrieveLaborHourRequest request) {
 		if (request.getState().equals("已通过")) {
-			throw new Exception("The record has already been passed.");
+			throw new IllegalArgumentException("The record has already been passed.");
 		}
 		LaborHour laborHour = this.baseMapper.selectById(request.getId());
 		laborHour.setState("已通过");
@@ -331,9 +334,9 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 * @throws Exception
 	 */
-	public LaborHour returnLaborHourInfo(RetrieveLaborHourRequest request) throws Exception {
+	public LaborHour returnLaborHourInfo(RetrieveLaborHourRequest request) {
 		if (request.getState().equals("已退回")) {
-			throw new Exception("The record has already been returned.");
+			throw new IllegalArgumentException("The record has already been returned.");
 		}
 		LaborHour laborHour = this.baseMapper.selectById(request.getId());
 		laborHour.setState("已退回");
