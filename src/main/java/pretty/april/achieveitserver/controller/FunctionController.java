@@ -1,14 +1,18 @@
 package pretty.april.achieveitserver.controller;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pretty.april.achieveitserver.dto.*;
+import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.request.AddFunctionRequest;
 import pretty.april.achieveitserver.request.EditFunctionRequest;
 import pretty.april.achieveitserver.service.FunctionService;
+import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -16,8 +20,11 @@ public class FunctionController {
 
     private FunctionService functionService;
 
-    public FunctionController(FunctionService functionService) {
+    private UserService userService;
+
+    public FunctionController(FunctionService functionService, UserService userService) {
         this.functionService = functionService;
+        this.userService = userService;
     }
 
     @PostMapping("/project/{projectId}/function")
@@ -60,5 +67,12 @@ public class FunctionController {
     @GetMapping("/project/{projectId}/functions/{functionId}")
     public Response<FullFunctionDTO> getFunction(@PathVariable Integer projectId, @PathVariable Integer functionId) {
         return ResponseUtils.successResponse(functionService.getFullFunction(projectId, functionId));
+    }
+
+    @GetMapping("/functions/me")
+    public Response<List<ValueLabelChildren>> getWorkHourFunctions() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        return ResponseUtils.successResponse(functionService.getWorkHourFunctions(user.getId()));
     }
 }
