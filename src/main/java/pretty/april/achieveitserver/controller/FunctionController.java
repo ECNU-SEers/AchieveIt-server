@@ -39,8 +39,9 @@ public class FunctionController {
     }
 
     @GetMapping("/project/{projectId}/functions")
-    public Response<List<FunctionDTO>> getFunctions(@PathVariable Integer projectId) {
-        return ResponseUtils.successResponse(functionService.getFunctions(projectId));
+    public Response<List<FunctionDTO>> getFunctions(@PathVariable Integer projectId,
+                                                    @RequestParam(required = false, defaultValue = "") String keyword) {
+        return ResponseUtils.successResponse(functionService.getFunctions(projectId, keyword));
     }
 
     @GetMapping("/project/{projectId}/functions/{functionId}/sub")

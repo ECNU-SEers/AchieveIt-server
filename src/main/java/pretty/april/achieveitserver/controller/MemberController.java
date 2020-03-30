@@ -41,8 +41,9 @@ public class MemberController {
     @GetMapping("/project/{projectId}/members")
     public Response<PageDTO<MemberDTO>> getMembers(@PathVariable Integer projectId,
                                                    @RequestParam @Min(1) Integer page,
-                                                   @RequestParam Integer pageSize) {
-        return ResponseUtils.successResponse(memberService.getMembers(page, pageSize, projectId));
+                                                   @RequestParam Integer pageSize,
+                                                   @RequestParam(required = false, defaultValue = "") String keyword) {
+        return ResponseUtils.successResponse(memberService.getMembers(page, pageSize, projectId, keyword));
     }
 
     @GetMapping("/project/{projectId}/member/{memberId}")

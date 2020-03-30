@@ -125,7 +125,7 @@ public class DefectService {
         defectMapper.deleteById(defectId);
     }
 
-    public PageDTO<DefectDTO> queryDefects(Integer pageNo, Integer pageSize, Integer projectId, Integer type, Integer level, Integer state) {
+    public PageDTO<DefectDTO> queryDefects(Integer pageNo, Integer pageSize, Integer projectId, Integer type, Integer level, Integer state, String keyword) {
         Page<Defect> page = new Page<>(pageNo, pageSize);
         Map<String, Object> map = new HashMap<>();
         map.put("project_id", projectId);
@@ -135,6 +135,7 @@ public class DefectService {
         IPage<Defect> defects = defectMapper.selectPage(page,
                 new QueryWrapper<Defect>()
                         .allEq(map, false)
+                        .like("name",keyword)
                         .orderByDesc("created_at"));
         return new PageDTO<>(defects.getCurrent(), defects.getSize(), defects.getTotal(),
                 defectConverter.defectDTOList(defects.getRecords()));
