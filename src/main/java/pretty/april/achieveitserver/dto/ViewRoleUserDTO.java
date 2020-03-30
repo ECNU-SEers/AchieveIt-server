@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ViewPermissionUserDTO {
+public class ViewRoleUserDTO {
     private Integer id;
     private String username;
     private String email;

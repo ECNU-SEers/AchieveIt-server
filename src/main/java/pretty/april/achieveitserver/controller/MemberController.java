@@ -22,22 +22,51 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    /**
+     * 给某个项目添加一名成员
+     *
+     * @param projectId
+     * @param request
+     * @return
+     */
     @PostMapping("/project/{projectId}/member")
     public Response<?> addProjectMember(@PathVariable @NotNull Integer projectId, @RequestBody @Valid AddProjectMemberRequest request) {
         memberService.addProjectMember(request, projectId);
         return ResponseUtils.successResponse();
     }
 
+    /**
+     * 获取某个项目所有成员的ID和Name信息
+     *
+     * @param projectId
+     * @return
+     */
     @GetMapping("/project/{projectId}/members/simple")
     public Response<List<SimpleMemberDTO>> getSimpleMembers(@PathVariable Integer projectId) {
         return ResponseUtils.successResponse(memberService.getSimpleMembers(projectId));
     }
 
+    /**
+     * 对用户名模糊搜索获取某个项目所有成员的ID和Name信息
+     *
+     * @param projectId
+     * @param name
+     * @return
+     */
     @GetMapping("/project/{projectId}/members/search")
     public Response<List<SearchableDTO>> getSimpleMembers(@PathVariable Integer projectId, @RequestParam String name) {
         return ResponseUtils.successResponse(memberService.searchMembers(projectId, name));
     }
 
+    /**
+     * 分页获取某个项目的所有成员信息
+     *
+     * @param projectId
+     * @param page
+     * @param pageSize
+     * @param keyword
+     * @return
+     */
     @GetMapping("/project/{projectId}/members")
     public Response<PageDTO<MemberDTO>> getMembers(@PathVariable Integer projectId,
                                                    @RequestParam @Min(1) Integer page,
@@ -46,17 +75,39 @@ public class MemberController {
         return ResponseUtils.successResponse(memberService.getMembers(page, pageSize, projectId, keyword));
     }
 
+    /**
+     * 获取某个项目的某个成员的信息
+     *
+     * @param projectId
+     * @param memberId
+     * @return
+     */
     @GetMapping("/project/{projectId}/member/{memberId}")
     public Response<MemberDTO> getMember(@PathVariable Integer projectId, @PathVariable Integer memberId) {
         return ResponseUtils.successResponse(memberService.getMember(projectId, memberId));
     }
 
+    /**
+     * 修改某个项目的某个成员的信息
+     *
+     * @param projectId
+     * @param memberId
+     * @param request
+     * @return
+     */
     @PutMapping("/project/{projectId}/member/{memberId}")
     public Response<?> editProjectMember(@PathVariable Integer projectId, @PathVariable Integer memberId, @RequestBody EditMemberRequest request) {
         memberService.editMember(memberId, projectId, request);
         return ResponseUtils.successResponse();
     }
 
+    /**
+     * 删除某个项目的某个成员
+     *
+     * @param projectId
+     * @param memberId
+     * @return
+     */
     @DeleteMapping("/project/{projectId}/member/{memberId}")
     public Response<?> deleteMember(@PathVariable Integer projectId, @PathVariable Integer memberId) {
         memberService.deleteMember(memberId, projectId);

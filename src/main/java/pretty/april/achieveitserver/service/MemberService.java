@@ -99,7 +99,7 @@ public class MemberService {
         MemberDetails memberDetails = projectMemberMapper.selectMemberDetailsByProjectIdAndMemberId(projectId, memberId);
         MemberDTO memberDTO = new MemberDTO();
         BeanUtils.copyProperties(memberDetails, memberDTO);
-        memberDTO.setWorkingHours(workingHourMapper.selectWorkingHour(memberId, projectId));
+        memberDTO.setWorkingHours(workingHourMapper.selectWorkingHour(memberId, projectId) / 3600);
         memberDTO.setRoles(userRoleMapper.selectRoleNamesByUserIdAndProjectId(memberId, projectId));
         return memberDTO;
     }
@@ -123,8 +123,13 @@ public class MemberService {
             common.retainAll(newRoles);
             oldRoles.removeAll(common);
             newRoles.removeAll(common);
-            userRoleMapper.deleteBatch(memberId, projectId, new ArrayList<>(oldRoles));
-            userRoleMapper.deleteBatch(memberId, projectId, new ArrayList<>(newRoles));
+            if (!CollectionUtils.isEmpty(oldRoles)) {
+                userRoleMapper.deleteBatch(memberId, projectId, new ArrayList<>(oldRoles));
+            }
+            if (!CollectionUtils.isEmpty(newRoles)) {
+                List<UserRole> newUserRoles = newRoles.stream().map(o -> new UserRole(memberId, o, projectId)).collect(Collectors.toList());
+                userRoleMapper.insertBatch(newUserRoles);
+            }
         }
     }
 

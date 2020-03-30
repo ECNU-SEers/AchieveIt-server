@@ -22,17 +22,23 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * 获取所有用户ID和Name信息
+     *
+     * @return
+     */
     @GetMapping("/employees")
     public Response<List<SimpleEmployeeDTO>> getEmployees() {
         return ResponseUtils.successResponse(userService.getEmployees());
     }
-    
+
     /**
      * 所有的项目上级
+     *
      * @return
      */
     @GetMapping("/supervisors")
     public Response<List<Supervisor>> getAllSupervisors() {
-    	return ResponseUtils.successResponse(userService.getAllSupervisors());
+        return ResponseUtils.successResponse(userService.getAllSupervisors());
     }
 }
