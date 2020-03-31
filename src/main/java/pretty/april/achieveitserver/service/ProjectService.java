@@ -159,7 +159,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         pid.setIsfree(false);
         projectIdMapper.updateIsFreeByProjectId(validator.getOuterId());
 
-//		6.启动流程实例
+//		7.启动流程实例
         Map<String, Object> map = new HashMap();
         String projectOuterId = validator.getOuterId();
         map.put("projectManager", projectOuterId + "manager");
@@ -169,20 +169,20 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         map.put("QAManager", projectOuterId + "qa_manager");
         ProcessInstance processInstanceWithBusinessKey = processManagementService.startProcessInstance("projectApproval", this.getProjectByOuterId(validator.getOuterId()).getId().toString(), map);
 
-//		7.设置项目流程实例ID
+//		8.设置项目流程实例ID
         project.setInstanceId(processInstanceWithBusinessKey.getId());
         projectMapper.updateById(project);
 
-//		8.查询该执行人名下所有的task
+//		9.查询该执行人名下所有的task
         List<Task> taskList = processManagementService.queryActivityTask("projectApproval", projectOuterId + "manager");
-//		9.执行当前流程实例下的第一个task
+//		10.执行当前流程实例下的第一个task
         for (Task task : taskList) {
             if (task.getProcessInstanceId().equals(processInstanceWithBusinessKey.getId())) {
                 processManagementService.handleActivityTask(task);
             }
         }
         
-//      10.状态更新
+//      11.状态更新
         StateChange stateChange = new StateChange();
         stateChange.setProjectId(projectId);
         stateChange.setChangeDate(LocalDateTime.now());
@@ -233,7 +233,11 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param keyword
      * @return 所有项目名称包含该关键字的项目的详情
      */
-    public PageDTO<RetrieveProjectRequest> retrieveProjectsWithNameIncluingKeywordByPage(Integer pageNo, Integer pageSize, Integer userId, String keyword) {
+    public PageDTO<RetrieveProjectRequest> retrieveProjectsWithNameIncluingKeywordByPage(Integer pageNo, Integer pageSize, String keyword) {
+    	String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        Integer userId = user.getId();
+    	
     	Page<Project> page = this.selectProjectByNameWithKeyword(userId, keyword, new Page<Project>(pageNo, pageSize));
     	List<RetrieveProjectRequest> projectsDetails = new ArrayList<RetrieveProjectRequest>();
     	for (Project project : page.getRecords()) {
@@ -249,7 +253,11 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param keyword
      * @return 所有项目名称包含该关键字的项目名称和项目ID
      */
-    public List<SearchProjectRequest> searchProjectWithNameIncludingKeyword(Integer userId, String keyword) {
+    public List<SearchProjectRequest> searchProjectWithNameIncludingKeyword(String keyword) {
+    	String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        Integer userId = user.getId();
+    	
 //		1.利用keyword找到所有项目名称中包含该keyword的所有项目
         List<Project> projects = this.selectProjectByNameWithKeyword(userId, keyword);
 //		2.得到所有项目的详细信息
@@ -327,7 +335,11 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param userId 用户ID
      * @return 项目列表
      */
-    public PageDTO<ShowProjectListRequest> showProjects(Integer pageNo, Integer pageSize, Integer userId, String keyword) {
+    public PageDTO<ShowProjectListRequest> showProjects(Integer pageNo, Integer pageSize, String keyword) {
+    	String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(username);
+        Integer userId = user.getId();
+    	
     	Page<Project> page;
 //    	1.利用用户ID查找用户的角色
     	List<Integer> userRoles = userRoleService.getUserRoleByUserId(userId);

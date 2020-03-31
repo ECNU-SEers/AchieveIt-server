@@ -134,7 +134,7 @@ public class ProjectServiceTest {
 			System.out.println("name"+p.getName());
 			System.out.println("------------");
 		}
-		List<SearchProjectRequest> results = projectService.searchProjectWithNameIncludingKeyword(userId, keyword);
+		List<SearchProjectRequest> results = projectService.searchProjectWithNameIncludingKeyword(keyword);
 		System.out.println(results.size());
 		for (SearchProjectRequest r: results) {
 			System.out.println("projectOuterId = "+r.getOuterId());
@@ -147,8 +147,7 @@ public class ProjectServiceTest {
     @Test
     public void retrieveProjectsWithNameIncluingKeywordByPageTest() {
     	String keyword = "ch";
-    	Integer userId = 1;
-    	PageDTO<RetrieveProjectRequest> page = projectService.retrieveProjectsWithNameIncluingKeywordByPage(1, 5, userId, keyword);
+    	PageDTO<RetrieveProjectRequest> page = projectService.retrieveProjectsWithNameIncluingKeywordByPage(1, 5, keyword);
     	System.out.println(page.getTotal());
     }
 
@@ -166,7 +165,7 @@ public class ProjectServiceTest {
     @Test
 	public void showProjectsTest() {
     	String keyword = "";
-		PageDTO<ShowProjectListRequest> page = projectService.showProjects(1, 10, 1, keyword);
+		PageDTO<ShowProjectListRequest> page = projectService.showProjects(1, 10, keyword);
 		System.out.println("items:\n"+page.getItems());
 		System.out.println("total = "+ page.getTotal());
 		for (ShowProjectListRequest request: page.getItems()) {

@@ -39,14 +39,12 @@ public class ProjectController {
 	
 	/**
 	 * 利用关键字搜索（010101）
-	 * @param userId
 	 * @param keyword
 	 * @return 包含关键字的项目ID和项目名称
 	 */
 	@GetMapping("/search")
-	public Response<List<SearchProjectRequest>> searchProjectUsingKeyword(@RequestParam(value="userId") Integer userId, 
-																		@RequestParam(value="keyword") String keyword) {
-		return ResponseUtils.successResponse(projectService.searchProjectWithNameIncludingKeyword(userId, keyword));
+	public Response<List<SearchProjectRequest>> searchProjectUsingKeyword(@RequestParam(value="keyword") String keyword) {
+		return ResponseUtils.successResponse(projectService.searchProjectWithNameIncludingKeyword(keyword));
 	}
 	
 	/**
@@ -69,9 +67,8 @@ public class ProjectController {
 	@GetMapping("/retrieve/all/keyword")
 	public Response<PageDTO<RetrieveProjectRequest>> retrieveProjectInfoWithNameIncluingKeyword(@RequestParam(value="pageNo") Integer pageNo,
 			 																					@RequestParam(value="pageSize") Integer pageSize,
-			 																					@RequestParam(value="userId") Integer userId,
 			 																					@RequestParam(value="keyword") String keyword) {
-		return ResponseUtils.successResponse(projectService.retrieveProjectsWithNameIncluingKeywordByPage(pageNo, pageSize, userId, keyword));
+		return ResponseUtils.successResponse(projectService.retrieveProjectsWithNameIncluingKeywordByPage(pageNo, pageSize, keyword));
 	}
 	
 	/**
@@ -91,16 +88,14 @@ public class ProjectController {
 	 * 展示项目列表，可利用关键字搜索项目名称 （01010301）
 	 * @param pageNo
 	 * @param pageSize
-	 * @param userId 用户ID
 	 * @return
 	 */
 	@GetMapping("show/all/projects")
 	public Response<PageDTO<ShowProjectListRequest>> showProjects(@RequestParam(value="pageNo") Integer pageNo,
 													 @RequestParam(value="pageSize") Integer pageSize,
-													 @RequestParam(value="userId") Integer userId,
 													 @RequestParam(value="keyword") String keyword) {
 		
-		return ResponseUtils.successResponse(projectService.showProjects(pageNo, pageSize, userId, keyword));
+		return ResponseUtils.successResponse(projectService.showProjects(pageNo, pageSize, keyword));
 	}
 	
 	/**
