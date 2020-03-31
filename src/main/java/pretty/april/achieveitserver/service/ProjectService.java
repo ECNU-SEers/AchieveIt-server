@@ -99,11 +99,11 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @throws Exception
      */
     @Transactional
-    public Project createProject(CreateProjectRequest validator) throws Exception {
+    public Project createProject(CreateProjectRequest validator) {
 //		1.验证该项目是否存在
         boolean projectIsExist = this.checkProjectExistByOuterId(validator.getOuterId());
         if (projectIsExist) {
-            throw new Exception("The project already exists, please choose a new one.");
+            throw new IllegalArgumentException("The project already exists, please choose a new one.");
         }
 
 //		2.设置项目状态和客户表ID并创建项目
@@ -365,11 +365,11 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return 被更新的项目
      */
     @Transactional
-    public Project updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(UpdateProjectInfoRequest validator) throws Exception {
+    public Project updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(UpdateProjectInfoRequest validator) {
 //		1.利用projectId找到待修改的project，判断项目是否“结束”或“已归档”
         Project primaryProject = this.getProjectByOuterId(validator.getOuterId());
         if (primaryProject.getState().equals("结束") || primaryProject.getState().equals("已归档")) {
-            throw new Exception("The project already expires, cannot be updated, please choose a new one.");
+            throw new IllegalArgumentException("The project already expires, cannot be updated, please choose a new one.");
         }
 //		2.更新project表
         Project project = new Project();
@@ -400,11 +400,11 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return 被更新的项目
      */
     @Transactional
-    public Project updateProjectInfo(UpdateProjectRequest validator) throws Exception {
+    public Project updateProjectInfo(UpdateProjectRequest validator) {
 //		1.利用projectId找到待修改的project，判断项目是否“结束”或“已归档”
         Project primaryProject = this.getProjectByOuterId(validator.getOuterId());
         if (primaryProject.getState().equals("结束") || primaryProject.getState().equals("已归档")) {
-            throw new Exception("The project already expires, cannot be updated, please choose a new one.");
+            throw new IllegalArgumentException("The project already expires, cannot be updated, please choose a new one.");
         }
 //		2.更新project表
         Project project = new Project();
@@ -471,7 +471,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @throws Exception
      */
     @Transactional
-    public Project updateProjectInfoDuringProjectApproval(UpdateProjectRequest validator) throws Exception {
+    public Project updateProjectInfoDuringProjectApproval(UpdateProjectRequest validator) {
         Project project = this.updateProjectInfo(validator);
 
 //		2.查询该执行人名下所有的task
@@ -534,10 +534,10 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @throws Exception
      */
     @Transactional
-    public ApproveProjectRequest acceptProject(String projectOuterId, String remark) throws Exception {
+    public ApproveProjectRequest acceptProject(String projectOuterId, String remark) {
     	Project primaryProject = this.getProjectByOuterId(projectOuterId);
     	if (!primaryProject.getState().equals("申请立项") && !primaryProject.getState().equals("立项驳回")) {
-    		throw new Exception("The project is not in the state of applying for project approval.");
+    		throw new IllegalArgumentException("The project is not in the state of applying for project approval.");
     	}
     	StateChange stateChange = new StateChange();
     	stateChange.setFormerState(primaryProject.getState());
@@ -580,10 +580,10 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @throws Exception
      */
     @Transactional
-    public ApproveProjectRequest rejectProject(String projectOuterId, String remark) throws Exception {
+    public ApproveProjectRequest rejectProject(String projectOuterId, String remark) {
     	Project primaryProject = this.getProjectByOuterId(projectOuterId);
     	if (!primaryProject.getState().equals("申请立项") && !primaryProject.getState().equals("立项驳回")) {
-    		throw new Exception("The project is not in the state of applying for project approval.");
+    		throw new IllegalArgumentException("The project is not in the state of applying for project approval.");
     	}
     	StateChange stateChange = new StateChange();
     	stateChange.setFormerState(primaryProject.getState());
@@ -755,10 +755,10 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @throws Exception
      */
     @Transactional
-    public Project endProject(String outerId) throws Exception {
+    public Project endProject(String outerId) {
         Project project = this.getProjectByOuterId(outerId);
         if (project.getState().equals("结束") || project.getState().equals("已归档")) {
-            throw new Exception("The project already expires, cannot be updated, please choose a new one.");
+            throw new IllegalArgumentException("The project already expires, cannot be updated, please choose a new one.");
         }
         StateChange stateChange = new StateChange();
         stateChange.setFormerState(project.getState());

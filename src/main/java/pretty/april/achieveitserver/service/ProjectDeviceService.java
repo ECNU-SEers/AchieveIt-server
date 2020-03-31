@@ -45,17 +45,17 @@ public class ProjectDeviceService extends ServiceImpl<ProjectDeviceMapper, Proje
 	 * @throws Exception
 	 */
 	@Transactional
-	public ProjectDevice createProjectDevice(CreateOrUpdateProjectDeviceRequest request) throws Exception {
+	public ProjectDevice createProjectDevice(CreateOrUpdateProjectDeviceRequest request) {
 //		1.验证该设备是否已经存在于本项目中
 		boolean projectDeviceIsExist = this.checkProjectDeviceExistByOuterIdAndProjectId(request.getOuterId(), request.getProjectId());
 		if (projectDeviceIsExist) {
-			throw new Exception("The device already exists in this project, please choose a new one.");
+			throw new IllegalArgumentException("The device already exists in this project, please choose a new one.");
 		}
 //		2.验证该设备是否正在被其他项目使用
 		List<String> allStates = this.checkProjectDeviceFreeByOuterId(request.getOuterId());
 		for (String state: allStates) {
 			if (state.equals("已领取")) {
-				throw new Exception("The device hasn't been returned, thus unavailable.");
+				throw new IllegalArgumentException("The device hasn't been returned, thus unavailable.");
 			}
 		}
 		
@@ -214,11 +214,11 @@ public class ProjectDeviceService extends ServiceImpl<ProjectDeviceMapper, Proje
 	 * @return
 	 * @throws Exception
 	 */
-	public ProjectDevice updateProjectDeviceInfo(CreateOrUpdateProjectDeviceRequest request) throws Exception {
+	public ProjectDevice updateProjectDeviceInfo(CreateOrUpdateProjectDeviceRequest request) {
 //		1.判断项目是否“结束”或“已归档”，若是，则不能修改设备信息
 		Project project = projectService.getById(request.getProjectId());
 		if (project.getState().equals("结束") || project.getState().equals("已归档")) {
-			throw new Exception("The project already expires, device info cannot be updated, please choose a new one.");
+			throw new IllegalArgumentException("The project already expires, device info cannot be updated, please choose a new one.");
 		}
 //		2.更新项目设备信息
 		ProjectDevice primaryProjectDevice = this.getProjectDeviceByOuterIdAndProjectId(request.getOuterId(), request.getProjectId());
@@ -239,10 +239,10 @@ public class ProjectDeviceService extends ServiceImpl<ProjectDeviceMapper, Proje
 	 * @return
 	 * @throws Exception
 	 */
-	public ProjectDevice removeProjectDevice(String outerId, Integer projectId) throws Exception {
+	public ProjectDevice removeProjectDevice(String outerId, Integer projectId) {
 		ProjectDevice projectDevice = this.getProjectDeviceByOuterIdAndProjectId(outerId, projectId);
 		if (projectDevice.getState().equals("已归还")) {
-			throw new Exception("The device cannot be removed, please choose a new one.");
+			throw new IllegalArgumentException("The device cannot be removed, please choose a new one.");
 		}
 		this.baseMapper.deleteById(projectDevice.getId());
 		return projectDevice;
@@ -255,10 +255,10 @@ public class ProjectDeviceService extends ServiceImpl<ProjectDeviceMapper, Proje
 	 * @return
 	 * @throws Exception
 	 */
-	public ProjectDevice returnProjectDevice(String outerId, Integer projectId) throws Exception {
+	public ProjectDevice returnProjectDevice(String outerId, Integer projectId) {
 		ProjectDevice projectDevice = this.getProjectDeviceByOuterIdAndProjectId(outerId, projectId);
 		if (projectDevice.getState().equals("已归还")) {
-			throw new Exception("The device has already returned, please choose another one.");
+			throw new IllegalArgumentException("The device has already returned, please choose another one.");
 		}
 		projectDevice.setState("已归还");
 		this.baseMapper.updateById(projectDevice);

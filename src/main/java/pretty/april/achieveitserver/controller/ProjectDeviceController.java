@@ -54,10 +54,9 @@ public class ProjectDeviceController {
 	 * 新增项目资产（010802）
 	 * @param request
 	 * @return
-	 * @throws Exception
 	 */
 	@PostMapping("/create")
-	public Response<?> createProjectDevice(@RequestBody CreateOrUpdateProjectDeviceRequest request) throws Exception {
+	public Response<?> createProjectDevice(@RequestBody CreateOrUpdateProjectDeviceRequest request) {
 		projectDeviceService.createProjectDevice(request);
 		return ResponseUtils.successResponse();
 	}
@@ -107,10 +106,9 @@ public class ProjectDeviceController {
 	 * 更新设备信息（01080303）
 	 * @param request
 	 * @return
-	 * @throws Exception
 	 */
 	@PutMapping("/update")
-	public Response<?> updateProjectDevice(@RequestBody CreateOrUpdateProjectDeviceRequest request) throws Exception {
+	public Response<?> updateProjectDevice(@RequestBody CreateOrUpdateProjectDeviceRequest request) {
 		projectDeviceService.updateProjectDeviceInfo(request);
 		return ResponseUtils.successResponse();
 	}
@@ -119,10 +117,9 @@ public class ProjectDeviceController {
 	 * 利用设备ID移除设备（01080304：不做）
 	 * @param outerId
 	 * @return
-	 * @throws Exception
 	 */
 //	@PutMapping("/remove")
-//	public Response<?> removeProjectDevice(@RequestParam(value="outerId") String outerId) throws Exception {
+//	public Response<?> removeProjectDevice(@RequestParam(value="outerId") String outerId) {
 //		projectDeviceService.removeProjectDevice(outerId);
 //		return ResponseUtils.successResponse();
 //	}

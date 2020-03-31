@@ -75,10 +75,9 @@ public class ProjectController {
 	 * 项目经理新建项目（自动立项）（010102）
 	 * @param request
 	 * @return
-	 * @throws Exception 
 	 */
 	@PostMapping("/create")
-	public Response<?> createProject(@RequestBody CreateProjectRequest request) throws Exception {
+	public Response<?> createProject(@RequestBody CreateProjectRequest request) {
 		Project project = projectService.createProject(request);
 		externalSystemController.sendmail("申请立项", project.getSupervisorId());
 		return ResponseUtils.successResponse();	
@@ -102,10 +101,9 @@ public class ProjectController {
 	 * 结束项目（01010305）
 	 * @param outerId 项目ID
 	 * @return
-	 * @throws Exception
 	 */
 	@PutMapping("/end")
-	public Response<?> endProject(@RequestParam(value="outerId") String outerId) throws Exception {
+	public Response<?> endProject(@RequestParam(value="outerId") String outerId) {
 		projectService.endProject(outerId);
 		return ResponseUtils.successResponse();	
 	}
@@ -163,10 +161,9 @@ public class ProjectController {
 	 * 项目上级审批立项：同意（01010308）
 	 * @param request
 	 * @return
-	 * @throws Exception 
 	 */
 	@PutMapping("/accept")
-	public Response<?> acceptProject(@RequestParam(value="projectOuterId") String projectOuterId, @RequestParam(value="remark") String remark) throws Exception {
+	public Response<?> acceptProject(@RequestParam(value="projectOuterId") String projectOuterId, @RequestParam(value="remark") String remark) {
 		ApproveProjectRequest project = projectService.acceptProject(projectOuterId, remark);
 		externalSystemController.sendmail("立项成功", 1);
 		externalSystemController.sendmail("立项成功", 2);
@@ -182,10 +179,9 @@ public class ProjectController {
 	 * 项目上级审批立项：不同意（01010308）
 	 * @param request
 	 * @return
-	 * @throws Exception 
 	 */
 	@PutMapping("/reject")
-	public Response<?> rejectProject(@RequestParam(value="projectOuterId") String projectOuterId, @RequestParam(value="remark") String remark) throws Exception {
+	public Response<?> rejectProject(@RequestParam(value="projectOuterId") String projectOuterId, @RequestParam(value="remark") String remark) {
 		projectService.rejectProject(projectOuterId, remark);
 		return ResponseUtils.successResponse();	
 	}
@@ -204,10 +200,9 @@ public class ProjectController {
 	 * 更新项目信息（01010304）（修改内容不包括里程碑、技术和业务领域）
 	 * @param request
 	 * @return
-	 * @throws Exception
 	 */
 	@PutMapping("/update/less")
-	public Response<?> updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(@RequestBody UpdateProjectInfoRequest request) throws Exception {
+	public Response<?> updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(@RequestBody UpdateProjectInfoRequest request) {
 		projectService.updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(request);
 		return ResponseUtils.successResponse();
 	}
@@ -216,10 +211,9 @@ public class ProjectController {
 	 * 更新项目信息（010202）
 	 * @param request
 	 * @return
-	 * @throws Exception
 	 */
 	@PutMapping("/update")
-	public Response<?> updateProject(@RequestBody UpdateProjectRequest request) throws Exception {
+	public Response<?> updateProject(@RequestBody UpdateProjectRequest request) {
 		projectService.updateProjectInfo(request);
 		return ResponseUtils.successResponse();
 	}
@@ -228,10 +222,9 @@ public class ProjectController {
 	 * 因立项驳回而更新项目信息（注意：该接口只可执行一次，如果需要反复修改，调用上一个更新接口，最后一次用这个）
 	 * @param request
 	 * @return
-	 * @throws Exception
 	 */
 	@PutMapping("/update/reject")
-	public Response<?> updateProjectDuringProjectApproval(@RequestBody UpdateProjectRequest request) throws Exception {
+	public Response<?> updateProjectDuringProjectApproval(@RequestBody UpdateProjectRequest request) {
 		projectService.updateProjectInfoDuringProjectApproval(request);
 		return ResponseUtils.successResponse();
 	}
