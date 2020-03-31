@@ -1,14 +1,16 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://:3306/
+    url: jdbc:mysql://:3306/?serverTimezone=GMT+8
     username:
     password:
-   http:
-       encoding:
-         force: true
-         charset: utf-8
-         enabled: true
+  http:
+    encoding:
+        force: true
+        charset: utf-8
+        enabled: true
+  jackson:
+    time-zone: GMT+8
 
 security:
   jwt:
