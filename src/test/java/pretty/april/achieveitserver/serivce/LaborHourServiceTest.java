@@ -30,7 +30,7 @@ public class LaborHourServiceTest {
 	@Test
 	public void retrieveLaborHourByDatesTest() {
 		LocalDate date1 = LocalDate.of(2020, 3, 22);
-		LocalDate date2 = LocalDate.of(2020, 3, 27);
+		LocalDate date2 = LocalDate.of(2020, 3, 30);
 		Long startDateTimestamp = date1.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		Long endDateTimestamp = date2.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		PageDTO<RetrieveLaborHourRequest> request = laborHourService.retrieveLaborHourByDates(1, 10, startDateTimestamp, endDateTimestamp);
@@ -40,6 +40,8 @@ public class LaborHourServiceTest {
 			System.out.println("date = "+r.getDate());
 			System.out.println("functionName = "+r.getFunctionName());
 			System.out.println("activityName = "+r.getActivityName());
+			System.out.println("startTime = "+r.getStartTime());
+			System.out.println("endTime = "+r.getEndTime());
 			System.out.println("state = "+r.getState());
 			System.out.println("---------------------------------------------");
 		}
@@ -72,6 +74,7 @@ public class LaborHourServiceTest {
 			System.out.println("subfunctionName = "+r.getSubfunctionName());
 			System.out.println("activityName = "+r.getActivityName());
 			System.out.println("subactivityName = "+r.getSubactivityName());
+			System.out.println("startTime = "+r.getStartTime());
 			System.out.println("state = "+r.getState());
 			System.out.println("---------------------------------------------");
 		}
@@ -109,6 +112,7 @@ public class LaborHourServiceTest {
 			System.out.println("id = "+r.getId());
 			System.out.println("functionName = "+r.getFunctionName());
 			System.out.println("activityName = "+r.getActivityName());
+			System.out.println("date = "+r.getDate());
 			System.out.println("state = "+r.getState());
 			System.out.println("---------------------------------------------");
 		}

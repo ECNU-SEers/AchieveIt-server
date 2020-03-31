@@ -1,9 +1,5 @@
 package pretty.april.achieveitserver.request.laborhour;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +11,7 @@ public class ShowLaborHourListRequest {
 
 	private Integer id;
 	
-	private LocalDate date;
+	private Long date;
 	
 	private Integer functionId;
 	
@@ -33,12 +29,11 @@ public class ShowLaborHourListRequest {
 	
 	private String subactivityName;
 
-    private LocalTime startTime;
+    private Long startTime;
 
-    private LocalTime endTime;
+    private Long endTime;
     
-//    private LocalDateTime submissionDate;
-    private LocalDate submissionDate;
+    private Long submissionDate;
     
     private String state;
 }

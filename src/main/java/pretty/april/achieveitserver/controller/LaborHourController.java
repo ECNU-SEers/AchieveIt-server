@@ -52,12 +52,8 @@ public class LaborHourController {
 	 */
 	@PostMapping("/create")
 	public Response<?> createProject(@RequestBody CreateLaborHourRequest request) throws Exception {
-		String result = laborHourService.createLaborHour(request);
-		if ("success".equals(result)) {
-			return ResponseUtils.successResponse();
-		} else {
-			return ResponseUtils.errorResponseWithMessage(ErrorCode.STATE_ERROR, result);
-		}
+		laborHourService.createLaborHour(request);
+		return ResponseUtils.successResponse();
 	}
 	
 	/**
@@ -81,12 +77,8 @@ public class LaborHourController {
 	 */
 	@PutMapping("/update")
 	public Response<?> updateLaborHour(@RequestBody UpdateLaborHourRequest request) throws Exception {
-		String result = laborHourService.updateLaborHour(request);
-		if ("success".equals(result)) {
-			return ResponseUtils.successResponse();
-		} else {
-			return ResponseUtils.errorResponseWithMessage(ErrorCode.STATE_ERROR, result);
-		}
+		laborHourService.updateLaborHour(request);
+		return ResponseUtils.successResponse();
 	}
 	
 	/**
@@ -127,12 +119,8 @@ public class LaborHourController {
 	 */
 	@PutMapping("/accept")
 	public Response<?> acceptLaborHourInfo(@RequestParam(value="id") Integer id) throws Exception {
-		String result = laborHourService.acceptLaborHourInfo(id);
-		if ("success".equals(result)) {
-			return ResponseUtils.successResponse();
-		} else {
-			return ResponseUtils.errorResponseWithMessage(ErrorCode.STATE_ERROR, result);
-		}
+		laborHourService.acceptLaborHourInfo(id);
+		return ResponseUtils.successResponse();
 	}
 	
 	/**
@@ -143,12 +131,8 @@ public class LaborHourController {
 	 */
 	@PutMapping("/return")
 	public Response<?> returnLaborHourInfo(@RequestParam(value="id") Integer id) throws Exception {
-		String result = laborHourService.returnLaborHourInfo(id);
-		if ("success".equals(result)) {
-			return ResponseUtils.successResponse();
-		} else {
-			return ResponseUtils.errorResponseWithMessage(ErrorCode.STATE_ERROR, result);
-		}
+		laborHourService.returnLaborHourInfo(id);
+		return ResponseUtils.successResponse();
 	}
 	
 }
