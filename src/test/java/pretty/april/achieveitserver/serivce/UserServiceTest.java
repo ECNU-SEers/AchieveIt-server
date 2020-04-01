@@ -26,6 +26,7 @@ public class UserServiceTest {
 			System.out.println("id = "+user.getId());
 			System.out.println("username = "+user.getUsername());
 			System.out.println("realname = "+user.getRealName());
+			System.out.println("============================");
 		}
 	}
 }

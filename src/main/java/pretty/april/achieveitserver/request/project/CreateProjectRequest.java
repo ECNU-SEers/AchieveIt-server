@@ -27,6 +27,12 @@ public class CreateProjectRequest {
 	private String supervisorName;
 	private Integer managerId;
 	private String managerName;
+	private Integer configOrganizerId;
+	private String configOrganizerName;
+	private Integer epgLeaderId;
+	private String epgLeaderName;
+	private Integer qaManagerId;
+	private String qaManagerName;
 	private List<String> skillNames;
 	private String businessAreaName;
 	private String remark;

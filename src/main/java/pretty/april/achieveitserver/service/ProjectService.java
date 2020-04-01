@@ -144,7 +144,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
             projectBusinessAreaMapper.insert(projectBusinessArea);
         }
         
-//      5.把manager和supervisor加入project_member中
+//      5.把manager和supervisor，组织配置管理员、EPGLeader和QA经理加入project_member中
         ProjectMember manager = new ProjectMember();
         manager.setProjectId(projectId);
         manager.setUserId(validator.getManagerId());
@@ -161,6 +161,30 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         supervisor.setProjectName(validator.getName());
 //      supervisor的leader为null
         projectMemberMapper.insert(supervisor);
+        
+        ProjectMember configOrganizer = new ProjectMember();
+        configOrganizer.setProjectId(projectId);
+        configOrganizer.setUserId(validator.getConfigOrganizerId());
+        configOrganizer.setUsername(validator.getConfigOrganizerName());
+        configOrganizer.setProjectName(validator.getName());
+//      configOrganizer的leader为null
+        projectMemberMapper.insert(configOrganizer);
+        
+        ProjectMember qaManager = new ProjectMember();
+        qaManager.setProjectId(projectId);
+        qaManager.setUserId(validator.getQaManagerId());
+        qaManager.setUsername(validator.getQaManagerName());
+        qaManager.setProjectName(validator.getName());
+//      qaManager的leader为null
+        projectMemberMapper.insert(qaManager);
+        
+        ProjectMember epgLeader = new ProjectMember();
+        epgLeader.setProjectId(projectId);
+        epgLeader.setUserId(validator.getEpgLeaderId());
+        epgLeader.setUsername(validator.getEpgLeaderName());
+        epgLeader.setProjectName(validator.getName());
+//      epgLeader的leader为null
+        projectMemberMapper.insert(epgLeader);
         
 //      6.修改project_id的状态
         ProjectId pid = new ProjectId();
@@ -640,6 +664,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     public Project assignConfig(String outerId) {
 //		1.改变project表的git_assigned
         Project project = this.getProjectByOuterId(outerId);
+        if (!project.getState().equals("已立项")) {
+        	throw new IllegalArgumentException("The project should be approved by supervisor.");
+        }
         project.setConfigAssigned(true);
         projectMapper.updateById(project);
 
@@ -665,6 +692,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     public Project assignQA(AssignRoleRequest request) {
 //		1.改变project表的qa_assigned
         Project project = this.getProjectByOuterId(request.getOuterId());
+        if (!project.getState().equals("已立项")) {
+        	throw new IllegalArgumentException("The project should be approved by supervisor.");
+        }
         project.setQaAssigned(true);
         projectMapper.updateById(project);
 //		2.将分配的QA加入project_member表
@@ -717,6 +747,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     public Project assignEPG(AssignRoleRequest request) {
 //		1.改变project表的epg_assigned
         Project project = this.getProjectByOuterId(request.getOuterId());
+        if (!project.getState().equals("已立项")) {
+        	throw new IllegalArgumentException("The project should be approved by supervisor.");
+        }
         project.setEpgAssigned(true);
         projectMapper.updateById(project);
 //		2.将分配的QA加入project_member表
@@ -827,6 +860,13 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     public Project setConfigInfo(String outerId, String remark) {
 //		1.改变project表的git_assigned
         Project project = this.getProjectByOuterId(outerId);
+        if (!project.getState().equals("已立项")) {
+        	throw new IllegalArgumentException("The project should be approved by supervisor.");
+        }
+        if (project.getConfigAssigned()==false || project.getEpgAssigned()==false || project.getQaAssigned()==false) {
+        	throw new IllegalArgumentException("Config, EPG and QA should all be assigned first.");
+        }
+        
         StateChange stateChange = new StateChange();
         stateChange.setFormerState(project.getState());
         

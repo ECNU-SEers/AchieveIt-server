@@ -32,17 +32,17 @@ public class ProjectServiceTest {
     @Autowired
     private ProjectService projectService;
 
-    @Test
-    public void getAllProjectIdAndNameTest() {
-    	List<ObtainAllProjectRequest> allProjects = projectService.getAllIdAndOuterIdAndName();
-    	System.out.println(allProjects.size());
-    	for (ObtainAllProjectRequest project: allProjects) {
-    		System.out.println("projectId = "+project.getId());
-    		System.out.println("projectOuterId = "+project.getOuterId());
-    		System.out.println("projectName = "+project.getName());
-    		System.out.println("===================");
-    	}
-    }
+//    @Test
+//    public void getAllProjectIdAndNameTest() {
+//    	List<ObtainAllProjectRequest> allProjects = projectService.getAllIdAndOuterIdAndName();
+//    	System.out.println(allProjects.size());
+//    	for (ObtainAllProjectRequest project: allProjects) {
+//    		System.out.println("projectId = "+project.getId());
+//    		System.out.println("projectOuterId = "+project.getOuterId());
+//    		System.out.println("projectName = "+project.getName());
+//    		System.out.println("===================");
+//    	}
+//    }
 //    
 //	@Test
 //	public void createProjectTest() {
@@ -209,17 +209,17 @@ public class ProjectServiceTest {
 //		}
 //	}
 //
-//	@Test
-//	public void assignEQGTest() {
-//		String outerId = "2020-0322-D-qq";
-//		AssignRoleRequest arr = new AssignRoleRequest();
-//		List<Integer> userId = new ArrayList<Integer>();
-//		userId.add(1);
-//		arr.setOuterId(outerId);
-//		arr.setUserId(userId);
-//		Project project = projectService.assignEPG(arr);
-//		System.out.println("EPG state = "+project.getEpgAssigned());
-//	}
+	@Test
+	public void assignEQGTest() {
+		String outerId = "2020-ECNU-D-00";
+		AssignRoleRequest arr = new AssignRoleRequest();
+		List<Integer> userId = new ArrayList<Integer>();
+		userId.add(1);
+		arr.setOuterId(outerId);
+		arr.setUserId(userId);
+		Project project = projectService.assignEPG(arr);
+		System.out.println("EPG state = "+project.getEpgAssigned());
+	}
 //
 //	@Test
 //	public void assignQATest() {

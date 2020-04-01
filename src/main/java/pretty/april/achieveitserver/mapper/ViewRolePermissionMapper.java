@@ -22,4 +22,12 @@ public interface ViewRolePermissionMapper extends BaseMapper<ViewRolePermission>
             "</foreach>" +
             "</script>")
     List<ViewPermission> selectViewPermissionWithModuleByRoleIdIn(@Param("roles") List<Integer> roles);
+    
+    /**
+     * 查看一个人的所有权限
+     * @param userId
+     * @return
+     */
+    @Select("SELECT DISTINCT permission_id FROM view_role_permission WHERE role_id in (SELECT role_id FROM user_view_role WHERE user_id = #{userId})")
+    List<Integer> selectAllPermissionsByUserId(@Param("userId")Integer userId);
 }

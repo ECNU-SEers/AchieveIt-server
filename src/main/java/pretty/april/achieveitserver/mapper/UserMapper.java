@@ -21,9 +21,7 @@ public interface UserMapper extends BaseMapper<User> {
             "</script>")
     List<Username> selectUsernameBatch(@Param("ids") List<Integer> ids);
     
-    @Select("SELECT id, username, real_name FROM user WHERE position = \"主管\"")
-    List<Supervisor> selectUsernameByPosition();
-
-//    List<Username> selectUsernameBatch(@Param("ids") List<Integer> ids);
+    @Select("SELECT id, username, real_name FROM user")
+    List<Supervisor> selectAll();
 
 }

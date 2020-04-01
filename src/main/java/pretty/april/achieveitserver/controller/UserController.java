@@ -41,4 +41,34 @@ public class UserController {
     public Response<List<Supervisor>> getAllSupervisors() {
         return ResponseUtils.successResponse(userService.getAllSupervisors());
     }
+    
+    /**
+     * 所有的组织配置管理员
+     *
+     * @return
+     */
+    @GetMapping("/config/organizers")
+    public Response<List<Supervisor>> getAllConfigOrganizers() {
+        return ResponseUtils.successResponse(userService.getAllConfigOrganizer());
+    }
+    
+    /**
+     * 所有的QA经理
+     *
+     * @return
+     */
+    @GetMapping("/qa/managers")
+    public Response<List<Supervisor>> getAllQAManagers() {
+        return ResponseUtils.successResponse(userService.getAllQAManager());
+    }
+    
+    /**
+     * 所有的EPGLeader
+     *
+     * @return
+     */
+    @GetMapping("/epg/leaders")
+    public Response<List<Supervisor>> getAllEPGLeaders() {
+        return ResponseUtils.successResponse(userService.getAllEPGLeader());
+    }
 }
