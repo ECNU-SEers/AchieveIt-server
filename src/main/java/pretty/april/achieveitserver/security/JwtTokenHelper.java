@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -32,17 +33,14 @@ public class JwtTokenHelper {
                 .build();
     }
 
-    public String generateAccessJwtToken(UserContext userContext) {
-        if (StringUtils.isEmpty(userContext.getUsername())) {
-            throw new IllegalArgumentException("Cannot generate jwt token without username");
-        }
-
-        if (CollectionUtils.isEmpty(userContext.getAuthorities())) {
-            throw new IllegalArgumentException("Cannot generate jwt token for user without any roles");
+    public String generateAccessJwtToken(UserContext userContext, List<GrantedAuthority> authorities) {
+        if (StringUtils.isEmpty(userContext.getUsername()) || userContext.getUserId() == null) {
+            throw new IllegalArgumentException("Cannot generate jwt token without username or userId");
         }
 
         Claims claims = Jwts.claims().setSubject(userContext.getUsername());
-        claims.put("scopes", userContext.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
+        claims.put("roles", authorities.stream().map(Object::toString).collect(Collectors.toList()));
+        claims.put("userId", userContext.getUserId());
 
         LocalDateTime time = LocalDateTime.now();
 
@@ -55,15 +53,16 @@ public class JwtTokenHelper {
                 .compact();
     }
 
-    public String generateRefreshToken(String username) {
-        if (StringUtils.isEmpty(username)) {
-            throw new IllegalArgumentException("Cannot generate jwt token without username");
+    public String generateRefreshToken(UserContext userContext) {
+        if (StringUtils.isEmpty(userContext.getUsername()) || userContext.getUserId() == null) {
+            throw new IllegalArgumentException("Cannot generate jwt token without username or userId");
         }
 
         LocalDateTime time = LocalDateTime.now();
 
-        Claims claims = Jwts.claims().setSubject(username);
-        claims.put("scopes", Collections.singletonList(SecurityConstants.SCOPES_REFRESH_TOKEN));
+        Claims claims = Jwts.claims().setSubject(userContext.getUsername());
+        claims.put("roles", Collections.singletonList(SecurityConstants.SCOPES_REFRESH_TOKEN));
+        claims.put("userId", userContext.getUserId());
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -91,7 +90,7 @@ public class JwtTokenHelper {
         } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException | SignatureException | ExpiredJwtException e) {
             return null;
         }
-        List<String> scopes = claims.getBody().get("scopes", List.class);
+        List<String> scopes = claims.getBody().get("roles", List.class);
         if (CollectionUtils.isEmpty(scopes) || scopes.stream().noneMatch(SecurityConstants.SCOPES_REFRESH_TOKEN::equals)) {
             return null;
         } else {

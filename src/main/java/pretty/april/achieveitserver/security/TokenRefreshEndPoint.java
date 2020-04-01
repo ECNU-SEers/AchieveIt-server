@@ -1,33 +1,34 @@
 package pretty.april.achieveitserver.security;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pretty.april.achieveitserver.dto.Response;
+import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.enums.ErrorCode;
-import pretty.april.achieveitserver.service.UserService;
+import pretty.april.achieveitserver.mapper.UserMapper;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class TokenRefreshEndPoint {
 
     private JwtTokenHelper jwtTokenHelper;
 
-    private UserService userService;
+    private UserMapper userMapper;
 
-    public TokenRefreshEndPoint(JwtTokenHelper jwtTokenHelper, UserService userService, JwtTokenHelper jwtTokenFactory) {
+    public TokenRefreshEndPoint(JwtTokenHelper jwtTokenHelper, JwtTokenHelper jwtTokenFactory, UserMapper userMapper) {
         this.jwtTokenHelper = jwtTokenHelper;
-        this.userService = userService;
         this.jwtTokenHelper = jwtTokenFactory;
+        this.userMapper = userMapper;
     }
 
 
@@ -47,17 +48,19 @@ public class TokenRefreshEndPoint {
         }
 
         String subject = claims.getBody().getSubject();
-        SecurityUser su = userService.getSecurityUserByUsername(subject);
-        if (su == null) {
+        Integer userId = claims.getBody().get("userId", Integer.class);
+
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("id", userId).eq("username", subject));
+        if (user == null) {
             return ResponseUtils.errorResponseWithMessage(ErrorCode.INVALID_TOKEN, "User not found");
         }
-        if (CollectionUtils.isEmpty(su.getAuthorities())) {
-            return ResponseUtils.errorResponseWithMessage(ErrorCode.INVALID_TOKEN, "User has no roles");
-        }
 
-        List<GrantedAuthority> authorities = su.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-        UserContext userContext = new UserContext(subject, authorities);
-        return ResponseUtils.successResponse(new AccessToken(jwtTokenHelper.generateAccessJwtToken(userContext)));
+        UserContext userContext = new UserContext(userId, subject);
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (user.getId() == 1) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+        return ResponseUtils.successResponse(new AccessToken(jwtTokenHelper.generateAccessJwtToken(userContext, authorities)));
     }
 
 }

@@ -2,20 +2,19 @@ package pretty.april.achieveitserver.security;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class LoginAuthProvider implements AuthenticationProvider {
@@ -35,22 +34,21 @@ public class LoginAuthProvider implements AuthenticationProvider {
         String username = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
 
-        SecurityUser su = userService.getSecurityUserByUsername(username);
-        if (su == null) {
+        User user = userService.getByUsername(username);
+        if (user == null) {
             throw new BadCredentialsException("Cannot find user: " + username);
         }
 
-        if (!encoder.matches(password, su.getPassword())) {
+        if (!encoder.matches(password, user.getPassword())) {
             throw new BadCredentialsException("Username or password is invalid");
         }
 
-        if (su.getAuthorities() == null) {
-            throw new BadCredentialsException("User has no authorities");
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (user.getId() == 1) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
 
-        List<GrantedAuthority> authorities = su.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-
-        UserContext uc = new UserContext(su.getUsername(), authorities);
+        UserContext uc = new UserContext(user.getId(), user.getUsername());
 
         return new UsernamePasswordAuthenticationToken(uc, null, authorities);
     }

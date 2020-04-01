@@ -7,12 +7,11 @@ import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.dto.PermissionDTO;
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.dto.RoleDTO;
-import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.request.AssignRevokeRoleRequest;
 import pretty.april.achieveitserver.request.CreateRoleRequest;
 import pretty.april.achieveitserver.request.EditRoleRequest;
+import pretty.april.achieveitserver.security.UserContext;
 import pretty.april.achieveitserver.service.AuthorityService;
-import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
 import javax.validation.Valid;
@@ -26,15 +25,13 @@ public class AuthorityController {
 
     private AuthorityService authorityService;
 
-    private UserService userService;
-
-    public AuthorityController(AuthorityService authorityService, UserService userService) {
+    public AuthorityController(AuthorityService authorityService) {
         this.authorityService = authorityService;
-        this.userService = userService;
     }
 
     /**
      * 获取所有的项目权限
+     *
      * @param pageSize
      * @param pageNo
      * @return
@@ -47,6 +44,7 @@ public class AuthorityController {
 
     /**
      * 获取当前用户可见的所有的项目角色
+     *
      * @param pageSize
      * @param page
      * @return
@@ -54,25 +52,25 @@ public class AuthorityController {
     @GetMapping("/roles")
     public Response<PageDTO<RoleDTO>> getRoles(@RequestParam Integer pageSize,
                                                @RequestParam @Min(1) Integer page) {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        return ResponseUtils.successResponse(authorityService.getRoles(page, pageSize, user.getId()));
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseUtils.successResponse(authorityService.getRoles(page, pageSize, userContext.getUserId()));
     }
 
     /**
      * 使用当前用户创建一个项目角色
+     *
      * @param request
      * @return
      */
     @PostMapping("/role")
     public Response<Integer> createRoles(@RequestBody @Valid CreateRoleRequest request) {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        return ResponseUtils.successResponse(authorityService.createRole(request, user.getId()));
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseUtils.successResponse(authorityService.createRole(request, userContext.getUserId()));
     }
 
     /**
      * 编辑某个项目角色
+     *
      * @param roleId
      * @param request
      * @return
@@ -85,6 +83,7 @@ public class AuthorityController {
 
     /**
      * 获取某个项目角色包含的所有权限
+     *
      * @param roleId
      * @return
      */
@@ -95,6 +94,7 @@ public class AuthorityController {
 
     /**
      * 将某个角色分配给某个项目的某个成员
+     *
      * @param roleId
      * @param projectId
      * @param request
@@ -108,6 +108,7 @@ public class AuthorityController {
 
     /**
      * 从某个项目的某个成员处撤回某个角色
+     *
      * @param roleId
      * @param projectId
      * @param request
@@ -121,25 +122,25 @@ public class AuthorityController {
 
     /**
      * 获取当前用户在某个项目内拥有的所有项目权限
+     *
      * @param projectId
      * @return
      */
     @GetMapping("/project/{projectId}/permissions/me")
     public Response<List<PermissionDTO>> getMyPermissions(@PathVariable Integer projectId) {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        return ResponseUtils.successResponse(authorityService.getMyPermissions(projectId, user.getId()));
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseUtils.successResponse(authorityService.getMyPermissions(projectId, userContext.getUserId()));
     }
 
     /**
      * 获取当前用户在某个项目内拥有的所有项目角色
+     *
      * @param projectId
      * @return
      */
     @GetMapping("/project/{projectId}/roles/me")
     public Response<List<RoleDTO>> getMyRoles(@PathVariable Integer projectId) {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        return ResponseUtils.successResponse(authorityService.getMyRoles(projectId, user.getId()));
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseUtils.successResponse(authorityService.getMyRoles(projectId, userContext.getUserId()));
     }
 }

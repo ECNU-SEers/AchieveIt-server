@@ -7,14 +7,13 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import pretty.april.achieveitserver.dto.MemberDTO;
 import pretty.april.achieveitserver.dto.PageDTO;
-import pretty.april.achieveitserver.dto.SearchableDTO;
 import pretty.april.achieveitserver.dto.SimpleMemberDTO;
 import pretty.april.achieveitserver.entity.Project;
 import pretty.april.achieveitserver.entity.ProjectMember;
 import pretty.april.achieveitserver.entity.UserRole;
 import pretty.april.achieveitserver.mapper.*;
+import pretty.april.achieveitserver.model.Member;
 import pretty.april.achieveitserver.model.MemberDetails;
-import pretty.april.achieveitserver.model.Searchable;
 import pretty.april.achieveitserver.request.AddProjectMemberRequest;
 import pretty.april.achieveitserver.request.EditMemberRequest;
 
@@ -89,12 +88,6 @@ public class MemberService {
         return new PageDTO<>((long) pageNo, (long) pageSize, count, memberDTOList);
     }
 
-    public List<SimpleMemberDTO> getSimpleMembers(Integer projectId) {
-        List<ProjectMember> projectMembers = projectMemberMapper.selectList(new QueryWrapper<ProjectMember>()
-                .eq("project_id", projectId));
-        return projectMembers.stream().map(o -> new SimpleMemberDTO(o.getUserId(), o.getUsername())).collect(Collectors.toList());
-    }
-
     public MemberDTO getMember(Integer projectId, Integer memberId) {
         MemberDetails memberDetails = projectMemberMapper.selectMemberDetailsByProjectIdAndMemberId(projectId, memberId);
         MemberDTO memberDTO = new MemberDTO();
@@ -142,8 +135,8 @@ public class MemberService {
                 .eq("project_id", projectId));
     }
 
-    public List<SearchableDTO> searchMembers(Integer projectId, String name) {
-        List<Searchable> searchables = projectMemberMapper.selectLikeName(projectId, name);
-        return searchables.stream().map(o -> new SearchableDTO(o.getId(), o.getName())).collect(Collectors.toList());
+    public List<SimpleMemberDTO> searchMembers(Integer projectId, String keyword) {
+        List<Member> members = projectMemberMapper.selectByProjectIdAndRealNameLike(projectId, keyword);
+        return members.stream().map(o -> new SimpleMemberDTO(o.getId(), o.getUsername(), o.getRealName())).collect(Collectors.toList());
     }
 }

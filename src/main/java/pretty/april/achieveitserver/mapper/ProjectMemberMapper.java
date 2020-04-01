@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import pretty.april.achieveitserver.entity.ProjectMember;
+import pretty.april.achieveitserver.model.Member;
 import pretty.april.achieveitserver.model.MemberDetails;
 import pretty.april.achieveitserver.model.Searchable;
 
@@ -66,6 +67,9 @@ public interface ProjectMemberMapper extends BaseMapper<ProjectMember> {
 
     @Select("select user_id id,username name from project_member where project_id = #{projectId} and username like concat('%',#{name},'%')")
     List<Searchable> selectLikeName(@Param("projectId") Integer projectId, @Param("name") String name);
+
+    @Select("select u.id id,u.username username,u.real_name real_name from project_member pm left join user u on pm.user_id = u.id where project_id = #{projectId} and real_name like concat('%',#{keyword},'%')")
+    List<Member> selectByProjectIdAndRealNameLike(@Param("projectId") Integer projectId, @Param("keyword") String keyword);
 
     @Select("select name from project_member pm left join project p on pm.project_id = p.id where user_id = #{userId} and state = #{state}")
     List<String> selectProjectNamesByUserIdAndState(@Param("userId") Integer userId, @Param("state") String state);
