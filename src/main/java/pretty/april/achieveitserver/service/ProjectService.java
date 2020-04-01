@@ -92,6 +92,14 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     private ProjectIdMapper projectIdMapper;
 
     /**
+     * 获得所有项目id和name
+     * @return
+     */
+    public List<ObtainAllProjectRequest> getAllIdAndOuterIdAndName() {
+    	return this.baseMapper.selectIdAndOuterIdAndName();
+    }
+    
+    /**
      * 创建项目：项目经理录入项目信息并自动申请立项
      *
      * @param validator 新建项目校验器
@@ -112,6 +120,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         project.setState("申请立项");
 //		通过客户名称和客户ID得到客户表ID
         project.setClientId(clientService.getIdByOuterIdAndCompany(validator.getClientOuterId(), validator.getCompany()));
+        project.setRemark(null);
         projectMapper.insert(project);
 
         Integer projectId = project.getId();
@@ -190,6 +199,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
         stateChange.setOperatorId(user.getId());
+        stateChange.setRemark(validator.getRemark());
         stateChangeMapper.insert(stateChange);
         
         return project;
@@ -564,6 +574,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
         stateChange.setOperatorId(user.getId());
+        stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
     	
     	ApproveProjectRequest approveProject = new ApproveProjectRequest();
@@ -610,6 +621,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
         stateChange.setOperatorId(user.getId());
+        stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
     	
     	ApproveProjectRequest approveProject = new ApproveProjectRequest();
@@ -755,7 +767,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @throws Exception
      */
     @Transactional
-    public Project endProject(String outerId) {
+    public Project endProject(String outerId, String remark) {
         Project project = this.getProjectByOuterId(outerId);
         if (project.getState().equals("结束") || project.getState().equals("已归档")) {
             throw new IllegalArgumentException("The project already expires, cannot be updated, please choose a new one.");
@@ -772,6 +784,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
         stateChange.setOperatorId(user.getId());
+        stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
         
         return project;
@@ -784,7 +797,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return
      */
     @Transactional
-    public Project acceptArchive(String outerId) {
+    public Project acceptArchive(String outerId, String remark) {
         Project project = this.getProjectByOuterId(outerId);
         StateChange stateChange = new StateChange();
         stateChange.setFormerState(project.getState());
@@ -798,6 +811,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
         stateChange.setOperatorId(user.getId());
+        stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
         
         return project;
@@ -810,7 +824,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return
      */
     @Transactional
-    public Project setConfigInfo(String outerId) {
+    public Project setConfigInfo(String outerId, String remark) {
 //		1.改变project表的git_assigned
         Project project = this.getProjectByOuterId(outerId);
         StateChange stateChange = new StateChange();
@@ -834,6 +848,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
         stateChange.setOperatorId(user.getId());
+        stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
 
         return project;
@@ -845,7 +860,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return
      */
     @Transactional
-    public Project projectDelivery(String outerId) {
+    public Project projectDelivery(String outerId, String remark) {
     	Project project = this.getProjectByOuterId(outerId);
     	StateChange stateChange = new StateChange();
         stateChange.setFormerState(project.getState());
@@ -859,6 +874,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(username);
         stateChange.setOperatorId(user.getId());
+        stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
         
         return project;

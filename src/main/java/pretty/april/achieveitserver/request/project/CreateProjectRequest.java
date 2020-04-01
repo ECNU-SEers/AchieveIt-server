@@ -29,5 +29,6 @@ public class CreateProjectRequest {
 	private String managerName;
 	private List<String> skillNames;
 	private String businessAreaName;
+	private String remark;
 
 }

@@ -37,5 +37,6 @@ public class StateChange implements Serializable {
     private String latterState;
     
     private Integer operatorId;
-
+    
+    private String remark;
 }

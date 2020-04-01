@@ -1,7 +1,6 @@
 package pretty.april.achieveitserver.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pretty.april.achieveitserver.dto.Response;
-import pretty.april.achieveitserver.request.activity.RetrieveActivityRequest;
 import pretty.april.achieveitserver.request.activity.ValueLabelChildren;
 import pretty.april.achieveitserver.service.ActivityService;
 import pretty.april.achieveitserver.utils.ResponseUtils;

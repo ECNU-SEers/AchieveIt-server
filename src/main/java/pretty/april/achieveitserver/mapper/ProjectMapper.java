@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import pretty.april.achieveitserver.entity.Project;
+import pretty.april.achieveitserver.request.project.ObtainAllProjectRequest;
 
 import java.util.List;
 
@@ -21,6 +22,14 @@ public interface ProjectMapper extends BaseMapper<Project> {
      */
     @Select("SELECT COUNT(*) FROM project WHERE outer_id = #{outerId}")
     int selectCountByOuterId(String outerId);
+    
+    /**
+     * 查询所有项目的id，outer_id和name
+     * 
+     * @return
+     */
+    @Select("SELECT id, outer_id, name FROM project")
+    List<ObtainAllProjectRequest> selectIdAndOuterIdAndName();
 
     /**
      * 查询项目名称中包含关键字的所有项目

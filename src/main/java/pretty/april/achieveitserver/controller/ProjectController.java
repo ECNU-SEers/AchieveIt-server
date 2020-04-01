@@ -19,6 +19,7 @@ import pretty.april.achieveitserver.entity.Project;
 import pretty.april.achieveitserver.request.project.ApproveProjectRequest;
 import pretty.april.achieveitserver.request.project.AssignRoleRequest;
 import pretty.april.achieveitserver.request.project.CreateProjectRequest;
+import pretty.april.achieveitserver.request.project.ObtainAllProjectRequest;
 import pretty.april.achieveitserver.request.project.RetrieveProjectRequest;
 import pretty.april.achieveitserver.request.project.SearchProjectRequest;
 import pretty.april.achieveitserver.request.project.ShowProjectListRequest;
@@ -36,6 +37,11 @@ public class ProjectController {
 	
 	@Autowired
 	private ExternalSystemController externalSystemController;
+	
+	@GetMapping("/all")
+	public Response<List<ObtainAllProjectRequest>> getAllIdAndOuterIdAndName() {
+		return ResponseUtils.successResponse(projectService.getAllIdAndOuterIdAndName());
+	}
 	
 	/**
 	 * 利用关键字搜索（010101）
@@ -103,8 +109,8 @@ public class ProjectController {
 	 * @return
 	 */
 	@PutMapping("/end")
-	public Response<?> endProject(@RequestParam(value="outerId") String outerId) {
-		projectService.endProject(outerId);
+	public Response<?> endProject(@RequestParam(value="outerId") String outerId, @RequestParam(value="remark") String remark) {
+		projectService.endProject(outerId, remark);
 		return ResponseUtils.successResponse();	
 	}
 	
@@ -114,8 +120,8 @@ public class ProjectController {
 	 * @return
 	 */
 	@PutMapping("/approve/archive")
-	public Response<?> approveArchive(@RequestParam(value="outerId") String outerId) {
-		projectService.acceptArchive(outerId);
+	public Response<?> approveArchive(@RequestParam(value="outerId") String outerId, @RequestParam(value="remark") String remark) {
+		projectService.acceptArchive(outerId, remark);
 		return ResponseUtils.successResponse();	
 	}
 	
@@ -164,7 +170,7 @@ public class ProjectController {
 	 */
 	@PutMapping("/accept")
 	public Response<?> acceptProject(@RequestParam(value="projectOuterId") String projectOuterId, @RequestParam(value="remark") String remark) {
-		ApproveProjectRequest project = projectService.acceptProject(projectOuterId, remark);
+		projectService.acceptProject(projectOuterId, remark);
 		externalSystemController.sendmail("立项成功", 1);
 		externalSystemController.sendmail("立项成功", 2);
 		externalSystemController.sendmail("立项成功", 3);
@@ -235,8 +241,8 @@ public class ProjectController {
 	 * @return
 	 */
 	@PutMapping("/set/config")
-	public Response<?> setConfigInfo(@RequestParam(value="outerId") String outerId) {
-		projectService.setConfigInfo(outerId);
+	public Response<?> setConfigInfo(@RequestParam(value="outerId") String outerId, @RequestParam(value="remark") String remark) {
+		projectService.setConfigInfo(outerId, remark);
 		return ResponseUtils.successResponse();
 	}
 	
@@ -246,8 +252,8 @@ public class ProjectController {
 	 * @return
 	 */
 	@PutMapping("/deliver")
-	public Response<?> projectDelivery(@RequestParam(value="outerId") String outerId) {
-		projectService.projectDelivery(outerId);
+	public Response<?> projectDelivery(@RequestParam(value="outerId") String outerId, @RequestParam(value="remark") String remark) {
+		projectService.projectDelivery(outerId, remark);
 		return ResponseUtils.successResponse();
 	}
 }

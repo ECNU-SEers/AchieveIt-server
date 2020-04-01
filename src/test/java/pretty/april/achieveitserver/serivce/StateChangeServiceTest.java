@@ -20,7 +20,7 @@ public class StateChangeServiceTest {
 	
 	@Test
 	public void showStateChangeListTest() {
-		String outerId = "2020-1234-D-qq";
+		String outerId = "2020-ECNU-D-00";
 		List<RetrieveStateChangeRequest> request = stateChangeService.showStateChangeList(outerId);
 		System.out.println(request.size());
 		
@@ -29,8 +29,11 @@ public class StateChangeServiceTest {
 			System.out.println("formerState = "+r.getFormerState());
 			System.out.println("latterState = "+r.getLatterState());
 			System.out.println("operatorId = "+r.getOperatorId());
+			System.out.println("username = "+r.getUsername());
+			System.out.println("realName = "+r.getRealName());
 			System.out.println("operation = "+r.getOperation());
 			System.out.println("changeDate = "+r.getChangeDate());
+			System.out.println("remark = "+r.getRemark());
 			System.out.println("----------------------------------");
 		}
 	}

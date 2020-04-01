@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.dto.Response;
-import pretty.april.achieveitserver.enums.ErrorCode;
 import pretty.april.achieveitserver.request.laborhour.CreateLaborHourRequest;
 import pretty.april.achieveitserver.request.laborhour.RetrieveLaborHourRequest;
 import pretty.april.achieveitserver.request.laborhour.ShowLaborHourListRequest;

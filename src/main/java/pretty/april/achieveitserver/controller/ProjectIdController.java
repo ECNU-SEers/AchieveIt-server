@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pretty.april.achieveitserver.dto.Response;
-import pretty.april.achieveitserver.entity.ProjectId;
 import pretty.april.achieveitserver.service.ProjectIdService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import pretty.april.achieveitserver.entity.StateChange;
+import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.mapper.StateChangeMapper;
 import pretty.april.achieveitserver.request.statechange.RetrieveStateChangeRequest;
 
@@ -18,6 +19,8 @@ public class StateChangeService extends ServiceImpl<StateChangeMapper, StateChan
 
 	@Autowired
 	private ProjectService projectService;
+	@Autowired
+	private UserService userService;
 	
 	public List<RetrieveStateChangeRequest> showStateChangeList(String outerId) {
 		Integer projectId = projectService.getProjectByOuterId(outerId).getId();
@@ -29,6 +32,11 @@ public class StateChangeService extends ServiceImpl<StateChangeMapper, StateChan
 			if (request.getFormerState()==null) {
 				request.setFormerState("无");
 			}
+			
+			User user = userService.getById(stateChange.getOperatorId());
+			request.setUsername(user.getUsername());
+			request.setRealName(user.getRealName());
+			
 			if (request.getLatterState().equals("申请立项")) {
 				request.setOperation("新建项目");
 			} else if (request.getLatterState().equals("已立项")) {
@@ -44,6 +52,11 @@ public class StateChangeService extends ServiceImpl<StateChangeMapper, StateChan
 			} else if (request.getLatterState().equals("已归档")) {
 				request.setOperation("项目归档");
 			}
+			
+			if (request.getRemark()==null || "".equals(request.getRemark())) {
+				request.setRemark("无");
+			}
+			
 			retrieveStateChangeRequest.add(request);
 		}
 		return retrieveStateChangeRequest;

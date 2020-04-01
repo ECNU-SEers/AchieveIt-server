@@ -21,5 +21,11 @@ public class RetrieveStateChangeRequest {
     
     private Integer operatorId;
     
+    private String username;
+    
+    private String realName;
+    
     private String operation;
+    
+    private String remark;
 }
