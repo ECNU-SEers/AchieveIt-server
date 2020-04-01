@@ -6,6 +6,7 @@ import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.request.AddFunctionRequest;
 import pretty.april.achieveitserver.request.EditFunctionRequest;
+import pretty.april.achieveitserver.security.UserContext;
 import pretty.april.achieveitserver.service.FunctionService;
 import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
@@ -133,8 +134,7 @@ public class FunctionController {
      */
     @GetMapping("/functions/me")
     public Response<List<ValueLabelChildren>> getWorkHourFunctions() {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        return ResponseUtils.successResponse(functionService.getWorkHourFunctions(user.getId()));
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseUtils.successResponse(functionService.getWorkHourFunctions(userContext.getUserId()));
     }
 }

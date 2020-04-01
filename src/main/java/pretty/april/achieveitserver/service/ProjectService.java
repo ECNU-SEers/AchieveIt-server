@@ -16,6 +16,7 @@ import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.entity.*;
 import pretty.april.achieveitserver.mapper.*;
 import pretty.april.achieveitserver.request.project.*;
+import pretty.april.achieveitserver.security.UserContext;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -220,9 +221,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(projectId);
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        stateChange.setOperatorId(user.getId());
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        stateChange.setOperatorId(userContext.getUserId());
         stateChange.setRemark(validator.getRemark());
         stateChangeMapper.insert(stateChange);
         
@@ -268,9 +268,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return 所有项目名称包含该关键字的项目的详情
      */
     public PageDTO<RetrieveProjectRequest> retrieveProjectsWithNameIncluingKeywordByPage(Integer pageNo, Integer pageSize, String keyword) {
-    	String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        Integer userId = user.getId();
+    	UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
     	
     	Page<Project> page = this.selectProjectByNameWithKeyword(userId, keyword, new Page<Project>(pageNo, pageSize));
     	List<RetrieveProjectRequest> projectsDetails = new ArrayList<RetrieveProjectRequest>();
@@ -288,9 +287,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return 所有项目名称包含该关键字的项目名称和项目ID
      */
     public List<SearchProjectRequest> searchProjectWithNameIncludingKeyword(String keyword) {
-    	String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        Integer userId = user.getId();
+    	UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
     	
 //		1.利用keyword找到所有项目名称中包含该keyword的所有项目
         List<Project> projects = this.selectProjectByNameWithKeyword(userId, keyword);
@@ -370,9 +368,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return 项目列表
      */
     public PageDTO<ShowProjectListRequest> showProjects(Integer pageNo, Integer pageSize, String keyword) {
-    	String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        Integer userId = user.getId();
+    	UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
     	
     	Page<Project> page;
 //    	1.利用用户ID查找用户的角色
@@ -482,9 +479,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
             milestone.setProjectId(projectId);
             milestone.setProgress(validator.getMilestone());
             milestone.setRecordDate(LocalDate.now());
-            String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User user = userService.getByUsername(username);
-            milestone.setRecorderId(user.getId());
+            UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            milestone.setRecorderId(userContext.getUserId());
             milestoneMapper.insert(milestone);
         }
 
@@ -595,9 +591,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(primaryProject.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(primaryProject.getState());
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        stateChange.setOperatorId(user.getId());
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        stateChange.setOperatorId(userContext.getUserId());
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
     	
@@ -642,9 +637,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(primaryProject.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(primaryProject.getState());
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        stateChange.setOperatorId(user.getId());
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        stateChange.setOperatorId(userContext.getUserId());
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
     	
@@ -702,9 +696,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         ProjectMember member = new ProjectMember();
         member.setProjectId(projectId);
         member.setProjectName(project.getName());
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();        
-        member.setLeaderId(userService.getByUsername(username).getId());
-        member.setLeaderName(username);
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        member.setLeaderId(userContext.getUserId());
+        member.setLeaderName(userContext.getUsername());
         for (Integer id : request.getUserId()) {
             if (!memberService.checkMemberExistByProjectIdAndUserId(projectId, id)) {
                 member.setUserId(id);
@@ -757,9 +751,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         ProjectMember member = new ProjectMember();
         member.setProjectId(projectId);
         member.setProjectName(project.getName());
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();        
-        member.setLeaderId(userService.getByUsername(username).getId());
-        member.setLeaderName(username);
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        member.setLeaderId(userContext.getUserId());
+        member.setLeaderName(userContext.getUsername());
         for (Integer id : request.getUserId()) {
             if (!memberService.checkMemberExistByProjectIdAndUserId(projectId, id)) {
                 member.setUserId(id);
@@ -814,9 +808,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(project.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        stateChange.setOperatorId(user.getId());
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        stateChange.setOperatorId(userContext.getUserId());
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
         
@@ -841,9 +834,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(project.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        stateChange.setOperatorId(user.getId());
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        stateChange.setOperatorId(userContext.getUserId());
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
         
@@ -885,9 +877,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(project.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        stateChange.setOperatorId(user.getId());
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        stateChange.setOperatorId(userContext.getUserId());
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
 
@@ -911,9 +902,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(project.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        stateChange.setOperatorId(user.getId());
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        stateChange.setOperatorId(userContext.getUserId());
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
         

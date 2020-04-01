@@ -8,6 +8,7 @@ import pretty.april.achieveitserver.request.AddViewRoleRequest;
 import pretty.april.achieveitserver.request.EditUserRolesRequest;
 import pretty.april.achieveitserver.request.EditViewRoleRequest;
 import pretty.april.achieveitserver.request.UserViewRoleRequest;
+import pretty.april.achieveitserver.security.UserContext;
 import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.service.ViewPermissionService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
@@ -23,18 +24,14 @@ public class ViewPermissionController {
 
     private ViewPermissionService viewPermissionService;
 
-    private UserService userService;
-
-    public ViewPermissionController(ViewPermissionService viewPermissionService, UserService userService) {
+    public ViewPermissionController(ViewPermissionService viewPermissionService) {
         this.viewPermissionService = viewPermissionService;
-        this.userService = userService;
     }
 
     @GetMapping("/view/permissions/me")
     public Response<Map<String, List<ViewPermissionDTO>>> getViewPermissions() {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        return ResponseUtils.successResponse(viewPermissionService.getViewPermissions(user.getId()));
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseUtils.successResponse(viewPermissionService.getViewPermissions(userContext.getUserId()));
     }
 
     @PostMapping("/view/role")

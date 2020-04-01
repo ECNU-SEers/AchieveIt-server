@@ -33,6 +33,7 @@ import pretty.april.achieveitserver.request.laborhour.RetrieveLaborHourRequest;
 import pretty.april.achieveitserver.request.laborhour.ShowLaborHourListRequest;
 import pretty.april.achieveitserver.request.laborhour.ShowSubordinateLaborHourListRequest;
 import pretty.april.achieveitserver.request.laborhour.UpdateLaborHourRequest;
+import pretty.april.achieveitserver.security.UserContext;
 
 @Service
 public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
@@ -95,9 +96,8 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return 该用户在该时间范围内的所有工时信息
 	 */
 	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourByDates(Integer pageNo, Integer pageSize, Long startDateTimestamp, Long endDateTimestamp) {
-		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        Integer userId = user.getId();
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
         
         LocalDate startDate = this.longToLocalDate(startDateTimestamp);
         LocalDate endDate = this.longToLocalDate(endDateTimestamp);     
@@ -138,9 +138,8 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 		}
 		
 //		2.一天之内工时不超过24小时
-		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        Integer userId = user.getId();
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
 //      找到这个人在填写的工时日期（loacldate1）当天的工时总和
         LocalTime startTime = this.longToLocalTime(request.getStartTime());
         LocalTime endTime = this.longToLocalTime(request.getEndTime());
@@ -199,9 +198,8 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 */
 	public PageDTO<ShowLaborHourListRequest> showList(Integer pageNo, Integer pageSize) {
-		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        Integer userId = user.getId();
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
 		
 		Page<LaborHour> page = new Page<>(pageNo, pageSize);
 		QueryWrapper<LaborHour> queryWrapper = new QueryWrapper<LaborHour>();
@@ -283,9 +281,8 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 */
 	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourOfSubordinate(Integer pageNo, Integer pageSize, Long startDateTimestamp, Long endDateTimestamp) {
-		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        Integer userId = user.getId();
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
         
         LocalDate startDate = this.longToLocalDate(startDateTimestamp);
         LocalDate endDate = this.longToLocalDate(endDateTimestamp);
@@ -325,9 +322,8 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 */
 	public PageDTO<ShowSubordinateLaborHourListRequest> showSubordinateLists(Integer pageNo, Integer pageSize) {
-		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        Integer userId = user.getId();
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
 		
 		Page<LaborHour> page = this.showSubordinateList(userId, new Page<LaborHour>(pageNo, pageSize));
 		List<ShowSubordinateLaborHourListRequest> laborHourDetails = new ArrayList<ShowSubordinateLaborHourListRequest>();

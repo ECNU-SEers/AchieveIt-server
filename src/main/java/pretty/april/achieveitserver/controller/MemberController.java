@@ -1,7 +1,10 @@
 package pretty.april.achieveitserver.controller;
 
 import org.springframework.web.bind.annotation.*;
-import pretty.april.achieveitserver.dto.*;
+import pretty.april.achieveitserver.dto.MemberDTO;
+import pretty.april.achieveitserver.dto.PageDTO;
+import pretty.april.achieveitserver.dto.Response;
+import pretty.april.achieveitserver.dto.SimpleMemberDTO;
 import pretty.april.achieveitserver.request.AddProjectMemberRequest;
 import pretty.april.achieveitserver.request.EditMemberRequest;
 import pretty.april.achieveitserver.service.MemberService;
@@ -36,26 +39,16 @@ public class MemberController {
     }
 
     /**
-     * 获取某个项目所有成员的ID和Name信息
+     * 对用户真实姓名模糊搜索获取某个项目所有成员的ID、Username和RealName信息
      *
      * @param projectId
-     * @return
-     */
-    @GetMapping("/project/{projectId}/members/simple")
-    public Response<List<SimpleMemberDTO>> getSimpleMembers(@PathVariable Integer projectId) {
-        return ResponseUtils.successResponse(memberService.getSimpleMembers(projectId));
-    }
-
-    /**
-     * 对用户名模糊搜索获取某个项目所有成员的ID和Name信息
-     *
-     * @param projectId
-     * @param name
+     * @param keyword
      * @return
      */
     @GetMapping("/project/{projectId}/members/search")
-    public Response<List<SearchableDTO>> getSimpleMembers(@PathVariable Integer projectId, @RequestParam String name) {
-        return ResponseUtils.successResponse(memberService.searchMembers(projectId, name));
+    public Response<List<SimpleMemberDTO>> getSimpleMembers(@PathVariable Integer projectId,
+                                                            @RequestParam(required = false, defaultValue = "") String keyword) {
+        return ResponseUtils.successResponse(memberService.searchMembers(projectId, keyword));
     }
 
     /**

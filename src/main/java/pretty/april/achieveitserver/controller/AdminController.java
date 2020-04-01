@@ -12,7 +12,7 @@ import pretty.april.achieveitserver.utils.ResponseUtils;
 
 @RestController
 @RequestMapping("/api/admin")
-@PreAuthorize("hasAuthority('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     private UserService userService;

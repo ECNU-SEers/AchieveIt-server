@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class UserContext {
+    private Integer userId;
     private String username;
-    private List<GrantedAuthority> authorities;
+//    private List<GrantedAuthority> authorities;
 }

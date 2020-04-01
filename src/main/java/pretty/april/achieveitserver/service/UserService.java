@@ -6,16 +6,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import pretty.april.achieveitserver.dto.SimpleEmployeeDTO;
 import pretty.april.achieveitserver.entity.User;
-import pretty.april.achieveitserver.entity.UserSysRole;
 import pretty.april.achieveitserver.mapper.UserMapper;
-import pretty.april.achieveitserver.mapper.UserSysRoleMapper;
 import pretty.april.achieveitserver.mapper.ViewRolePermissionMapper;
 import pretty.april.achieveitserver.model.Supervisor;
-import pretty.april.achieveitserver.model.Username;
 import pretty.april.achieveitserver.request.AddUserRequest;
-import pretty.april.achieveitserver.security.SecurityUser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,14 +21,11 @@ public class UserService {
     private UserMapper userMapper;
     private ViewRolePermissionMapper viewRolePermissionMapper;
 
-    private UserSysRoleMapper userSysRoleMapper;
-
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserService(UserMapper userMapper, ViewRolePermissionMapper viewRolePermissionMapper, UserSysRoleMapper userSysRoleMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(UserMapper userMapper, ViewRolePermissionMapper viewRolePermissionMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userMapper = userMapper;
         this.viewRolePermissionMapper = viewRolePermissionMapper;
-        this.userSysRoleMapper = userSysRoleMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
@@ -43,20 +37,6 @@ public class UserService {
         return userMapper.selectOne(new QueryWrapper<User>().eq("id", id));
     }
 
-    public SecurityUser getSecurityUserByUsername(String username) {
-        User user = getByUsername(username);
-        if (user == null) {
-            return null;
-        }
-        SecurityUser su = new SecurityUser();
-        su.setUsername(user.getUsername());
-        su.setPassword(user.getPassword());
-        List<String> authorities = userSysRoleMapper.selectRoleNamesByUserId(user.getId());
-        Set<String> au = new HashSet<>(authorities);
-        su.setAuthorities(au);
-        return su;
-    }
-
     public void addUser(AddUserRequest request) {
         if (null != userMapper.selectOne(new QueryWrapper<User>().eq("username", request.getUsername()))) {
             throw new IllegalArgumentException("Username already exists");
@@ -65,10 +45,6 @@ public class UserService {
         BeanUtils.copyProperties(request, user);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
-        UserSysRole userSysRole = new UserSysRole();
-        userSysRole.setUserId(user.getId());
-        userSysRole.setSysRoleId(2);
-        userSysRoleMapper.insert(userSysRole);
     }
 
     public List<SimpleEmployeeDTO> getEmployees() {

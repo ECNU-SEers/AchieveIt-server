@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.dto.SimpleEmployeeDTO;
 import pretty.april.achieveitserver.model.Supervisor;
-import pretty.april.achieveitserver.model.Username;
 import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 

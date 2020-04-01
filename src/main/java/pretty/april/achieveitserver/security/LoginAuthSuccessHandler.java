@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -31,9 +33,10 @@ public class LoginAuthSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
         UserContext userContext = (UserContext) authentication.getPrincipal();
+        List<GrantedAuthority> authorityList = (List<GrantedAuthority>) authentication.getAuthorities();
 
-        String accessToken = jwtTokenHelper.generateAccessJwtToken(userContext);
-        String refreshToken = jwtTokenHelper.generateRefreshToken(userContext.getUsername());
+        String accessToken = jwtTokenHelper.generateAccessJwtToken(userContext, authorityList);
+        String refreshToken = jwtTokenHelper.generateRefreshToken(userContext);
 
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("accessToken", accessToken);
