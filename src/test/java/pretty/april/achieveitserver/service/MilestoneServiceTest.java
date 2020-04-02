@@ -1,4 +1,4 @@
-package pretty.april.achieveitserver.serivce;
+package pretty.april.achieveitserver.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 

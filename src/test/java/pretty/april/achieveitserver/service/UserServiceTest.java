@@ -6,9 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+
+import pretty.april.achieveitserver.model.Supervisor;
 import pretty.april.achieveitserver.request.AddUserRequest;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -48,4 +52,52 @@ class UserServiceTest {
     void getEmployees() {
         assertNotNull(userService.getEmployees());
     }
+    
+    @Test
+	public void getAllSupervisorTest() {
+		List<Supervisor> allUsers = userService.getAllSupervisors();
+		for (Supervisor user: allUsers) {
+			System.out.println("id = "+user.getId());
+			System.out.println("username = "+user.getUsername());
+			System.out.println("realname = "+user.getRealName());
+			System.out.println("============================");
+		}
+		assertNotNull(allUsers);
+	}
+	
+	@Test
+	public void getAllConfigOrganizerTest() {
+		List<Supervisor> allUsers = userService.getAllConfigOrganizer();
+		for (Supervisor user: allUsers) {
+			System.out.println("id = "+user.getId());
+			System.out.println("username = "+user.getUsername());
+			System.out.println("realname = "+user.getRealName());
+			System.out.println("============================");
+		}
+		assertNotNull(allUsers);
+	}
+	
+	@Test
+	public void getAllQAManagerTest() {
+		List<Supervisor> allUsers = userService.getAllQAManager();
+		for (Supervisor user: allUsers) {
+			System.out.println("id = "+user.getId());
+			System.out.println("username = "+user.getUsername());
+			System.out.println("realname = "+user.getRealName());
+			System.out.println("============================");
+		}
+		assertNotNull(allUsers);
+	}
+	
+	@Test
+	public void getAllEPGLeaderTest() {
+		List<Supervisor> allUsers = userService.getAllEPGLeader();
+		for (Supervisor user: allUsers) {
+			System.out.println("id = "+user.getId());
+			System.out.println("username = "+user.getUsername());
+			System.out.println("realname = "+user.getRealName());
+			System.out.println("============================");
+		}
+		assertNotNull(allUsers);
+	}
 }
