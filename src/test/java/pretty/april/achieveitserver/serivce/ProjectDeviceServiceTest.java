@@ -1,9 +1,9 @@
 package pretty.april.achieveitserver.serivce;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,30 +24,57 @@ public class ProjectDeviceServiceTest {
 	private ProjectDeviceService projectDeviceService;
 	
 	@Test
-	public void createProjectDevice() throws Exception {
+	public void createProjectDevice() {
 		CreateOrUpdateProjectDeviceRequest request = new CreateOrUpdateProjectDeviceRequest();
 		request.setOuterId("device001");
 		request.setType("PAD");
 		request.setProjectId(3);
-		request.setManagerId(2);
-		request.setManagerName("Jack");
-		request.setStartDate(LocalDate.now(Clock.systemUTC()).minusDays(4));
-		request.setDueDate(LocalDate.now(Clock.systemUTC()).plusDays(50));
+		request.setManagerId(1);
+		request.setManagerName("admin");
+		request.setStartDate(LocalDate.now());
+		request.setDueDate(LocalDate.now().plusDays(50));
+		projectDeviceService.createProjectDevice(request);
+	}
+	
+	@Test
+	public void createProjectDevice_inner_exception() {
+		CreateOrUpdateProjectDeviceRequest request = new CreateOrUpdateProjectDeviceRequest();
+		request.setOuterId("1");
+		request.setType("PAD");
+		request.setProjectId(1);
+		request.setManagerId(1);
+		request.setManagerName("admin");
+		request.setStartDate(LocalDate.now());
+		request.setDueDate(LocalDate.now().plusDays(50));
+		projectDeviceService.createProjectDevice(request);
+	}
+	
+	@Test
+	public void createProjectDevice_outer_exception() {
+		CreateOrUpdateProjectDeviceRequest request = new CreateOrUpdateProjectDeviceRequest();
+		request.setOuterId("1");
+		request.setType("PAD");
+		request.setProjectId(3);
+		request.setManagerId(1);
+		request.setManagerName("admin");
+		request.setStartDate(LocalDate.now());
+		request.setDueDate(LocalDate.now().plusDays(50));
 		projectDeviceService.createProjectDevice(request);
 	}
 	
 	@Test
 	public void searchProjectDeviceWithOuterIdIncludingKeywordTest() {
-		String keyword = "de";
-		Integer projectId = 2;
+		String keyword = "1";
+		Integer projectId = 1;
 		List<String> allIds = projectDeviceService.searchProjectDeviceWithOuterIdIncludingKeyword(keyword, projectId);
 		System.out.println(allIds.size());
+		assertEquals(2, allIds.size());
 	}
 	
 	@Test
 	public void showProjectDeviceListTest() {
-		String outerId = "device001";
-		Integer projectId = 2;
+		String outerId = "1";
+		Integer projectId = 1;
 		ShowProjectDeviceListRequest request = new ShowProjectDeviceListRequest();
 		request = projectDeviceService.showProjectDeviceList(outerId, projectId);
 		System.out.println("outerId = "+request.getOuterId());
@@ -62,9 +89,9 @@ public class ProjectDeviceServiceTest {
 	
 	@Test
 	public void showDevicesTest() {
-		Integer projectId = 1;
-		String keyword = "";
-		PageDTO<ShowProjectDeviceListRequest> page = projectDeviceService.showDevices(1, 3, projectId, keyword);
+		Integer projectId = new Integer(1);
+		String keyword = "1";
+		PageDTO<ShowProjectDeviceListRequest> page = projectDeviceService.showDevices(1, 10, projectId, keyword);
 		System.out.println(page.getTotal());
 		for (ShowProjectDeviceListRequest request: page.getItems()) {
 			System.out.println("outerId = "+request.getOuterId());
@@ -80,7 +107,7 @@ public class ProjectDeviceServiceTest {
 	
 	@Test
 	public void retrieveDeviceInspectionTest() {
-		String deviceOuterId = "device001";
+		String deviceOuterId = "1";
 		Integer projectId = 1;
 		List<RetrieveDeviceInspectionRequest> request = projectDeviceService.retrieveDeviceInspection(deviceOuterId, projectId);
 		System.out.println("size = "+request.size());
@@ -90,11 +117,12 @@ public class ProjectDeviceServiceTest {
 			System.out.println("remark = "+info.getRemark());
 			System.out.println("-------------------------------------");
 		}
+		assertEquals(5, request.size());
 	}
 	
 	@Test
 	public void retrieveDeviceInspectionByPageTest() {
-		String deviceOuterId = "01";
+		String deviceOuterId = "1";
 		Integer projectId = 1;
 		PageDTO<RetrieveDeviceInspectionRequest> request = projectDeviceService.retrieveDeviceInspectionByPage(1, 10, deviceOuterId, projectId);
 		System.out.println(request.getTotal());
@@ -107,15 +135,29 @@ public class ProjectDeviceServiceTest {
 	}
 	
 	@Test
-	public void updateProjectDevice() throws Exception {
+	public void updateProjectDevice() {
 		CreateOrUpdateProjectDeviceRequest request = new CreateOrUpdateProjectDeviceRequest();
-		request.setOuterId("device001");
+		request.setOuterId("2");
 		request.setType("电脑");
-		request.setProjectId(2);
+		request.setProjectId(1);
 		request.setManagerId(1);
 		request.setManagerName("admin");
-		request.setStartDate(LocalDate.now(Clock.systemUTC()).minusDays(4));
-		request.setDueDate(LocalDate.now(Clock.systemUTC()).plusDays(40));
+		request.setStartDate(LocalDate.now().minusDays(4));
+		request.setDueDate(LocalDate.now().plusDays(40));
 		projectDeviceService.updateProjectDeviceInfo(request);
+	}
+	
+	@Test
+	public void returnProjectDevice() {
+		String outerId = "2";
+		Integer projectId = new Integer(1);
+		projectDeviceService.returnProjectDevice(outerId, projectId);
+	}
+	
+	@Test
+	public void returnProjectDevice_exception() {
+		String outerId = "3";
+		Integer projectId = new Integer(1);
+		projectDeviceService.returnProjectDevice(outerId, projectId);
 	}
 }

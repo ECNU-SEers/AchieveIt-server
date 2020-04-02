@@ -119,6 +119,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         Project project = new Project();
         BeanUtils.copyProperties(validator, project);
         project.setState("申请立项");
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        project.setManagerId(userContext.getUserId());
+        project.setManagerName(userContext.getUsername());
 //		通过客户名称和客户ID得到客户表ID
         project.setClientId(clientService.getIdByOuterIdAndCompany(validator.getClientOuterId(), validator.getCompany()));
         project.setRemark(null);
@@ -148,8 +151,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
 //      5.把manager和supervisor，组织配置管理员、EPGLeader和QA经理加入project_member中
         ProjectMember manager = new ProjectMember();
         manager.setProjectId(projectId);
-        manager.setUserId(validator.getManagerId());
-        manager.setUsername(validator.getManagerName());
+        manager.setUserId(userContext.getUserId());
+        manager.setUsername(userContext.getUsername());
         manager.setProjectName(validator.getName());
         manager.setLeaderId(validator.getSupervisorId());
         manager.setLeaderName(validator.getSupervisorName());
@@ -221,7 +224,6 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(projectId);
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
-        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         stateChange.setOperatorId(userContext.getUserId());
         stateChange.setRemark(validator.getRemark());
         stateChangeMapper.insert(stateChange);

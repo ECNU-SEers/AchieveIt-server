@@ -1,5 +1,6 @@
 package pretty.april.achieveitserver.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -239,14 +240,14 @@ public class ProjectDeviceService extends ServiceImpl<ProjectDeviceMapper, Proje
 	 * @return
 	 * @throws Exception
 	 */
-	public ProjectDevice removeProjectDevice(String outerId, Integer projectId) {
-		ProjectDevice projectDevice = this.getProjectDeviceByOuterIdAndProjectId(outerId, projectId);
-		if (projectDevice.getState().equals("已归还")) {
-			throw new IllegalArgumentException("The device cannot be removed, please choose a new one.");
-		}
-		this.baseMapper.deleteById(projectDevice.getId());
-		return projectDevice;
-	}
+//	public ProjectDevice removeProjectDevice(String outerId, Integer projectId) {
+//		ProjectDevice projectDevice = this.getProjectDeviceByOuterIdAndProjectId(outerId, projectId);
+//		if (projectDevice.getState().equals("已归还")) {
+//			throw new IllegalArgumentException("The device cannot be removed, please choose a new one.");
+//		}
+//		this.baseMapper.deleteById(projectDevice.getId());
+//		return projectDevice;
+//	}
 	
 	/**
 	 * 归还项目设备
@@ -261,6 +262,7 @@ public class ProjectDeviceService extends ServiceImpl<ProjectDeviceMapper, Proje
 			throw new IllegalArgumentException("The device has already returned, please choose another one.");
 		}
 		projectDevice.setState("已归还");
+		projectDevice.setReturnDate(LocalDate.now());
 		this.baseMapper.updateById(projectDevice);
 		return projectDevice;
 	}

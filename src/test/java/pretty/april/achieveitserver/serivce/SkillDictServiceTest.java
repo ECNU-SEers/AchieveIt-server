@@ -8,26 +8,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import pretty.april.achieveitserver.entity.BusinessAreaDict;
-import pretty.april.achieveitserver.service.BusinessAreaDictService;
+import pretty.april.achieveitserver.entity.SkillDict;
+import pretty.april.achieveitserver.service.SkillDictService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class BusinessAreaDictServiceTest {
+public class SkillDictServiceTest {
 
 	@Autowired
-	private BusinessAreaDictService businessAreaDictService;
+	private SkillDictService skillDictService;
 	
 	@Test
 	public void getBusinessAreaIdByBusinessAreaNameTest() {
-		String businessAreaName = "AI";
-		Integer id = businessAreaDictService.getBusinessAreaIdByBusinessAreaName(businessAreaName);
-		assertEquals(1, id);
+		String skillName = "Java";
+		Integer id = skillDictService.getSkillIdBySkillName(skillName);
+		assertNotNull(id);
 	}
 	
 	@Test
 	public void getAllBusinessAreasTest() {
-		List<BusinessAreaDict> allBusinessAreas = businessAreaDictService.getAllBusinessAreas();
-		assertEquals(3, allBusinessAreas.size());
+		List<SkillDict> allSkills = skillDictService.getAllSkills();
+		assertEquals(4, allSkills.size());
 	}
 }

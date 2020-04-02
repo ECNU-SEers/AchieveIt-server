@@ -50,6 +50,23 @@ public class LaborHourServiceTest {
 	@Test
 	public void createLaborHourTest() throws Exception {
 		CreateLaborHourRequest request = new CreateLaborHourRequest();
+		request.setDate(1585816643323L);
+		request.setFunctionId(3);
+		request.setFunctionName("func1");
+		request.setSubfunctionId(4);
+		request.setSubfunctionName("func1.1");
+		request.setActivityId(1);
+		request.setActivityName("act1");
+		request.setSubactivityId(3);
+		request.setSubactivityName("act3");
+		request.setStartTime(1585816643323L);
+		request.setEndTime(1585816843323L);
+		laborHourService.createLaborHour(request);
+	}
+	
+	@Test
+	public void createLaborHourTest_more_than_3days() throws Exception {
+		CreateLaborHourRequest request = new CreateLaborHourRequest();
 		request.setDate(1085587265378L);
 		request.setFunctionId(3);
 		request.setFunctionName("func1");
@@ -60,7 +77,24 @@ public class LaborHourServiceTest {
 		request.setSubactivityId(3);
 		request.setSubactivityName("act3");
 		request.setStartTime(1585587265378L);
-		request.setEndTime(  1585588265378L);
+		request.setEndTime(1585588265378L);
+		laborHourService.createLaborHour(request);
+	}
+	
+	@Test
+	public void createLaborHourTest_overlap() throws Exception {
+		CreateLaborHourRequest request = new CreateLaborHourRequest();
+		request.setDate(1585816643323L);
+		request.setFunctionId(3);
+		request.setFunctionName("func1");
+		request.setSubfunctionId(4);
+		request.setSubfunctionName("func1.1");
+		request.setActivityId(1);
+		request.setActivityName("act1");
+		request.setSubactivityId(3);
+		request.setSubactivityName("act3");
+		request.setStartTime(1585816643323L);
+		request.setEndTime(1585816843323L);
 		laborHourService.createLaborHour(request);
 	}
 	
@@ -81,9 +115,29 @@ public class LaborHourServiceTest {
 	}
 	
 	@Test
-	public void updateLaborHourTest() throws Exception {
+	public void updateLaborHourTest() {
 		UpdateLaborHourRequest request = new UpdateLaborHourRequest();
 		request.setId(4);
+		request.setDate(1585587265378L);
+		request.setFunctionId(3);
+		request.setFunctionName("func1");
+		request.setSubfunctionId(4);
+		request.setSubfunctionName("func1.1");
+		request.setActivityId(1);
+		request.setActivityName("act1");
+		request.setSubactivityId(3);
+		request.setSubactivityName("act3");
+		request.setStartTime(1585587265378L);
+		request.setEndTime(1585587537813L);
+		String result = laborHourService.updateLaborHour(request);
+		System.out.println(result);
+		System.out.println("date = "+request.getDate());
+	}
+	
+	@Test
+	public void updateLaborHourTest_exception() {
+		UpdateLaborHourRequest request = new UpdateLaborHourRequest();
+		request.setId(2);
 		request.setDate(1585587265378L);
 		request.setFunctionId(3);
 		request.setFunctionName("func1");
@@ -137,13 +191,24 @@ public class LaborHourServiceTest {
 	@Test
 	public void acceptLaborHourInfoTest() {
 		Integer id = 1;
-		System.out.println(laborHourService.acceptLaborHourInfo(id));
+		laborHourService.acceptLaborHourInfo(id);
+	}
+	
+	@Test
+	public void acceptLaborHourInfoTest_exception() {
+		Integer id = 2;
+		laborHourService.acceptLaborHourInfo(id);
 	}
 	
 	@Test
 	public void returnLaborHourInfoTest() {
-		Integer id = 1;
-		System.out.println(laborHourService.returnLaborHourInfo(id));
+		Integer id = 4;
+		laborHourService.returnLaborHourInfo(id);
 	}
 	
+	@Test
+	public void returnLaborHourInfoTest_exception() {
+		Integer id = 3;
+		laborHourService.returnLaborHourInfo(id);
+	}
 }

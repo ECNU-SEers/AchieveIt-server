@@ -1,7 +1,7 @@
 package pretty.april.achieveitserver.serivce;
 
 import java.util.List;
-import java.util.Map;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +21,13 @@ public class ActivityServiceTest {
 	private ActivityService activityService;
 	
 	@Test
-	public void getBusinessAreaIdByBusinessAreaNameTest() { 
+	public void selectByIdTest() {
+		Integer id = new Integer(1);
+		assertNotNull(activityService.getById(id));
+	}
+	
+	@Test
+	public void getAllActivitiesTest() { 
 		List<ValueLabelChildren> allActivities = activityService.getAllActivities();
 		for (ValueLabelChildren key: allActivities) {
 			System.out.println("1st id = "+key.getId()+"  name = "+key.getName());
@@ -31,6 +37,6 @@ public class ActivityServiceTest {
 			}
 			System.out.println("==================");
 		}
-		System.out.println(activityService.getAllActivities());
+		assertEquals(2, allActivities.size());
 	}
 }

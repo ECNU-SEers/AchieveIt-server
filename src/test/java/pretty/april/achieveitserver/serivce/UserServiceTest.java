@@ -1,7 +1,7 @@
 package pretty.april.achieveitserver.serivce;
 
 import java.util.List;
-
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import pretty.april.achieveitserver.model.Supervisor;
-import pretty.april.achieveitserver.model.Username;
 import pretty.april.achieveitserver.service.UserService;
 
 @RunWith(SpringRunner.class)
@@ -28,5 +27,42 @@ public class UserServiceTest {
 			System.out.println("realname = "+user.getRealName());
 			System.out.println("============================");
 		}
+		assertNotNull(allUsers);
+	}
+	
+	@Test
+	public void getAllConfigOrganizerTest() {
+		List<Supervisor> allUsers = userService.getAllConfigOrganizer();
+		for (Supervisor user: allUsers) {
+			System.out.println("id = "+user.getId());
+			System.out.println("username = "+user.getUsername());
+			System.out.println("realname = "+user.getRealName());
+			System.out.println("============================");
+		}
+		assertNotNull(allUsers);
+	}
+	
+	@Test
+	public void getAllQAManagerTest() {
+		List<Supervisor> allUsers = userService.getAllQAManager();
+		for (Supervisor user: allUsers) {
+			System.out.println("id = "+user.getId());
+			System.out.println("username = "+user.getUsername());
+			System.out.println("realname = "+user.getRealName());
+			System.out.println("============================");
+		}
+		assertNotNull(allUsers);
+	}
+	
+	@Test
+	public void getAllEPGLeaderTest() {
+		List<Supervisor> allUsers = userService.getAllEPGLeader();
+		for (Supervisor user: allUsers) {
+			System.out.println("id = "+user.getId());
+			System.out.println("username = "+user.getUsername());
+			System.out.println("realname = "+user.getRealName());
+			System.out.println("============================");
+		}
+		assertNotNull(allUsers);
 	}
 }
