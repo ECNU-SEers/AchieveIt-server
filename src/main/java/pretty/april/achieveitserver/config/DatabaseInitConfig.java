@@ -1,17 +1,5 @@
 package pretty.april.achieveitserver.config;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
-import pretty.april.achieveitserver.entity.Role;
-import pretty.april.achieveitserver.entity.User;
-import pretty.april.achieveitserver.entity.UserRole;
-import pretty.april.achieveitserver.service.RoleService;
-import pretty.april.achieveitserver.service.UserService;
-
 //@Configuration
 //@Slf4j
 public class DatabaseInitConfig {

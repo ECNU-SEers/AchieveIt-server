@@ -10,6 +10,7 @@ import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.dto.SimpleMemberDTO;
 import pretty.april.achieveitserver.entity.Project;
 import pretty.april.achieveitserver.entity.ProjectMember;
+import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.entity.UserRole;
 import pretty.april.achieveitserver.mapper.*;
 import pretty.april.achieveitserver.model.Member;
@@ -83,6 +84,11 @@ public class MemberService {
             BeanUtils.copyProperties(md, memberDTO);
             memberDTO.setWorkingHours(workingHourMapper.selectWorkingHour(md.getUserId(), projectId) / 3600);
             memberDTO.setRoles(userRoleMapper.selectRoleNamesByUserIdAndProjectId(md.getUserId(), projectId));
+            User leader = userMapper.selectById(md.getLeaderId());
+            if (leader != null) {
+                memberDTO.setLeaderUsername(leader.getUsername());
+                memberDTO.setLeaderRealName(leader.getRealName());
+            }
             memberDTOList.add(memberDTO);
         }
         return new PageDTO<>((long) pageNo, (long) pageSize, count, memberDTOList);

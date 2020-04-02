@@ -13,7 +13,8 @@ public class MemberDTO {
     private String department;
     private String phoneNumber;
     private Integer leaderId;
-    private String leaderName;
+    private String leaderUsername;
+    private String leaderRealName;
     private List<String> roles;
     private Float workingHours;
 }
