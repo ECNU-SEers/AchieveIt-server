@@ -98,9 +98,7 @@ public class AuthorityService {
                 throw new IllegalArgumentException("Permission not exists");
             }
 
-            List<RolePermission> oldRps = rolePermissionMapper.selectList(
-                    new QueryWrapper<RolePermission>().eq(true, "role_id", roleId));
-            rolePermissionMapper.deleteBatchIds(oldRps);
+            rolePermissionMapper.delete(new QueryWrapper<RolePermission>().eq("role_id", roleId));
 
             List<RolePermission> newRps = roleRequest.getPermissions().stream().map(o -> new RolePermission(role.getId(), o))
                     .collect(Collectors.toList());

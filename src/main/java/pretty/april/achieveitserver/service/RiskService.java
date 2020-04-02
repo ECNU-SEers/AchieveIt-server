@@ -103,7 +103,7 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
 
     public RiskDTO getRisk(Integer projectId, Integer riskId) {
         if (riskMapper.selectOne(new QueryWrapper<ProjectRisk>()
-                .eq("project_id", projectId).eq("risk_id", riskId)) == null) {
+                .eq("project_id", projectId).eq("id", riskId)) == null) {
             throw new IllegalArgumentException("Cannot find risk");
         }
         return getRiskDTO(riskId);

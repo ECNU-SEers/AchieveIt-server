@@ -49,66 +49,70 @@ public class UserService {
 
     public List<SimpleEmployeeDTO> getEmployees() {
         List<User> users = userMapper.selectList(new QueryWrapper<User>().ne(true, "id", 1));
-        return users.stream().map(u -> new SimpleEmployeeDTO(u.getId(), u.getUsername())).collect(Collectors.toList());
+        return users.stream().map(u -> new SimpleEmployeeDTO(u.getId(), u.getUsername(), u.getRealName())).collect(Collectors.toList());
     }
-    
+
     /**
      * 查询所有的项目主管（项目上级）
+     *
      * @return
      */
     public List<Supervisor> getAllSupervisors() {
-    	List<Supervisor> allUsers = userMapper.selectAll();
-    	List<Supervisor> allSupervisors = new ArrayList<>();
-    	for (Supervisor user: allUsers) {
-    		if (viewRolePermissionMapper.selectAllPermissionsByUserId(user.getId()).contains(7)) {
-    			allSupervisors.add(user);
-    		}
-    	}
-    	return allSupervisors;
+        List<Supervisor> allUsers = userMapper.selectAll();
+        List<Supervisor> allSupervisors = new ArrayList<>();
+        for (Supervisor user : allUsers) {
+            if (viewRolePermissionMapper.selectAllPermissionsByUserId(user.getId()).contains(7)) {
+                allSupervisors.add(user);
+            }
+        }
+        return allSupervisors;
     }
-    
+
     /**
      * 查询所有的组织配置管理员
+     *
      * @return
      */
     public List<Supervisor> getAllConfigOrganizer() {
-    	List<Supervisor> allUsers = userMapper.selectAll();
-    	List<Supervisor> allConfigOrganizers = new ArrayList<>();
-    	for (Supervisor user: allUsers) {
-    		if (viewRolePermissionMapper.selectAllPermissionsByUserId(user.getId()).contains(9)) {
-    			allConfigOrganizers.add(user);
-    		}
-    	}
-    	return allConfigOrganizers;
+        List<Supervisor> allUsers = userMapper.selectAll();
+        List<Supervisor> allConfigOrganizers = new ArrayList<>();
+        for (Supervisor user : allUsers) {
+            if (viewRolePermissionMapper.selectAllPermissionsByUserId(user.getId()).contains(9)) {
+                allConfigOrganizers.add(user);
+            }
+        }
+        return allConfigOrganizers;
     }
-    
+
     /**
      * 查询所有的QAManager
+     *
      * @return
      */
     public List<Supervisor> getAllQAManager() {
-    	List<Supervisor> allUsers = userMapper.selectAll();
-    	List<Supervisor> allQAManagers = new ArrayList<>();
-    	for (Supervisor user: allUsers) {
-    		if (viewRolePermissionMapper.selectAllPermissionsByUserId(user.getId()).contains(10)) {
-    			allQAManagers.add(user);
-    		}
-    	}
-    	return allQAManagers;
+        List<Supervisor> allUsers = userMapper.selectAll();
+        List<Supervisor> allQAManagers = new ArrayList<>();
+        for (Supervisor user : allUsers) {
+            if (viewRolePermissionMapper.selectAllPermissionsByUserId(user.getId()).contains(10)) {
+                allQAManagers.add(user);
+            }
+        }
+        return allQAManagers;
     }
-    
+
     /**
      * 查询所有的EPGLeader
+     *
      * @return
      */
     public List<Supervisor> getAllEPGLeader() {
-    	List<Supervisor> allUsers = userMapper.selectAll();
-    	List<Supervisor> allEPGLeaders = new ArrayList<>();
-    	for (Supervisor user: allUsers) {
-    		if (viewRolePermissionMapper.selectAllPermissionsByUserId(user.getId()).contains(11)) {
-    			allEPGLeaders.add(user);
-    		}
-    	}
-    	return allEPGLeaders;
+        List<Supervisor> allUsers = userMapper.selectAll();
+        List<Supervisor> allEPGLeaders = new ArrayList<>();
+        for (Supervisor user : allUsers) {
+            if (viewRolePermissionMapper.selectAllPermissionsByUserId(user.getId()).contains(11)) {
+                allEPGLeaders.add(user);
+            }
+        }
+        return allEPGLeaders;
     }
 }

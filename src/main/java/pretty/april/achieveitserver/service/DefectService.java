@@ -135,7 +135,7 @@ public class DefectService {
         IPage<Defect> defects = defectMapper.selectPage(page,
                 new QueryWrapper<Defect>()
                         .allEq(map, false)
-                        .like("name",keyword)
+                        .like("name", keyword)
                         .orderByDesc("created_at"));
         return new PageDTO<>(defects.getCurrent(), defects.getSize(), defects.getTotal(),
                 defectConverter.defectDTOList(defects.getRecords()));
