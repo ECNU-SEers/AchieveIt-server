@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.request.device.CreateOrUpdateProjectDeviceRequest;
@@ -18,6 +19,7 @@ import pretty.april.achieveitserver.service.ProjectDeviceService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 public class ProjectDeviceServiceTest {
 
 	@Autowired
@@ -46,7 +48,11 @@ public class ProjectDeviceServiceTest {
 		request.setManagerName("admin");
 		request.setStartDate(LocalDate.now());
 		request.setDueDate(LocalDate.now().plusDays(50));
-		projectDeviceService.createProjectDevice(request);
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectDeviceService.createProjectDevice(request);
+		});
+	    assertEquals("The device already exists in this project, please choose a new one.", exception.getMessage());
 	}
 	
 	@Test
@@ -59,7 +65,10 @@ public class ProjectDeviceServiceTest {
 		request.setManagerName("admin");
 		request.setStartDate(LocalDate.now());
 		request.setDueDate(LocalDate.now().plusDays(50));
-		projectDeviceService.createProjectDevice(request);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectDeviceService.createProjectDevice(request);
+		});
+	    assertEquals("The device hasn't been returned, thus unavailable.", exception.getMessage());
 	}
 	
 	@Test
@@ -148,16 +157,36 @@ public class ProjectDeviceServiceTest {
 	}
 	
 	@Test
+	public void updateProjectDevice_exception() {
+		CreateOrUpdateProjectDeviceRequest request = new CreateOrUpdateProjectDeviceRequest();
+		request.setOuterId("2");
+		request.setType("电脑");
+		request.setProjectId(13);
+		request.setManagerId(1);
+		request.setManagerName("admin");
+		request.setStartDate(LocalDate.now().minusDays(4));
+		request.setDueDate(LocalDate.now().plusDays(40));
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectDeviceService.updateProjectDeviceInfo(request);
+		});
+	    assertEquals("The project already expires, device info cannot be updated, please choose a new one.", exception.getMessage());
+	}
+	
+	@Test
 	public void returnProjectDevice() {
-		String outerId = "2";
+		String outerId = "1";
 		Integer projectId = new Integer(1);
 		projectDeviceService.returnProjectDevice(outerId, projectId);
 	}
 	
 	@Test
 	public void returnProjectDevice_exception() {
-		String outerId = "3";
+		String outerId = "2";
 		Integer projectId = new Integer(1);
-		projectDeviceService.returnProjectDevice(outerId, projectId);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectDeviceService.returnProjectDevice(outerId, projectId);
+		});
+	    assertEquals("The device has already returned, please choose another one.", exception.getMessage());
+		
 	}
 }

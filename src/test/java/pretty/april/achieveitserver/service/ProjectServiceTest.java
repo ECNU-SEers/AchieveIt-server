@@ -1,5 +1,7 @@
 package pretty.april.achieveitserver.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
@@ -23,10 +26,12 @@ import pretty.april.achieveitserver.request.project.SearchProjectRequest;
 import pretty.april.achieveitserver.request.project.ShowProjectListRequest;
 import pretty.april.achieveitserver.request.project.UpdateProjectInfoRequest;
 import pretty.april.achieveitserver.request.project.UpdateProjectRequest;
+import pretty.april.achieveitserver.security.UserContext;
 import pretty.april.achieveitserver.service.ProjectService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 public class ProjectServiceTest {
 
     @Autowired
@@ -68,7 +73,8 @@ public class ProjectServiceTest {
 		project.setSkillNames(skillNames);
 		project.setBusinessAreaName("AI");
 		
-		projectService.createProject(project);
+		UserContext userContext = new UserContext(1, "admin");
+		projectService.createProject(project, userContext);
 	}
 	
 	@Test
@@ -89,7 +95,12 @@ public class ProjectServiceTest {
 		project.setSkillNames(skillNames);
 		project.setBusinessAreaName("AI");
 		
-		projectService.createProject(project);
+		UserContext userContext = new UserContext(1, "admin");
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectService.createProject(project, userContext);
+		});
+	    assertEquals("The project already exists, please choose a new one.", exception.getMessage());
+		
 	}
 
 	@Test
@@ -127,7 +138,10 @@ public class ProjectServiceTest {
 		project.setEndDate(LocalDate.now().plusDays(45));
 		project.setClientOuterId("C01");
 		project.setCompany("阿里巴巴");
-		projectService.updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(project);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectService.updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(project);
+		});
+	    assertEquals("The project already expires, cannot be updated, please choose a new one.", exception.getMessage());
 	}
   
     
@@ -147,7 +161,8 @@ public class ProjectServiceTest {
 		project.setSkillNames(skillNames);
 		project.setBusinessAreaName("金融");
 		project.setMilestone("milestone:1st");
-		projectService.updateProjectInfo(project);
+		Integer userId = new Integer(1);
+		projectService.updateProjectInfo(project, userId);
 	}
     
 	@Test
@@ -166,7 +181,11 @@ public class ProjectServiceTest {
 		project.setSkillNames(skillNames);
 		project.setBusinessAreaName("金融");
 		project.setMilestone("milestone:1st");
-		projectService.updateProjectInfo(project);
+		Integer userId = new Integer(1);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectService.updateProjectInfo(project, userId);
+		});
+	    assertEquals("The project already expires, cannot be updated, please choose a new one.", exception.getMessage());
 	}
 
 	@Test
@@ -185,13 +204,14 @@ public class ProjectServiceTest {
 		project.setSkillNames(skillNames);
 		project.setBusinessAreaName("AI");
 		project.setMilestone("milestone:1st");
-		projectService.updateProjectInfoDuringProjectApproval(project);
+		Integer userId = new Integer(1);
+		projectService.updateProjectInfoDuringProjectApproval(project, userId);
 	}
 
 	@Test
 	public void searchProjectTest() {
 		String keyword = "项目";
-		Integer userId = 1;
+		Integer userId = new Integer(1);
 		List<Project> projects = projectService.selectProjectByNameWithKeyword(userId, keyword);
 		System.out.println(projects.size());
 		for (Project p: projects) {
@@ -199,7 +219,7 @@ public class ProjectServiceTest {
 			System.out.println("name"+p.getName());
 			System.out.println("------------");
 		}
-		List<SearchProjectRequest> results = projectService.searchProjectWithNameIncludingKeyword(keyword);
+		List<SearchProjectRequest> results = projectService.searchProjectWithNameIncludingKeyword(keyword, userId);
 		System.out.println(results.size());
 		for (SearchProjectRequest r: results) {
 			System.out.println("projectOuterId = "+r.getOuterId());
@@ -212,7 +232,8 @@ public class ProjectServiceTest {
     @Test
     public void retrieveProjectsWithNameIncluingKeywordByPageTest() {
     	String keyword = "项目";
-    	PageDTO<RetrieveProjectRequest> page = projectService.retrieveProjectsWithNameIncluingKeywordByPage(1, 5, keyword);
+    	Integer userId = new Integer(1);
+    	PageDTO<RetrieveProjectRequest> page = projectService.retrieveProjectsWithNameIncluingKeywordByPage(1, 5, keyword, userId);
     	System.out.println(page.getTotal());
     }
 
@@ -230,7 +251,8 @@ public class ProjectServiceTest {
     @Test
 	public void showProjectsTest() {
     	String keyword = "";
-		PageDTO<ShowProjectListRequest> page = projectService.showProjects(1, 10, keyword);
+    	Integer userId = new Integer(1);
+		PageDTO<ShowProjectListRequest> page = projectService.showProjects(1, 10, keyword, userId);
 		System.out.println("items:\n"+page.getItems());
 		System.out.println("total = "+ page.getTotal());
 		for (ShowProjectListRequest request: page.getItems()) {
@@ -242,82 +264,88 @@ public class ProjectServiceTest {
 
     @Test
     public void acceptProjectTest() {
-        String outerId = "2020-ECNU-D-02";
+        String outerId = "2020-ECNU-D-00";
         String remark = "acceptTest0402";
-        ApproveProjectRequest apd = projectService.acceptProject(outerId, remark);
-        if (apd.isReviewResult()) {
-            System.out.println("yes");
-        }
+        Integer userId = new Integer(1);
+        ApproveProjectRequest apd = projectService.acceptProject(outerId, remark, userId);
     }
 
 	@Test
 	public void rejectProjectTest() {
-		String outerId = "2020-ECNU-D-01";
+		String outerId = "2020-ECNU-D-06";
 		String remark = "rejectTest0329";
-		ApproveProjectRequest apd = projectService.rejectProject(outerId, remark);
-		if (apd.isReviewResult()) {
-			System.out.println("yes");
-		}
+		Integer userId = new Integer(1);
+		ApproveProjectRequest apd = projectService.rejectProject(outerId, remark, userId);
 	}
 
 	@Test
 	public void assignEQGTest_exception() {
-		String outerId = "2020-ECNU-D-00";
+		String outerId = "2020-ECNU-D-03";
 		AssignRoleRequest arr = new AssignRoleRequest();
 		List<Integer> userId = new ArrayList<Integer>();
 		userId.add(1);
 		arr.setOuterId(outerId);
 		arr.setUserId(userId);
-		Project project = projectService.assignEPG(arr);
-		System.out.println("EPG state = "+project.getEpgAssigned());
+		UserContext userContext = new UserContext(1, "admin");
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectService.assignEPG(arr, userContext);
+		});
+	    assertEquals("The project should be approved by supervisor.", exception.getMessage());
 	}
 	
 	@Test
 	public void assignEQGTest() {
-		String outerId = "2020-ECNU-D-02";
+		String outerId = "P01";
 		AssignRoleRequest arr = new AssignRoleRequest();
 		List<Integer> userId = new ArrayList<Integer>();
-		userId.add(1);
+		userId.add(20);
 		arr.setOuterId(outerId);
 		arr.setUserId(userId);
-		Project project = projectService.assignEPG(arr);
+		UserContext userContext = new UserContext(1, "admin");
+		Project project = projectService.assignEPG(arr, userContext);
 		System.out.println("EPG state = "+project.getEpgAssigned());
 	}
 
 	@Test
 	public void assignQATest_exception() {
-		String outerId = "2020-ECNU-D-00";
+		String outerId = "2020-ECNU-D-03";
 		AssignRoleRequest arr = new AssignRoleRequest();
 		List<Integer> userId = new ArrayList<Integer>();
 		userId.add(1);
 		arr.setOuterId(outerId);
 		arr.setUserId(userId);
-		Project project = projectService.assignQA(arr);
-		System.out.println("QA state = "+project.getQaAssigned());
+		UserContext userContext = new UserContext(1, "admin");
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectService.assignQA(arr, userContext);
+		});
+	    assertEquals("The project should be approved by supervisor.", exception.getMessage());
 	}
 	
 	@Test
 	public void assignQATest() {
-		String outerId = "2020-ECNU-D-02";
+		String outerId = "P01";
 		AssignRoleRequest arr = new AssignRoleRequest();
 		List<Integer> userId = new ArrayList<Integer>();
-		userId.add(1);
+		userId.add(20);
 		arr.setOuterId(outerId);
 		arr.setUserId(userId);
-		Project project = projectService.assignQA(arr);
+		UserContext userContext = new UserContext(1, "admin");
+		Project project = projectService.assignQA(arr, userContext);
 		System.out.println("QA state = "+project.getQaAssigned());
 	}
 
 	@Test
 	public void assignConfigTest_exception() {
-		String outerId = "2020-ECNU-D-00";
-		Project project = projectService.assignConfig(outerId);
-		System.out.println("Config state = "+project.getConfigAssigned());
+		String outerId = "2020-ECNU-D-03";
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectService.assignConfig(outerId);
+		});
+	    assertEquals("The project should be approved by supervisor.", exception.getMessage());
 	}
 	
 	@Test
 	public void assignConfigTest() {
-		String outerId = "2020-ECNU-D-02";
+		String outerId = "P01";
 		Project project = projectService.assignConfig(outerId);
 		System.out.println("Config state = "+project.getConfigAssigned());
 	}
@@ -326,7 +354,66 @@ public class ProjectServiceTest {
 	public void setConfigInfoTest() {
 		String outerId = "2020-ECNU-D-02";
 		String remark = "setConfig";
-		Project project = projectService.setConfigInfo(outerId, remark);
+		Integer userId = new Integer(1);
+		Project project = projectService.setConfigInfo(outerId, remark, userId);
 		System.out.println("State = "+project.getState());
 	}
+	
+	@Test
+	public void setConfigInfoTest_exception1() {
+		String outerId = "2020-ECNU-D-00";
+		String remark = "setConfig";
+		Integer userId = new Integer(1);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectService.setConfigInfo(outerId, remark, userId);
+		});
+	    assertEquals("The project should be approved by supervisor.", exception.getMessage());
+	}
+	
+	@Test
+	public void setConfigInfoTest_exception2() {
+		String outerId = "P01";
+		String remark = "setConfig";
+		Integer userId = new Integer(1);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectService.setConfigInfo(outerId, remark, userId);
+		});
+	    assertEquals("Config, EPG and QA should all be assigned first.", exception.getMessage());
+	}
+	
+	@Test
+	public void endProjectTest() {
+		String outerId = "P04";
+		String remark = " end project";
+		Integer userId = new Integer(1);
+		assertNotNull(projectService.endProject(outerId, remark, userId));
+	}
+	
+	@Test
+	public void endProjectTest_exception() {
+		String outerId = "2020-ECNU-D-03";
+		String remark = " end project";
+		Integer userId = new Integer(1);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			projectService.endProject(outerId, remark, userId);
+		});
+	    assertEquals("The project already expires, cannot be updated, please choose a new one.", exception.getMessage());
+	}
+	
+	@Test
+	public void acceptArchieveTest() {
+		String outerId = "P04";
+		String remark = "project archieve";
+		Integer userId = new Integer(1);
+		assertNotNull(projectService.acceptArchive(outerId, remark, userId));
+	}
+	
+	@Test
+	public void deliverProjectTest() {
+		String outerId = "P03";
+		String remark = "deliver project";
+		Integer userId = new Integer(1);
+		assertNotNull(projectService.projectDelivery(outerId, remark, userId));
+	}
+	
 }

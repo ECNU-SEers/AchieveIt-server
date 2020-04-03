@@ -7,11 +7,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import pretty.april.achieveitserver.service.ProjectBusinessAreaService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 public class ProjectBusinessAreaServiceTest {
 
 	@Autowired
@@ -25,7 +27,7 @@ public class ProjectBusinessAreaServiceTest {
 	
 	@Test
 	public void deleteProjectBusinessAreaByProjectIdTest() {
-		Integer projectId = new Integer(2);
-		assertEquals(0, projectBusinessAreaService.deleteProjectBusinessAreaByProjectId(projectId));
+		Integer projectId = new Integer(1);
+		assertEquals(1, projectBusinessAreaService.deleteProjectBusinessAreaByProjectId(projectId));
 	}
 }

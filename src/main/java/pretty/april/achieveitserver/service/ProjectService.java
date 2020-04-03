@@ -108,7 +108,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @throws Exception
      */
     @Transactional
-    public Project createProject(CreateProjectRequest validator) {
+    public Project createProject(CreateProjectRequest validator, UserContext userContext) {
 //		1.验证该项目是否存在
         boolean projectIsExist = this.checkProjectExistByOuterId(validator.getOuterId());
         if (projectIsExist) {
@@ -119,7 +119,6 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         Project project = new Project();
         BeanUtils.copyProperties(validator, project);
         project.setState("申请立项");
-        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         project.setManagerId(userContext.getUserId());
         project.setManagerName(userContext.getUsername());
 //		通过客户名称和客户ID得到客户表ID
@@ -269,9 +268,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param keyword
      * @return 所有项目名称包含该关键字的项目的详情
      */
-    public PageDTO<RetrieveProjectRequest> retrieveProjectsWithNameIncluingKeywordByPage(Integer pageNo, Integer pageSize, String keyword) {
-    	UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Integer userId = userContext.getUserId();
+    public PageDTO<RetrieveProjectRequest> retrieveProjectsWithNameIncluingKeywordByPage(Integer pageNo, Integer pageSize, String keyword, Integer userId) {
     	
     	Page<Project> page = this.selectProjectByNameWithKeyword(userId, keyword, new Page<Project>(pageNo, pageSize));
     	List<RetrieveProjectRequest> projectsDetails = new ArrayList<RetrieveProjectRequest>();
@@ -288,10 +285,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param keyword
      * @return 所有项目名称包含该关键字的项目名称和项目ID
      */
-    public List<SearchProjectRequest> searchProjectWithNameIncludingKeyword(String keyword) {
-    	UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Integer userId = userContext.getUserId();
-    	
+    public List<SearchProjectRequest> searchProjectWithNameIncludingKeyword(String keyword, Integer userId) {
+
 //		1.利用keyword找到所有项目名称中包含该keyword的所有项目
         List<Project> projects = this.selectProjectByNameWithKeyword(userId, keyword);
 //		2.得到所有项目的详细信息
@@ -369,10 +364,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @param userId 用户ID
      * @return 项目列表
      */
-    public PageDTO<ShowProjectListRequest> showProjects(Integer pageNo, Integer pageSize, String keyword) {
-    	UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Integer userId = userContext.getUserId();
-    	
+    public PageDTO<ShowProjectListRequest> showProjects(Integer pageNo, Integer pageSize, String keyword, Integer userId) {
+
     	Page<Project> page;
 //    	1.利用用户ID查找用户的角色
     	List<Integer> userRoles = userRoleService.getUserRoleByUserId(userId);
@@ -433,7 +426,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return 被更新的项目
      */
     @Transactional
-    public Project updateProjectInfo(UpdateProjectRequest validator) {
+    public Project updateProjectInfo(UpdateProjectRequest validator, Integer userId) {
 //		1.利用projectId找到待修改的project，判断项目是否“结束”或“已归档”
         Project primaryProject = this.getProjectByOuterId(validator.getOuterId());
         if (primaryProject.getState().equals("结束") || primaryProject.getState().equals("已归档")) {
@@ -481,8 +474,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
             milestone.setProjectId(projectId);
             milestone.setProgress(validator.getMilestone());
             milestone.setRecordDate(LocalDate.now());
-            UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            milestone.setRecorderId(userContext.getUserId());
+            milestone.setRecorderId(userId);
             milestoneMapper.insert(milestone);
         }
 
@@ -503,8 +495,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @throws Exception
      */
     @Transactional
-    public Project updateProjectInfoDuringProjectApproval(UpdateProjectRequest validator) {
-        Project project = this.updateProjectInfo(validator);
+    public Project updateProjectInfoDuringProjectApproval(UpdateProjectRequest validator, Integer userId) {
+        Project project = this.updateProjectInfo(validator, userId);
 
 //		2.查询该执行人名下所有的task
         String projectOuterId = validator.getOuterId();
@@ -566,7 +558,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @throws Exception
      */
     @Transactional
-    public ApproveProjectRequest acceptProject(String projectOuterId, String remark) {
+    public ApproveProjectRequest acceptProject(String projectOuterId, String remark, Integer userId) {
     	Project primaryProject = this.getProjectByOuterId(projectOuterId);
     	if (!primaryProject.getState().equals("申请立项") && !primaryProject.getState().equals("立项驳回")) {
     		throw new IllegalArgumentException("The project is not in the state of applying for project approval.");
@@ -593,8 +585,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(primaryProject.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(primaryProject.getState());
-        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        stateChange.setOperatorId(userContext.getUserId());
+        stateChange.setOperatorId(userId);
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
     	
@@ -612,7 +603,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @throws Exception
      */
     @Transactional
-    public ApproveProjectRequest rejectProject(String projectOuterId, String remark) {
+    public ApproveProjectRequest rejectProject(String projectOuterId, String remark, Integer userId) {
     	Project primaryProject = this.getProjectByOuterId(projectOuterId);
     	if (!primaryProject.getState().equals("申请立项") && !primaryProject.getState().equals("立项驳回")) {
     		throw new IllegalArgumentException("The project is not in the state of applying for project approval.");
@@ -639,8 +630,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(primaryProject.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(primaryProject.getState());
-        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        stateChange.setOperatorId(userContext.getUserId());
+        stateChange.setOperatorId(userId);
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
     	
@@ -685,7 +675,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return 该项目
      */
     @Transactional
-    public Project assignQA(AssignRoleRequest request) {
+    public Project assignQA(AssignRoleRequest request, UserContext userContext) {
 //		1.改变project表的qa_assigned
         Project project = this.getProjectByOuterId(request.getOuterId());
         if (!project.getState().equals("已立项")) {
@@ -698,7 +688,6 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         ProjectMember member = new ProjectMember();
         member.setProjectId(projectId);
         member.setProjectName(project.getName());
-        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         member.setLeaderId(userContext.getUserId());
         member.setLeaderName(userContext.getUsername());
         for (Integer id : request.getUserId()) {
@@ -740,7 +729,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return 该项目
      */
     @Transactional
-    public Project assignEPG(AssignRoleRequest request) {
+    public Project assignEPG(AssignRoleRequest request, UserContext userContext) {
 //		1.改变project表的epg_assigned
         Project project = this.getProjectByOuterId(request.getOuterId());
         if (!project.getState().equals("已立项")) {
@@ -753,7 +742,6 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         ProjectMember member = new ProjectMember();
         member.setProjectId(projectId);
         member.setProjectName(project.getName());
-        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         member.setLeaderId(userContext.getUserId());
         member.setLeaderName(userContext.getUsername());
         for (Integer id : request.getUserId()) {
@@ -796,7 +784,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @throws Exception
      */
     @Transactional
-    public Project endProject(String outerId, String remark) {
+    public Project endProject(String outerId, String remark, Integer userId) {
         Project project = this.getProjectByOuterId(outerId);
         if (project.getState().equals("结束") || project.getState().equals("已归档")) {
             throw new IllegalArgumentException("The project already expires, cannot be updated, please choose a new one.");
@@ -810,8 +798,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(project.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
-        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        stateChange.setOperatorId(userContext.getUserId());
+        stateChange.setOperatorId(userId);
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
         
@@ -825,7 +812,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return
      */
     @Transactional
-    public Project acceptArchive(String outerId, String remark) {
+    public Project acceptArchive(String outerId, String remark, Integer userId) {
         Project project = this.getProjectByOuterId(outerId);
         StateChange stateChange = new StateChange();
         stateChange.setFormerState(project.getState());
@@ -836,8 +823,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(project.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
-        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        stateChange.setOperatorId(userContext.getUserId());
+        stateChange.setOperatorId(userId);
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
         
@@ -851,7 +837,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return
      */
     @Transactional
-    public Project setConfigInfo(String outerId, String remark) {
+    public Project setConfigInfo(String outerId, String remark, Integer userId) {
 //		1.改变project表的git_assigned
         Project project = this.getProjectByOuterId(outerId);
         if (!project.getState().equals("已立项")) {
@@ -879,8 +865,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(project.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
-        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        stateChange.setOperatorId(userContext.getUserId());
+        stateChange.setOperatorId(userId);
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
 
@@ -893,7 +878,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      * @return
      */
     @Transactional
-    public Project projectDelivery(String outerId, String remark) {
+    public Project projectDelivery(String outerId, String remark, Integer userId) {
     	Project project = this.getProjectByOuterId(outerId);
     	StateChange stateChange = new StateChange();
         stateChange.setFormerState(project.getState());
@@ -904,8 +889,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setProjectId(project.getId());
         stateChange.setChangeDate(LocalDateTime.now());
         stateChange.setLatterState(project.getState());
-        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        stateChange.setOperatorId(userContext.getUserId());
+        stateChange.setOperatorId(userId);
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
         

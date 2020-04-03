@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,6 +26,7 @@ import pretty.april.achieveitserver.request.project.SearchProjectRequest;
 import pretty.april.achieveitserver.request.project.ShowProjectListRequest;
 import pretty.april.achieveitserver.request.project.UpdateProjectInfoRequest;
 import pretty.april.achieveitserver.request.project.UpdateProjectRequest;
+import pretty.april.achieveitserver.security.UserContext;
 import pretty.april.achieveitserver.service.ProjectService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
@@ -50,7 +52,9 @@ public class ProjectController {
 	 */
 	@GetMapping("/search")
 	public Response<List<SearchProjectRequest>> searchProjectUsingKeyword(@RequestParam(value="keyword") String keyword) {
-		return ResponseUtils.successResponse(projectService.searchProjectWithNameIncludingKeyword(keyword));
+    	UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		return ResponseUtils.successResponse(projectService.searchProjectWithNameIncludingKeyword(keyword, userId));
 	}
 	
 	/**
@@ -74,7 +78,9 @@ public class ProjectController {
 	public Response<PageDTO<RetrieveProjectRequest>> retrieveProjectInfoWithNameIncluingKeyword(@RequestParam(value="pageNo") Integer pageNo,
 			 																					@RequestParam(value="pageSize") Integer pageSize,
 			 																					@RequestParam(value="keyword") String keyword) {
-		return ResponseUtils.successResponse(projectService.retrieveProjectsWithNameIncluingKeywordByPage(pageNo, pageSize, keyword));
+    	UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		return ResponseUtils.successResponse(projectService.retrieveProjectsWithNameIncluingKeywordByPage(pageNo, pageSize, keyword, userId));
 	}
 	
 	/**
@@ -84,7 +90,8 @@ public class ProjectController {
 	 */
 	@PostMapping("/create")
 	public Response<?> createProject(@RequestBody CreateProjectRequest request) {
-		Project project = projectService.createProject(request);
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Project project = projectService.createProject(request, userContext);
 		externalSystemController.sendmail("申请立项", project.getSupervisorId());
 		return ResponseUtils.successResponse();	
 	}
@@ -99,8 +106,9 @@ public class ProjectController {
 	public Response<PageDTO<ShowProjectListRequest>> showProjects(@RequestParam(value="pageNo") Integer pageNo,
 													 @RequestParam(value="pageSize") Integer pageSize,
 													 @RequestParam(value="keyword") String keyword) {
-		
-		return ResponseUtils.successResponse(projectService.showProjects(pageNo, pageSize, keyword));
+    	UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		return ResponseUtils.successResponse(projectService.showProjects(pageNo, pageSize, keyword, userId));
 	}
 	
 	/**
@@ -110,7 +118,9 @@ public class ProjectController {
 	 */
 	@PutMapping("/end")
 	public Response<?> endProject(@RequestParam(value="outerId") String outerId, @RequestParam(value="remark") String remark) {
-		projectService.endProject(outerId, remark);
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		projectService.endProject(outerId, remark, userId);
 		return ResponseUtils.successResponse();	
 	}
 	
@@ -121,7 +131,9 @@ public class ProjectController {
 	 */
 	@PutMapping("/approve/archive")
 	public Response<?> approveArchive(@RequestParam(value="outerId") String outerId, @RequestParam(value="remark") String remark) {
-		projectService.acceptArchive(outerId, remark);
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		projectService.acceptArchive(outerId, remark, userId);
 		return ResponseUtils.successResponse();	
 	}
 	
@@ -146,7 +158,8 @@ public class ProjectController {
 	 */
 	@PutMapping("/assign/qa")
 	public Response<?> assignQA(@RequestBody AssignRoleRequest request) {
-		Project project = projectService.assignQA(request);
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Project project = projectService.assignQA(request, userContext);
 		externalSystemController.sendmail("已分配QA", project.getManagerId());
 		return ResponseUtils.successResponse();	
 	}
@@ -158,7 +171,8 @@ public class ProjectController {
 	 */
 	@PutMapping("/assign/epg")
 	public Response<?> assignEPG(@RequestBody AssignRoleRequest request) {
-		Project project = projectService.assignEPG(request);
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Project project = projectService.assignEPG(request, userContext);
 		externalSystemController.sendmail("已分配EPG", project.getManagerId());
 		return ResponseUtils.successResponse();	
 	}
@@ -170,7 +184,9 @@ public class ProjectController {
 	 */
 	@PutMapping("/accept")
 	public Response<?> acceptProject(@RequestParam(value="projectOuterId") String projectOuterId, @RequestParam(value="remark") String remark) {
-		projectService.acceptProject(projectOuterId, remark);
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		projectService.acceptProject(projectOuterId, remark, userId);
 		externalSystemController.sendmail("立项成功", 1);
 		externalSystemController.sendmail("立项成功", 2);
 		externalSystemController.sendmail("立项成功", 3);
@@ -188,7 +204,9 @@ public class ProjectController {
 	 */
 	@PutMapping("/reject")
 	public Response<?> rejectProject(@RequestParam(value="projectOuterId") String projectOuterId, @RequestParam(value="remark") String remark) {
-		projectService.rejectProject(projectOuterId, remark);
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		projectService.rejectProject(projectOuterId, remark, userId);
 		return ResponseUtils.successResponse();	
 	}
 	
@@ -220,7 +238,9 @@ public class ProjectController {
 	 */
 	@PutMapping("/update")
 	public Response<?> updateProject(@RequestBody UpdateProjectRequest request) {
-		projectService.updateProjectInfo(request);
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    	Integer userId = userContext.getUserId();
+		projectService.updateProjectInfo(request, userId);
 		return ResponseUtils.successResponse();
 	}
 	
@@ -231,7 +251,9 @@ public class ProjectController {
 	 */
 	@PutMapping("/update/reject")
 	public Response<?> updateProjectDuringProjectApproval(@RequestBody UpdateProjectRequest request) {
-		projectService.updateProjectInfoDuringProjectApproval(request);
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    	Integer userId = userContext.getUserId();
+		projectService.updateProjectInfoDuringProjectApproval(request, userId);
 		return ResponseUtils.successResponse();
 	}
 
@@ -242,7 +264,9 @@ public class ProjectController {
 	 */
 	@PutMapping("/set/config")
 	public Response<?> setConfigInfo(@RequestParam(value="outerId") String outerId, @RequestParam(value="remark") String remark) {
-		projectService.setConfigInfo(outerId, remark);
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		projectService.setConfigInfo(outerId, remark, userId);
 		return ResponseUtils.successResponse();
 	}
 	
@@ -253,7 +277,9 @@ public class ProjectController {
 	 */
 	@PutMapping("/deliver")
 	public Response<?> projectDelivery(@RequestParam(value="outerId") String outerId, @RequestParam(value="remark") String remark) {
-		projectService.projectDelivery(outerId, remark);
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		projectService.projectDelivery(outerId, remark, userId);
 		return ResponseUtils.successResponse();
 	}
 }

@@ -95,9 +95,7 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @param userId 用户ID
 	 * @return 该用户在该时间范围内的所有工时信息
 	 */
-	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourByDates(Integer pageNo, Integer pageSize, Long startDateTimestamp, Long endDateTimestamp) {
-		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Integer userId = userContext.getUserId();
+	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourByDates(Integer pageNo, Integer pageSize, Long startDateTimestamp, Long endDateTimestamp, Integer userId) {
         
         LocalDate startDate = this.longToLocalDate(startDateTimestamp);
         LocalDate endDate = this.longToLocalDate(endDateTimestamp);     
@@ -128,7 +126,7 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @return
 	 * @throws Exception 
 	 */
-	public String createLaborHour(CreateLaborHourRequest request) {
+	public String createLaborHour(CreateLaborHourRequest request, Integer userId) {
 //		1.如果工时填写的日期在今天日期的3天之前，则不能提交
 		LocalDate localdate1 = this.longToLocalDate(request.getDate());
 		LocalDate localdate2 = LocalDate.now();
@@ -138,8 +136,6 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 		}
 		
 //		2.一天之内工时不超过24小时
-		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Integer userId = userContext.getUserId();
 //      找到这个人在填写的工时日期（loacldate1）当天的工时总和
         LocalTime startTime = this.longToLocalTime(request.getStartTime());
         LocalTime endTime = this.longToLocalTime(request.getEndTime());
@@ -197,9 +193,7 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @param userId
 	 * @return
 	 */
-	public PageDTO<ShowLaborHourListRequest> showList(Integer pageNo, Integer pageSize) {
-		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Integer userId = userContext.getUserId();
+	public PageDTO<ShowLaborHourListRequest> showList(Integer pageNo, Integer pageSize, Integer userId) {
 		
 		Page<LaborHour> page = new Page<>(pageNo, pageSize);
 		QueryWrapper<LaborHour> queryWrapper = new QueryWrapper<LaborHour>();
@@ -280,9 +274,7 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @param userId
 	 * @return
 	 */
-	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourOfSubordinate(Integer pageNo, Integer pageSize, Long startDateTimestamp, Long endDateTimestamp) {
-		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Integer userId = userContext.getUserId();
+	public PageDTO<RetrieveLaborHourRequest> retrieveLaborHourOfSubordinate(Integer pageNo, Integer pageSize, Long startDateTimestamp, Long endDateTimestamp, Integer userId) {
         
         LocalDate startDate = this.longToLocalDate(startDateTimestamp);
         LocalDate endDate = this.longToLocalDate(endDateTimestamp);
@@ -321,9 +313,7 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @param userId
 	 * @return
 	 */
-	public PageDTO<ShowSubordinateLaborHourListRequest> showSubordinateLists(Integer pageNo, Integer pageSize) {
-		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Integer userId = userContext.getUserId();
+	public PageDTO<ShowSubordinateLaborHourListRequest> showSubordinateLists(Integer pageNo, Integer pageSize, Integer userId) {
 		
 		Page<LaborHour> page = this.showSubordinateList(userId, new Page<LaborHour>(pageNo, pageSize));
 		List<ShowSubordinateLaborHourListRequest> laborHourDetails = new ArrayList<ShowSubordinateLaborHourListRequest>();

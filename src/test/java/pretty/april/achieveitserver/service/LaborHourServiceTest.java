@@ -1,18 +1,18 @@
 package pretty.april.achieveitserver.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import pretty.april.achieveitserver.dto.PageDTO;
-import pretty.april.achieveitserver.entity.LaborHour;
 import pretty.april.achieveitserver.request.laborhour.CreateLaborHourRequest;
 import pretty.april.achieveitserver.request.laborhour.RetrieveLaborHourRequest;
 import pretty.april.achieveitserver.request.laborhour.ShowLaborHourListRequest;
@@ -20,8 +20,11 @@ import pretty.april.achieveitserver.request.laborhour.ShowSubordinateLaborHourLi
 import pretty.april.achieveitserver.request.laborhour.UpdateLaborHourRequest;
 import pretty.april.achieveitserver.service.LaborHourService;
 
+
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 public class LaborHourServiceTest {
 
 	@Autowired
@@ -33,7 +36,8 @@ public class LaborHourServiceTest {
 		LocalDate date2 = LocalDate.of(2020, 3, 30);
 		Long startDateTimestamp = date1.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		Long endDateTimestamp = date2.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		PageDTO<RetrieveLaborHourRequest> request = laborHourService.retrieveLaborHourByDates(1, 10, startDateTimestamp, endDateTimestamp);
+		Integer userId = new Integer(1);
+		PageDTO<RetrieveLaborHourRequest> request = laborHourService.retrieveLaborHourByDates(1, 10, startDateTimestamp, endDateTimestamp, userId);
 		System.out.println("size = "+request.getTotal());
 		for (RetrieveLaborHourRequest r: request.getItems()) {
 			System.out.println("id = "+r.getId());
@@ -49,6 +53,7 @@ public class LaborHourServiceTest {
 	
 	@Test
 	public void createLaborHourTest() throws Exception {
+		Integer userId = new Integer(1);
 		CreateLaborHourRequest request = new CreateLaborHourRequest();
 		request.setDate(1585816643323L);
 		request.setFunctionId(3);
@@ -61,11 +66,12 @@ public class LaborHourServiceTest {
 		request.setSubactivityName("act3");
 		request.setStartTime(1585816643323L);
 		request.setEndTime(1585816843323L);
-		laborHourService.createLaborHour(request);
+		laborHourService.createLaborHour(request, userId);
 	}
 	
 	@Test
 	public void createLaborHourTest_more_than_3days() throws Exception {
+		Integer userId = new Integer(1);
 		CreateLaborHourRequest request = new CreateLaborHourRequest();
 		request.setDate(1085587265378L);
 		request.setFunctionId(3);
@@ -78,11 +84,16 @@ public class LaborHourServiceTest {
 		request.setSubactivityName("act3");
 		request.setStartTime(1585587265378L);
 		request.setEndTime(1585588265378L);
-		laborHourService.createLaborHour(request);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			laborHourService.createLaborHour(request, userId);
+		});
+	    assertEquals("You can only submit your labor hour info with three days.", exception.getMessage());
+		
 	}
 	
 	@Test
 	public void createLaborHourTest_overlap() throws Exception {
+		Integer userId = new Integer(1);
 		CreateLaborHourRequest request = new CreateLaborHourRequest();
 		request.setDate(1585816643323L);
 		request.setFunctionId(3);
@@ -95,12 +106,17 @@ public class LaborHourServiceTest {
 		request.setSubactivityName("act3");
 		request.setStartTime(1585816643323L);
 		request.setEndTime(1585816843323L);
-		laborHourService.createLaborHour(request);
+		laborHourService.createLaborHour(request, userId);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			laborHourService.createLaborHour(request, userId);
+		});
+	    assertEquals("The time period cannot overlap.", exception.getMessage());
 	}
 	
 	@Test
 	public void showListTest() {
-		PageDTO<ShowLaborHourListRequest> request = laborHourService.showList(1, 10);
+		Integer userId = new Integer(1);
+		PageDTO<ShowLaborHourListRequest> request = laborHourService.showList(1, 10, userId);
 		System.out.println("size = "+request.getTotal());
 		for (ShowLaborHourListRequest r: request.getItems()) {
 			System.out.println("id = "+r.getId());
@@ -149,9 +165,10 @@ public class LaborHourServiceTest {
 		request.setSubactivityName("act3");
 		request.setStartTime(1585587265378L);
 		request.setEndTime(1585587537813L);
-		String result = laborHourService.updateLaborHour(request);
-		System.out.println(result);
-		System.out.println("date = "+request.getDate());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			laborHourService.updateLaborHour(request);
+		});
+	    assertEquals("You cannot update the info if passed.", exception.getMessage());
 	}
 	
 	@Test
@@ -160,7 +177,8 @@ public class LaborHourServiceTest {
 		LocalDate date2 = LocalDate.of(2020, 3, 27);
 		Long startDateTimestamp = date1.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		Long endDateTimestamp = date2.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		PageDTO<RetrieveLaborHourRequest> request = laborHourService.retrieveLaborHourOfSubordinate(1, 10, startDateTimestamp, endDateTimestamp);
+		Integer userId = new Integer(1);
+		PageDTO<RetrieveLaborHourRequest> request = laborHourService.retrieveLaborHourOfSubordinate(1, 10, startDateTimestamp, endDateTimestamp, userId);
 		System.out.println("size = "+request.getTotal());
 		for (RetrieveLaborHourRequest r: request.getItems()) {
 			System.out.println("id = "+r.getId());
@@ -174,7 +192,8 @@ public class LaborHourServiceTest {
 	
 	@Test
 	public void showSubordinateListsTest() {
-		PageDTO<ShowSubordinateLaborHourListRequest> request = laborHourService.showSubordinateLists(1, 10);
+		Integer userId = new Integer(1);
+		PageDTO<ShowSubordinateLaborHourListRequest> request = laborHourService.showSubordinateLists(1, 10, userId);
 		System.out.println("size = "+request.getTotal());
 		for (ShowSubordinateLaborHourListRequest r: request.getItems()) {
 			System.out.println("id = "+r.getId());
@@ -197,7 +216,10 @@ public class LaborHourServiceTest {
 	@Test
 	public void acceptLaborHourInfoTest_exception() {
 		Integer id = 2;
-		laborHourService.acceptLaborHourInfo(id);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			laborHourService.acceptLaborHourInfo(id);
+		});
+	    assertEquals("The record has already been passed.", exception.getMessage());
 	}
 	
 	@Test
@@ -209,6 +231,9 @@ public class LaborHourServiceTest {
 	@Test
 	public void returnLaborHourInfoTest_exception() {
 		Integer id = 3;
-		laborHourService.returnLaborHourInfo(id);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			laborHourService.returnLaborHourInfo(id);
+		});
+	    assertEquals("The record has already been returned.", exception.getMessage());
 	}
 }

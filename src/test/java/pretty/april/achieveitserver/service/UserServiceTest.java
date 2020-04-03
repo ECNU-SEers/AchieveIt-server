@@ -54,6 +54,12 @@ class UserServiceTest {
     }
     
     @Test
+    public void getByIdTest() {
+    	Integer id = new Integer(1);
+    	assertNotNull(userService.getById(id));
+    }
+    
+    @Test
 	public void getAllSupervisorTest() {
 		List<Supervisor> allUsers = userService.getAllSupervisors();
 		for (Supervisor user: allUsers) {

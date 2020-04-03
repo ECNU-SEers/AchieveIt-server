@@ -1,6 +1,7 @@
 package pretty.april.achieveitserver.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +17,7 @@ import pretty.april.achieveitserver.request.laborhour.RetrieveLaborHourRequest;
 import pretty.april.achieveitserver.request.laborhour.ShowLaborHourListRequest;
 import pretty.april.achieveitserver.request.laborhour.ShowSubordinateLaborHourListRequest;
 import pretty.april.achieveitserver.request.laborhour.UpdateLaborHourRequest;
+import pretty.april.achieveitserver.security.UserContext;
 import pretty.april.achieveitserver.service.LaborHourService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
@@ -40,7 +42,9 @@ public class LaborHourController {
 			 																	@RequestParam(value="pageSize") Integer pageSize,
 			 																	@RequestParam(value="startDateTimestamp") Long startDateTimestamp,
 			 																	@RequestParam(value="endDateTimestamp") Long endDateTimestamp) {
-		return ResponseUtils.successResponse(laborHourService.retrieveLaborHourByDates(pageNo, pageSize, startDateTimestamp, endDateTimestamp));
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		return ResponseUtils.successResponse(laborHourService.retrieveLaborHourByDates(pageNo, pageSize, startDateTimestamp, endDateTimestamp, userId));
 	}
 	
 	/**
@@ -51,7 +55,9 @@ public class LaborHourController {
 	 */
 	@PostMapping("/create")
 	public Response<?> createProject(@RequestBody CreateLaborHourRequest request) throws Exception {
-		laborHourService.createLaborHour(request);
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		laborHourService.createLaborHour(request, userId);
 		return ResponseUtils.successResponse();
 	}
 	
@@ -65,7 +71,9 @@ public class LaborHourController {
 	@GetMapping("/show/list")
 	public Response<PageDTO<ShowLaborHourListRequest>> showList(@RequestParam(value="pageNo") Integer pageNo,
 			 													@RequestParam(value="pageSize") Integer pageSize) {
-		return ResponseUtils.successResponse(laborHourService.showList(pageNo, pageSize));
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		return ResponseUtils.successResponse(laborHourService.showList(pageNo, pageSize, userId));
 	}
 	
 	/**
@@ -94,7 +102,9 @@ public class LaborHourController {
 																					  @RequestParam(value="pageSize") Integer pageSize,
 																					  @RequestParam(value="startDateTimestamp") Long startDateTimestamp,
 																					  @RequestParam(value="endDateTimestamp") Long endDateTimestamp) {
-		return ResponseUtils.successResponse(laborHourService.retrieveLaborHourOfSubordinate(pageNo, pageSize, startDateTimestamp, endDateTimestamp));
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		return ResponseUtils.successResponse(laborHourService.retrieveLaborHourOfSubordinate(pageNo, pageSize, startDateTimestamp, endDateTimestamp, userId));
 	}
 	
 	/**
@@ -107,7 +117,9 @@ public class LaborHourController {
 	@GetMapping("/show/subordinate/list")
 	public Response<PageDTO<ShowSubordinateLaborHourListRequest>> showSubordinateList(@RequestParam(value="pageNo") Integer pageNo,
 																					  @RequestParam(value="pageSize") Integer pageSize) {
-		return ResponseUtils.successResponse(laborHourService.showSubordinateLists(pageNo, pageSize));
+		UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userContext.getUserId();
+		return ResponseUtils.successResponse(laborHourService.showSubordinateLists(pageNo, pageSize, userId));
 	}
 
 	/**

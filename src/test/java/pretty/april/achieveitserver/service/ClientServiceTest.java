@@ -24,7 +24,7 @@ public class ClientServiceTest {
 	public void getIdByOuterIdAndCompanyTest() {
 		String outerId = "C01";
 		String company = "阿里巴巴";
-		assertEquals(1,clientService.getIdByOuterIdAndCompany(outerId, company));
+		assertNotNull(clientService.getIdByOuterIdAndCompany(outerId, company));
 	}
 	
 	@Test
