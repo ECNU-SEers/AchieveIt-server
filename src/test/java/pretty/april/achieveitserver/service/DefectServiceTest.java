@@ -12,7 +12,7 @@ import pretty.april.achieveitserver.request.EditDefectRequest;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -85,6 +85,18 @@ class DefectServiceTest {
         defectTransitionRequest.setAssigneeName("admin");
         defectTransitionRequest.setDue(LocalDateTime.now().plusDays(2));
         defectService.transition(defectId, projectId, defectTransitionRequest);
+
+        DefectTransitionRequest fixTransition = new DefectTransitionRequest();
+        fixTransition.setAction("fix");
+        defectService.transition(defectId, projectId, fixTransition);
+
+        DefectTransitionRequest closeTransition = new DefectTransitionRequest();
+        closeTransition.setAction("close");
+        defectService.transition(defectId, projectId, closeTransition);
+
+        DefectTransitionRequest reopenTransition = new DefectTransitionRequest();
+        reopenTransition.setAction("reopen");
+        defectService.transition(defectId, projectId, reopenTransition);
     }
 
     @Test

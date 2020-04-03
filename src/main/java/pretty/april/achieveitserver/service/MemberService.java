@@ -112,7 +112,7 @@ public class MemberService {
                     .eq("project_id", projectId)
                     .eq("user_id", memberId));
         }
-        if (!CollectionUtils.isEmpty(request.getRoles())) {
+        if (request.getRoles() != null) {
             List<UserRole> userRoles = userRoleMapper.selectList(new QueryWrapper<UserRole>()
                     .eq("user_id", memberId)
                     .eq("project_id", projectId));

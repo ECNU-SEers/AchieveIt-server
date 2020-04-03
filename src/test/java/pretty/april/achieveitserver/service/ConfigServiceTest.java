@@ -36,8 +36,8 @@ class ConfigServiceTest {
         int projectId = 90901213;
         AddProjectConfigRequest request = new AddProjectConfigRequest();
         request.setFileServerDir("test");
-        request.setIsFileServerDirConfirmed(false);
-        request.setIsMailConfirmed(false);
+        request.setIsFileServerDirConfirmed(true);
+        request.setIsMailConfirmed(true);
         request.setMail("test");
         configService.createConfig(projectId, request);
         EditConfigRequest editConfigRequest = new EditConfigRequest();

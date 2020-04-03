@@ -81,7 +81,7 @@ public class FunctionService {
                 .eq("id", functionId).eq("project_id", projectId)) == null) {
             throw new IllegalArgumentException("Cannot find project function");
         }
-        projectFunctionMapper.deleteById(functionId);
+        projectFunctionMapper.delete(new QueryWrapper<ProjectFunction>().eq("id", functionId).or().eq("parent_id", functionId));
     }
 
     public List<SimpleFunctionDTO> getSimpleFunctions(Integer projectId) {

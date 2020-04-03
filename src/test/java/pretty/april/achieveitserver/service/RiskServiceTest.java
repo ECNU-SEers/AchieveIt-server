@@ -13,6 +13,8 @@ import pretty.april.achieveitserver.request.AddRiskRequest;
 import pretty.april.achieveitserver.request.EditRiskRequest;
 import pretty.april.achieveitserver.request.ImportRiskRequest;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
@@ -50,6 +52,7 @@ class RiskServiceTest {
         addRiskRequest.setLevel(1);
         addRiskRequest.setType("");
         addRiskRequest.setDescription("test");
+        addRiskRequest.setRelatedPersons(Collections.singletonList(1));
         Integer riskId = riskService.addRisk(projectId, addRiskRequest);
         assertNotNull(riskId);
     }
