@@ -19,7 +19,9 @@ public class EditRiskRequest {
 
     private String strategy;
 
-    private Integer ownId;
+    private Integer ownerId;
+
+    private String ownerName;
 
     private Integer trackingFreq;
 

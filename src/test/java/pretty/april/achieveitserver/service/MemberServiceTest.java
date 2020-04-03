@@ -110,7 +110,7 @@ class MemberServiceTest {
         assertNotNull(projectId);
         int memberId = 1;
         AddProjectMemberRequest addProjectMemberRequest = new AddProjectMemberRequest();
-        addProjectMemberRequest.setRoleId(Collections.singletonList(1));
+        addProjectMemberRequest.setRoleId(new ArrayList<>());
         addProjectMemberRequest.setUserId(memberId);
         addProjectMemberRequest.setUsername("admin");
         addProjectMemberRequest.setLeaderId(memberId);
@@ -118,7 +118,9 @@ class MemberServiceTest {
         memberService.addProjectMember(addProjectMemberRequest, projectId);
         assertNotNull(memberService.getMember(projectId, memberId));
         EditMemberRequest editMemberRequest = new EditMemberRequest();
-        editMemberRequest.setRoles(new ArrayList<>());
+        editMemberRequest.setLeaderId(memberId);
+        editMemberRequest.setLeaderName("admin");
+        editMemberRequest.setRoles(Collections.singletonList(1));
         memberService.editMember(memberId, projectId, editMemberRequest);
     }
 

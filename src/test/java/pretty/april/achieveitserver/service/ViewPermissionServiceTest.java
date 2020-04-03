@@ -26,7 +26,8 @@ class ViewPermissionServiceTest {
 
     @Test
     void getViewPermissions() {
-        assertNotNull(viewPermissionService.getAllPermissions());
+        int userId = 1;
+        assertNotNull(viewPermissionService.getViewPermissions(userId));
     }
 
     @Test

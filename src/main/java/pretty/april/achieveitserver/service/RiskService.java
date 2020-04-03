@@ -70,9 +70,9 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
             throw new IllegalArgumentException("Cannot find risk");
         }
         ProjectRisk risk = new ProjectRisk();
+        BeanUtils.copyProperties(request, risk);
         risk.setProjectId(projectId);
         risk.setId(riskId);
-        BeanUtils.copyProperties(request, risk);
         riskMapper.updateById(risk);
     }
 
