@@ -91,6 +91,12 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     
     @Autowired
     private ProjectIdMapper projectIdMapper;
+    
+    @Autowired
+    private RolePermissionService rolePermissionService;
+    
+    @Autowired
+    private RolePermissionMapper rolePermissionMapper;
 
     /**
      * 获得所有项目id和name
@@ -708,6 +714,12 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
                 userRoleMapper.insert(userRole);
             }
         }
+//      将role对应的permission加入到role_permission
+        Integer permissionId = new Integer(3);
+        if (!rolePermissionService.checkRolePermissionExistByRoleIdAndPermissionId(roleId, permissionId)) {
+        	RolePermission rolePermission = new RolePermission(roleId, permissionId);
+        	rolePermissionMapper.insert(rolePermission);
+        }
 
 //		4.查询该执行人名下所有的task
         String projectOuterId = request.getOuterId();
@@ -761,6 +773,12 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
                 userRole.setProjectId(projectId);
                 userRoleMapper.insert(userRole);
             }
+        }
+//      将role对应的permission加入到role_permission
+        Integer permissionId = new Integer(3);
+        if (!rolePermissionService.checkRolePermissionExistByRoleIdAndPermissionId(roleId, permissionId)) {
+        	RolePermission rolePermission = new RolePermission(roleId, permissionId);
+        	rolePermissionMapper.insert(rolePermission);
         }
 
 //		4.查询该执行人名下所有的task
