@@ -123,4 +123,16 @@ public class ProjectDeviceController {
 //		projectDeviceService.removeProjectDevice(outerId);
 //		return ResponseUtils.successResponse();
 //	}
+	
+	/**
+	 * 归还设备
+	 * @param outerId
+	 * @param projectId
+	 * @return
+	 */
+	@PutMapping("/return")
+	public Response<?> returnProjectDevice(@RequestParam(value="deviceOuterId") String deviceOuterId, @RequestParam(value="projectId") Integer projectId) {
+		projectDeviceService.returnProjectDevice(deviceOuterId, projectId);
+		return ResponseUtils.successResponse();
+	}
 }
