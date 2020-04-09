@@ -61,7 +61,12 @@ public class ViewPermissionService {
         List<UserViewRole> userViewRoles = userViewRoleMapper.selectList(new QueryWrapper<UserViewRole>()
                 .eq("user_id", userId));
         List<Integer> roles = userViewRoles.stream().map(UserViewRole::getRoleId).collect(Collectors.toList());
-        List<ViewPermission> viewPermissions = viewRolePermissionMapper.selectViewPermissionWithModuleByRoleIdIn(roles);
+        List<ViewPermission> viewPermissions;
+        if (!CollectionUtils.isEmpty(roles)) {
+            viewPermissions = viewRolePermissionMapper.selectViewPermissionWithModuleByRoleIdIn(roles);
+        } else {
+            viewPermissions = new ArrayList<>();
+        }
         Map<String, Object> map = new HashMap<>();
         Map<String, List<ViewPermissionDTO>> permissions = viewPermissions.stream()
                 .map(o -> new ViewPermissionDTO(o.getId(), o.getName(), o.getModule()))
