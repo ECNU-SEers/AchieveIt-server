@@ -32,4 +32,40 @@ public class BusinessAreaDictService extends ServiceImpl<BusinessAreaDictMapper,
 	public List<BusinessAreaDict> getAllBusinessAreas() {
 		return this.baseMapper.selectAllBusinessAreaDict();
 	}
+	
+	/**
+	 * 增加业务领域
+	 * @param businessAreas
+	 * @return
+	 */
+	public int addBusinessAreas(List<String> businessAreas) {
+		return this.baseMapper.insertBatch(businessAreas);
+	}
+	
+	public int insertBusinessArea(String businessAreaName) {
+		BusinessAreaDict businessAreaDict = new BusinessAreaDict();
+		businessAreaDict.setName(businessAreaName);
+		return this.baseMapper.insert(businessAreaDict);
+	}
+	
+	/**
+	 * 修改业务领域
+	 * @param id
+	 * @param newBusinessAreaName
+	 * @return
+	 */
+	public int updateBusinessArea(Integer id, String newBusinessAreaName) {
+		BusinessAreaDict businessArea = this.baseMapper.selectById(id);
+		businessArea.setName(newBusinessAreaName);
+		return this.baseMapper.updateById(businessArea);
+	}
+	
+	/**
+	 * 删除业务领域
+	 * @param businessAreaIds
+	 * @return
+	 */
+	public int deleteBusinessAreas(List<Integer> businessAreaIds) {
+		return this.baseMapper.deleteBatchIds(businessAreaIds);
+	}
 }

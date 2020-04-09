@@ -32,4 +32,36 @@ public class SkillDictService extends ServiceImpl<SkillDictMapper, SkillDict> {
 	public List<SkillDict> getAllSkills() {
 		return this.baseMapper.selectAllSkillDict();
 	}
+	
+	/**
+	 * 增加技术
+	 * @param skillName
+	 * @return
+	 */
+	public int insertSkill(String skillName) {
+		SkillDict skillDict = new SkillDict();
+		skillDict.setName(skillName);
+		return this.baseMapper.insert(skillDict);
+	}
+	
+	/**
+	 * 更新技术
+	 * @param id
+	 * @param newSkillName
+	 * @return
+	 */
+	public int updateSkill(Integer id, String newSkillName) {
+		SkillDict skill = this.baseMapper.selectById(id);
+		skill.setName(newSkillName);
+		return this.baseMapper.updateById(skill);
+	}
+	
+	/**
+	 * 删除技术
+	 * @param skills
+	 * @return
+	 */
+	public int deleteSkills(List<Integer> skillIds) {
+		return this.baseMapper.deleteBatchIds(skillIds);
+	}
 }
