@@ -3,13 +3,11 @@ package pretty.april.achieveitserver.controller;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pretty.april.achieveitserver.dto.*;
-import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.request.AddViewRoleRequest;
 import pretty.april.achieveitserver.request.EditUserRolesRequest;
 import pretty.april.achieveitserver.request.EditViewRoleRequest;
 import pretty.april.achieveitserver.request.UserViewRoleRequest;
 import pretty.april.achieveitserver.security.UserContext;
-import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.service.ViewPermissionService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
@@ -29,7 +27,7 @@ public class ViewPermissionController {
     }
 
     @GetMapping("/view/permissions/me")
-    public Response<Map<String, List<ViewPermissionDTO>>> getViewPermissions() {
+    public Response<Map<String, Object>> getViewPermissions() {
         UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseUtils.successResponse(viewPermissionService.getViewPermissions(userContext.getUserId()));
     }
