@@ -5,6 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class SimpleEmployeeDTO {
-    private String jobNumber;
+public class SimpleUserDTO {
+    private Integer userId;
+    private String username;
+    private String realName;
 }

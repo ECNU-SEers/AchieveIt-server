@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.request.AddUserRequest;
+import pretty.april.achieveitserver.request.AddUsersRequest;
 import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
@@ -27,9 +28,20 @@ public class AdminController {
      * @param request
      * @return
      */
-    @PostMapping("/user")
     public Response<?> addUser(@RequestBody AddUserRequest request) {
         userService.addUser(request);
+        return ResponseUtils.successResponse();
+    }
+
+    /**
+     * 添加用户
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("user")
+    public Response<?> addUsers(@RequestBody AddUsersRequest request) {
+        userService.addUsers(request);
         return ResponseUtils.successResponse();
     }
 }

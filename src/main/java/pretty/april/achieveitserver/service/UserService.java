@@ -1,32 +1,41 @@
 package pretty.april.achieveitserver.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import pretty.april.achieveitserver.dto.SimpleEmployeeDTO;
+import org.springframework.util.CollectionUtils;
+import pretty.april.achieveitserver.dto.SimpleUserDTO;
+import pretty.april.achieveitserver.entity.Employee;
 import pretty.april.achieveitserver.entity.User;
+import pretty.april.achieveitserver.mapper.EmployeeMapper;
 import pretty.april.achieveitserver.mapper.UserMapper;
 import pretty.april.achieveitserver.mapper.ViewRolePermissionMapper;
 import pretty.april.achieveitserver.model.Supervisor;
 import pretty.april.achieveitserver.request.AddUserRequest;
+import pretty.april.achieveitserver.request.AddUsersRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService extends ServiceImpl<UserMapper, User> {
 
     private UserMapper userMapper;
+
     private ViewRolePermissionMapper viewRolePermissionMapper;
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserService(UserMapper userMapper, ViewRolePermissionMapper viewRolePermissionMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    private EmployeeMapper employeeMapper;
+
+    public UserService(UserMapper userMapper, ViewRolePermissionMapper viewRolePermissionMapper, BCryptPasswordEncoder bCryptPasswordEncoder, EmployeeMapper employeeMapper) {
         this.userMapper = userMapper;
         this.viewRolePermissionMapper = viewRolePermissionMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.employeeMapper = employeeMapper;
     }
 
     public User getByUsername(String username) {
@@ -47,9 +56,28 @@ public class UserService {
         userMapper.insert(user);
     }
 
-    public List<SimpleEmployeeDTO> getEmployees() {
+    public void addUsers(AddUsersRequest request) {
+        if (CollectionUtils.isEmpty(request.getUsernames())) {
+            return;
+        }
+        List<Employee> employees = employeeMapper.selectList(new QueryWrapper<Employee>().in("job_number", request.getUsernames()));
+        if (employees.size() != request.getUsernames().size()) {
+            throw new IllegalArgumentException("Cannot find employee.");
+        }
+        List<User> users = new ArrayList<>();
+        for (Employee employee : employees) {
+            User user = new User();
+            BeanUtils.copyProperties(employees, user);
+            user.setUsername(employee.getJobNumber());
+            user.setPassword(bCryptPasswordEncoder.encode(employee.getJobNumber()));
+            users.add(user);
+        }
+        this.saveBatch(users);
+    }
+
+    public List<SimpleUserDTO> getEmployees() {
         List<User> users = userMapper.selectList(new QueryWrapper<User>().ne(true, "id", 1));
-        return users.stream().map(u -> new SimpleEmployeeDTO(u.getId(), u.getUsername(), u.getRealName())).collect(Collectors.toList());
+        return users.stream().map(u -> new SimpleUserDTO(u.getId(), u.getUsername(), u.getRealName())).collect(Collectors.toList());
     }
 
     /**

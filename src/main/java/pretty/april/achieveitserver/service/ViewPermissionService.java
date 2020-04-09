@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -48,14 +50,32 @@ public class ViewPermissionService {
         this.projectMemberMapper = projectMemberMapper;
     }
 
-    public Map<String, List<ViewPermissionDTO>> getViewPermissions(Integer userId) {
+    @Data
+    @AllArgsConstructor
+    static class SimpleUser {
+        private String username;
+        private String realName;
+    }
+
+    public Map<String, Object> getViewPermissions(Integer userId) {
         List<UserViewRole> userViewRoles = userViewRoleMapper.selectList(new QueryWrapper<UserViewRole>()
                 .eq("user_id", userId));
         List<Integer> roles = userViewRoles.stream().map(UserViewRole::getRoleId).collect(Collectors.toList());
-        List<ViewPermission> viewPermissions = viewRolePermissionMapper.selectViewPermissionWithModuleByRoleIdIn(roles);
-        return viewPermissions.stream()
+        List<ViewPermission> viewPermissions;
+        if (!CollectionUtils.isEmpty(roles)) {
+            viewPermissions = viewRolePermissionMapper.selectViewPermissionWithModuleByRoleIdIn(roles);
+        } else {
+            viewPermissions = new ArrayList<>();
+        }
+        Map<String, Object> map = new HashMap<>();
+        Map<String, List<ViewPermissionDTO>> permissions = viewPermissions.stream()
                 .map(o -> new ViewPermissionDTO(o.getId(), o.getName(), o.getModule()))
                 .collect(Collectors.groupingBy(ViewPermissionDTO::getModule));
+        map.put("permissions", permissions);
+        User user = userMapper.selectById(userId);
+        SimpleUser simpleUser = new SimpleUser(user.getUsername(), user.getRealName());
+        map.put("user", simpleUser);
+        return map;
     }
 
     public Integer addRole(AddViewRoleRequest request) {
