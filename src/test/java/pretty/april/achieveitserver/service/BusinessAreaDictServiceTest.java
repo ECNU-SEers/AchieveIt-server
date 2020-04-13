@@ -11,6 +11,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import pretty.april.achieveitserver.entity.BusinessAreaDict;
+import pretty.april.achieveitserver.request.dict.AddBusinessAreaDictRequest;
+import pretty.april.achieveitserver.request.dict.UpdateBusinessAreaDictRequest;
 import pretty.april.achieveitserver.service.BusinessAreaDictService;
 
 @RunWith(SpringRunner.class)
@@ -45,15 +47,17 @@ public class BusinessAreaDictServiceTest {
 	
 	@Test
 	public void insertBusinessAreaTest() {
-		String businessArea = "architect";
-		System.out.println(businessAreaDictService.insertBusinessArea(businessArea));
+		AddBusinessAreaDictRequest request = new AddBusinessAreaDictRequest();
+		request.setBusinessAreaName("architect");
+		System.out.println(businessAreaDictService.insertBusinessArea(request));
 	}
 	
 	@Test
 	public void updateBusinessAreaTest() {
-		Integer id = new Integer(3);
-		String newBusinessAreaName = "math";
-		System.out.println(businessAreaDictService.updateBusinessArea(id, newBusinessAreaName));
+		UpdateBusinessAreaDictRequest request = new UpdateBusinessAreaDictRequest();
+		request.setBusinessAreaId(new Integer(3));
+		request.setNewBusinessAreaName("math");
+		System.out.println(businessAreaDictService.updateBusinessArea(request));
 	}
 	
 	@Test

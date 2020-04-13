@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import pretty.april.achieveitserver.entity.BusinessAreaDict;
 import pretty.april.achieveitserver.mapper.BusinessAreaDictMapper;
+import pretty.april.achieveitserver.request.dict.AddBusinessAreaDictRequest;
+import pretty.april.achieveitserver.request.dict.UpdateBusinessAreaDictRequest;
 
 @Service
 public class BusinessAreaDictService extends ServiceImpl<BusinessAreaDictMapper, BusinessAreaDict> {
@@ -34,7 +36,7 @@ public class BusinessAreaDictService extends ServiceImpl<BusinessAreaDictMapper,
 	}
 	
 	/**
-	 * 增加业务领域
+	 * 批量增加业务领域
 	 * @param businessAreas
 	 * @return
 	 */
@@ -42,7 +44,13 @@ public class BusinessAreaDictService extends ServiceImpl<BusinessAreaDictMapper,
 		return this.baseMapper.insertBatch(businessAreas);
 	}
 	
-	public int insertBusinessArea(String businessAreaName) {
+	/**
+	 * 增加业务领域
+	 * @param request
+	 * @return
+	 */
+	public int insertBusinessArea(AddBusinessAreaDictRequest request) {
+		String businessAreaName = request.getBusinessAreaName();
 		BusinessAreaDict businessAreaDict = new BusinessAreaDict();
 		businessAreaDict.setName(businessAreaName);
 		return this.baseMapper.insert(businessAreaDict);
@@ -50,11 +58,12 @@ public class BusinessAreaDictService extends ServiceImpl<BusinessAreaDictMapper,
 	
 	/**
 	 * 修改业务领域
-	 * @param id
-	 * @param newBusinessAreaName
+	 * @param request
 	 * @return
 	 */
-	public int updateBusinessArea(Integer id, String newBusinessAreaName) {
+	public int updateBusinessArea(UpdateBusinessAreaDictRequest request) {
+		Integer id = request.getBusinessAreaId();
+		String newBusinessAreaName = request.getNewBusinessAreaName();
 		BusinessAreaDict businessArea = this.baseMapper.selectById(id);
 		businessArea.setName(newBusinessAreaName);
 		return this.baseMapper.updateById(businessArea);

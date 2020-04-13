@@ -55,7 +55,7 @@ public class LaborHourServiceTest {
 	public void createLaborHourTest() throws Exception {
 		Integer userId = new Integer(1);
 		CreateLaborHourRequest request = new CreateLaborHourRequest();
-		request.setDate(1585816643323L);
+		request.setDate(1586766087165L);
 		request.setFunctionId(3);
 		request.setFunctionName("func1");
 		request.setSubfunctionId(4);
@@ -64,8 +64,8 @@ public class LaborHourServiceTest {
 		request.setActivityName("act1");
 		request.setSubactivityId(3);
 		request.setSubactivityName("act3");
-		request.setStartTime(1585816643323L);
-		request.setEndTime(1585816843323L);
+		request.setStartTime(1580518800000L);
+		request.setEndTime(1580547600000L);
 		laborHourService.createLaborHour(request, userId);
 	}
 	

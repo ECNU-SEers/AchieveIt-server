@@ -11,6 +11,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import pretty.april.achieveitserver.entity.SkillDict;
+import pretty.april.achieveitserver.request.dict.AddSkillDictRequest;
+import pretty.april.achieveitserver.request.dict.UpdateSkillDictRequest;
 import pretty.april.achieveitserver.service.SkillDictService;
 
 @RunWith(SpringRunner.class)
@@ -36,15 +38,17 @@ public class SkillDictServiceTest {
 	
 	@Test
 	public void insertSkillTest() {
-		String skillName = "Mybatis";
-		System.out.println(skillDictService.insertSkill(skillName));
+		AddSkillDictRequest request = new AddSkillDictRequest();
+		request.setSkillName("Mybatis");
+		System.out.println(skillDictService.insertSkill(request));
 	}
 	
 	@Test
 	public void updateSkillTest() {
-		Integer id = new Integer(1);
-		String newSkillName = "Hibernate";
-		System.out.println(skillDictService.updateSkill(id, newSkillName));
+		UpdateSkillDictRequest request = new UpdateSkillDictRequest();
+		request.setSkillId(new Integer(1));
+		request.setNewSkillName("Hibernate");
+		System.out.println(skillDictService.updateSkill(request));
 	}
 	
 	@Test

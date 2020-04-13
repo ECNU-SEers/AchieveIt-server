@@ -127,12 +127,16 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @throws Exception 
 	 */
 	public String createLaborHour(CreateLaborHourRequest request, Integer userId) {
+		if (request.getStartTime() >= request.getEndTime()) {
+			throw new IllegalArgumentException("The start time must be before the end time.");
+		}
+		
 //		1.如果工时填写的日期在今天日期的3天之前，则不能提交
 		LocalDate localdate1 = this.longToLocalDate(request.getDate());
 		LocalDate localdate2 = LocalDate.now();
 		Period period = Period.between(localdate1, localdate2);
 		if (period.getDays() > 3) {
-			throw new IllegalArgumentException("You can only submit your labor hour info with three days.");
+			throw new IllegalArgumentException("You can only submit your labor hour info within three days.");
 		}
 		
 //		2.一天之内工时不超过24小时
@@ -153,11 +157,11 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 //		3.工时的开始到结束时间段不能重叠
 		boolean flag = true;
 		for (LaborHour record: dayRecords) {
-			if (startTime.compareTo(record.getStartTime())>0 && startTime.compareTo(record.getEndTime())<0) {
+			if (startTime.compareTo(record.getStartTime())>=0 && startTime.compareTo(record.getEndTime())<0) {
 				flag = false;
 				break;
 			}
-			if (endTime.compareTo(record.getStartTime())>0 && endTime.compareTo(record.getEndTime())<0) {
+			if (endTime.compareTo(record.getStartTime())>0 && endTime.compareTo(record.getEndTime())<=0) {
 				flag = false;
 				break;
 			}
@@ -235,6 +239,10 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 	 * @throws Exception
 	 */
 	public String updateLaborHour(UpdateLaborHourRequest request) {
+		if (request.getStartTime() >= request.getEndTime()) {
+			throw new IllegalArgumentException("The start time must be before the end time.");
+		}
+		
 		if (this.getById(request.getId()).getState().equals("已通过")) {
 			throw new IllegalArgumentException("You cannot update the info if passed.");
 		}

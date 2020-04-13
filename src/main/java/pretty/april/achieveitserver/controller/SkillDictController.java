@@ -7,12 +7,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import pretty.april.achieveitserver.dto.Response;
 import pretty.april.achieveitserver.entity.SkillDict;
+import pretty.april.achieveitserver.request.dict.AddSkillDictRequest;
+import pretty.april.achieveitserver.request.dict.UpdateSkillDictRequest;
 import pretty.april.achieveitserver.service.SkillDictService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
@@ -38,8 +41,8 @@ public class SkillDictController {
 	 * @return
 	 */
 	@PostMapping("/add")
-	public Response<?> addSkill(@RequestParam(value="skillName") String skillName) {
-		skillDictService.insertSkill(skillName);
+	public Response<?> addSkill(@RequestBody AddSkillDictRequest request) {
+		skillDictService.insertSkill(request);
 		return ResponseUtils.successResponse();
 	}
 	
@@ -50,8 +53,8 @@ public class SkillDictController {
 	 * @return
 	 */
 	@PutMapping("/update")
-	public Response<?> updateSkill(@RequestParam(value="skillId") Integer skillId, @RequestParam(value="newSkillName") String newSkillName) {
-		skillDictService.updateSkill(skillId, newSkillName);
+	public Response<?> updateSkill(@RequestBody UpdateSkillDictRequest request) {
+		skillDictService.updateSkill(request);
 		return ResponseUtils.successResponse();
 	}
 	

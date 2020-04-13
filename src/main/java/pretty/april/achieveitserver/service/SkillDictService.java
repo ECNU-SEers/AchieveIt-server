@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import pretty.april.achieveitserver.entity.SkillDict;
 import pretty.april.achieveitserver.mapper.SkillDictMapper;
+import pretty.april.achieveitserver.request.dict.AddSkillDictRequest;
+import pretty.april.achieveitserver.request.dict.UpdateSkillDictRequest;
 
 @Service
 public class SkillDictService extends ServiceImpl<SkillDictMapper, SkillDict> {
@@ -35,10 +37,11 @@ public class SkillDictService extends ServiceImpl<SkillDictMapper, SkillDict> {
 	
 	/**
 	 * 增加技术
-	 * @param skillName
+	 * @param request
 	 * @return
 	 */
-	public int insertSkill(String skillName) {
+	public int insertSkill(AddSkillDictRequest request) {
+		String skillName = request.getSkillName();
 		SkillDict skillDict = new SkillDict();
 		skillDict.setName(skillName);
 		return this.baseMapper.insert(skillDict);
@@ -46,11 +49,12 @@ public class SkillDictService extends ServiceImpl<SkillDictMapper, SkillDict> {
 	
 	/**
 	 * 更新技术
-	 * @param id
-	 * @param newSkillName
+	 * @param request
 	 * @return
 	 */
-	public int updateSkill(Integer id, String newSkillName) {
+	public int updateSkill(UpdateSkillDictRequest request) {
+		Integer id = request.getSkillId();
+		String newSkillName = request.getNewSkillName();
 		SkillDict skill = this.baseMapper.selectById(id);
 		skill.setName(newSkillName);
 		return this.baseMapper.updateById(skill);
