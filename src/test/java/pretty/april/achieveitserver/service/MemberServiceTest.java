@@ -39,12 +39,9 @@ class MemberServiceTest {
         projectMapper.insert(project);
         Integer projectId = project.getId();
         assertNotNull(projectId);
-        int memberId = 1;
         AddProjectMemberRequest addProjectMemberRequest = new AddProjectMemberRequest();
         addProjectMemberRequest.setRoleId(Collections.singletonList(1));
-        addProjectMemberRequest.setUserId(memberId);
         addProjectMemberRequest.setUsername("admin");
-        addProjectMemberRequest.setLeaderId(memberId);
         addProjectMemberRequest.setLeaderName("admin");
         memberService.addProjectMember(addProjectMemberRequest, projectId);
     }
@@ -61,12 +58,9 @@ class MemberServiceTest {
         projectMapper.insert(project);
         Integer projectId = project.getId();
         assertNotNull(projectId);
-        int memberId = 1;
         AddProjectMemberRequest addProjectMemberRequest = new AddProjectMemberRequest();
         addProjectMemberRequest.setRoleId(Collections.singletonList(1));
-        addProjectMemberRequest.setUserId(memberId);
         addProjectMemberRequest.setUsername("admin");
-        addProjectMemberRequest.setLeaderId(memberId);
         addProjectMemberRequest.setLeaderName("admin");
         memberService.addProjectMember(addProjectMemberRequest, projectId);
         String keyword = "";
@@ -88,9 +82,7 @@ class MemberServiceTest {
         int memberId = 1;
         AddProjectMemberRequest addProjectMemberRequest = new AddProjectMemberRequest();
         addProjectMemberRequest.setRoleId(Collections.singletonList(1));
-        addProjectMemberRequest.setUserId(memberId);
         addProjectMemberRequest.setUsername("admin");
-        addProjectMemberRequest.setLeaderId(memberId);
         addProjectMemberRequest.setLeaderName("admin");
         memberService.addProjectMember(addProjectMemberRequest, projectId);
         assertNotNull(memberService.getMember(projectId, memberId));
@@ -111,9 +103,7 @@ class MemberServiceTest {
         int memberId = 1;
         AddProjectMemberRequest addProjectMemberRequest = new AddProjectMemberRequest();
         addProjectMemberRequest.setRoleId(new ArrayList<>());
-        addProjectMemberRequest.setUserId(memberId);
         addProjectMemberRequest.setUsername("admin");
-        addProjectMemberRequest.setLeaderId(memberId);
         addProjectMemberRequest.setLeaderName("admin");
         memberService.addProjectMember(addProjectMemberRequest, projectId);
         assertNotNull(memberService.getMember(projectId, memberId));
@@ -139,9 +129,7 @@ class MemberServiceTest {
         int memberId = 1;
         AddProjectMemberRequest addProjectMemberRequest = new AddProjectMemberRequest();
         addProjectMemberRequest.setRoleId(Collections.singletonList(1));
-        addProjectMemberRequest.setUserId(memberId);
         addProjectMemberRequest.setUsername("admin");
-        addProjectMemberRequest.setLeaderId(memberId);
         addProjectMemberRequest.setLeaderName("admin");
         memberService.addProjectMember(addProjectMemberRequest, projectId);
         memberService.deleteMember(memberId, projectId);
@@ -162,9 +150,7 @@ class MemberServiceTest {
         int memberId = 1;
         AddProjectMemberRequest addProjectMemberRequest = new AddProjectMemberRequest();
         addProjectMemberRequest.setRoleId(Collections.singletonList(1));
-        addProjectMemberRequest.setUserId(memberId);
         addProjectMemberRequest.setUsername("admin");
-        addProjectMemberRequest.setLeaderId(memberId);
         addProjectMemberRequest.setLeaderName("admin");
         memberService.addProjectMember(addProjectMemberRequest, projectId);
         String keyword = "";

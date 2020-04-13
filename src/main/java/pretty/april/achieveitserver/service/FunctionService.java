@@ -64,6 +64,16 @@ public class FunctionService {
                 .collect(Collectors.toList());
     }
 
+    public List<FunctionDTO> searchFunctions(Integer projectId, String keyword) {
+        Page<ProjectFunction> page = new Page<>(1, 50);
+        IPage<ProjectFunction> functionIPage = projectFunctionMapper.selectPage(page, new QueryWrapper<ProjectFunction>()
+                .eq("project_id", projectId)
+                .like("name", keyword));
+        return functionIPage.getRecords().stream()
+                .map(o -> new FunctionDTO(o.getId(), o.getName(), o.getDescription(), o.getParentId() == null ? projectFunctionMapper.selectCountSubFunction(o.getId()) : -1))
+                .collect(Collectors.toList());
+    }
+
     public List<FunctionDTO> getSubFunctions(Integer projectId, Integer functionId) {
         if (projectFunctionMapper.selectOne(new QueryWrapper<ProjectFunction>()
                 .eq("id", functionId).eq("project_id", projectId)) == null) {
@@ -88,11 +98,6 @@ public class FunctionService {
         List<ProjectFunction> functions = projectFunctionMapper.selectList(new QueryWrapper<ProjectFunction>()
                 .eq("project_id", projectId));
         return functions.stream().map(o -> new SimpleFunctionDTO(o.getId(), o.getName())).collect(Collectors.toList());
-    }
-
-    public List<SearchableDTO> searchFunctions(Integer projectId, String name) {
-        List<Searchable> searchables = projectFunctionMapper.selectLikeName(projectId, name);
-        return searchables.stream().map(o -> new SearchableDTO(o.getId(), o.getName())).collect(Collectors.toList());
     }
 
     public FullFunctionDTO getFullFunction(Integer projectId, Integer functionId) {

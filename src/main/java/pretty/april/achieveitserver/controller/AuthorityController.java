@@ -3,10 +3,7 @@ package pretty.april.achieveitserver.controller;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pretty.april.achieveitserver.dto.PageDTO;
-import pretty.april.achieveitserver.dto.PermissionDTO;
-import pretty.april.achieveitserver.dto.Response;
-import pretty.april.achieveitserver.dto.RoleDTO;
+import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.request.AssignRevokeRoleRequest;
 import pretty.april.achieveitserver.request.CreateRoleRequest;
 import pretty.april.achieveitserver.request.EditRoleRequest;
@@ -49,11 +46,24 @@ public class AuthorityController {
      * @param page
      * @return
      */
-    @GetMapping("/roles")
     public Response<PageDTO<RoleDTO>> getRoles(@RequestParam Integer pageSize,
                                                @RequestParam @Min(1) Integer page) {
         UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseUtils.successResponse(authorityService.getRoles(page, pageSize, userContext.getUserId()));
+    }
+
+    /**
+     * 获取当前用户可见的所有项目角色和其包含的项目权限信息
+     *
+     * @param pageSize
+     * @param page
+     * @return
+     */
+    @GetMapping("/roles")
+    public Response<PageDTO<DetailedProjectRoleDTO>> getDetailedRoles(@RequestParam Integer pageSize,
+                                                                      @RequestParam @Min(1) Integer page) {
+        UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseUtils.successResponse(authorityService.getDetailedRoles(page, pageSize, userContext.getUserId(), userContext.getUsername()));
     }
 
     /**

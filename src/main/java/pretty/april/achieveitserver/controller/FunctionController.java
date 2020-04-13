@@ -3,17 +3,14 @@ package pretty.april.achieveitserver.controller;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pretty.april.achieveitserver.dto.*;
-import pretty.april.achieveitserver.entity.User;
 import pretty.april.achieveitserver.request.AddFunctionRequest;
 import pretty.april.achieveitserver.request.EditFunctionRequest;
 import pretty.april.achieveitserver.security.UserContext;
 import pretty.april.achieveitserver.service.FunctionService;
-import pretty.april.achieveitserver.service.UserService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -21,11 +18,8 @@ public class FunctionController {
 
     private FunctionService functionService;
 
-    private UserService userService;
-
-    public FunctionController(FunctionService functionService, UserService userService) {
+    public FunctionController(FunctionService functionService) {
         this.functionService = functionService;
-        this.userService = userService;
     }
 
     /**
@@ -98,21 +92,8 @@ public class FunctionController {
      * @param projectId
      * @return
      */
-    @GetMapping("/project/{projectId}/functions/simple")
     public Response<List<SimpleFunctionDTO>> getSimpleFunctions(@PathVariable Integer projectId) {
         return ResponseUtils.successResponse(functionService.getSimpleFunctions(projectId));
-    }
-
-    /**
-     * 对名称模糊搜索获取某个项目的所有功能ID和Name信息
-     *
-     * @param projectId
-     * @param name
-     * @return
-     */
-    @GetMapping("/project/{projectId}/functions/search")
-    public Response<List<SearchableDTO>> getSimpleFunctions(@PathVariable Integer projectId, @RequestParam String name) {
-        return ResponseUtils.successResponse(functionService.searchFunctions(projectId, name));
     }
 
     /**
@@ -136,5 +117,18 @@ public class FunctionController {
     public Response<List<ValueLabelChildren>> getWorkHourFunctions() {
         UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseUtils.successResponse(functionService.getWorkHourFunctions(userContext.getUserId()));
+    }
+
+    /**
+     * 对某个项目的所有功能名称进行模糊搜索
+     *
+     * @param projectId
+     * @param keyword
+     * @return
+     */
+    @GetMapping("/project/{projectId}/functions/search")
+    public Response<List<FunctionDTO>> searchFunctions(@PathVariable Integer projectId,
+                                                       @RequestParam(required = false, defaultValue = "") String keyword) {
+        return ResponseUtils.successResponse(functionService.searchFunctions(projectId, keyword));
     }
 }

@@ -8,13 +8,9 @@ import java.util.List;
 
 @Data
 public class AddProjectMemberRequest {
-    @NotNull
-    private Integer userId;
 
     @NotBlank
     private String username;
-
-    private Integer leaderId;
 
     private String leaderName;
 

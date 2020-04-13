@@ -13,6 +13,7 @@ import pretty.april.achieveitserver.request.AddRiskRequest;
 import pretty.april.achieveitserver.request.EditRiskRequest;
 import pretty.april.achieveitserver.request.ImportRiskRequest;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

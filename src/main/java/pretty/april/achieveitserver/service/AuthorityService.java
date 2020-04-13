@@ -3,9 +3,11 @@ package pretty.april.achieveitserver.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import pretty.april.achieveitserver.converter.AuthorityConverter;
+import pretty.april.achieveitserver.dto.DetailedProjectRoleDTO;
 import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.dto.PermissionDTO;
 import pretty.april.achieveitserver.dto.RoleDTO;
@@ -21,6 +23,7 @@ import pretty.april.achieveitserver.request.AssignRevokeRoleRequest;
 import pretty.april.achieveitserver.request.CreateRoleRequest;
 import pretty.april.achieveitserver.request.EditRoleRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,8 +115,9 @@ public class AuthorityService {
             throw new IllegalArgumentException("Role not exists");
         }
         UserRole ur = userRoleMapper.selectOne(new QueryWrapper<UserRole>()
-                .eq(true, "user_id", request.getAssigneeId())
-                .eq(true, "role_id", roleId));
+                .eq("user_id", request.getAssigneeId())
+                .eq("role_id", roleId)
+                .eq("project_id", projectId));
         if (ur != null) {
             return;
         }
@@ -159,5 +163,29 @@ public class AuthorityService {
         return modulePermissions.stream()
                 .map(o -> new PermissionDTO(o.getId(), o.getName(), o.getModule(), o.getRemark()))
                 .collect(Collectors.toList());
+    }
+
+    public PageDTO<DetailedProjectRoleDTO> getDetailedRoles(Integer pageNo, Integer pageSize, Integer creatorId, String creatorUsername) {
+        Page<Role> page = new Page<>(pageNo, pageSize);
+        IPage<Role> roleIPage = roleMapper.selectPage(page, new QueryWrapper<Role>()
+                .eq("creator_id", creatorId).or().eq("creator_id", 1));
+        List<Role> roles = roleIPage.getRecords();
+        List<DetailedProjectRoleDTO> detailedProjectRoleDTOS = new ArrayList<>();
+        for (Role role : roles) {
+            DetailedProjectRoleDTO detailedProjectRoleDTO = new DetailedProjectRoleDTO();
+            BeanUtils.copyProperties(role, detailedProjectRoleDTO);
+            if (role.getCreatorId() == 1) {
+                detailedProjectRoleDTO.setCreator("系统");
+            } else {
+                detailedProjectRoleDTO.setCreator(creatorUsername);
+            }
+            List<Permission> permissions = permissionMapper.getByRoleId(role.getId());
+            List<PermissionDTO> permissionDTOS = permissions.stream()
+                    .map(o -> new PermissionDTO(o.getId(), o.getName(), o.getModule(), o.getRemark()))
+                    .collect(Collectors.toList());
+            detailedProjectRoleDTO.setPermissions(permissionDTOS);
+            detailedProjectRoleDTOS.add(detailedProjectRoleDTO);
+        }
+        return new PageDTO<>(page.getCurrent(), page.getSize(), page.getTotal(), detailedProjectRoleDTOS);
     }
 }

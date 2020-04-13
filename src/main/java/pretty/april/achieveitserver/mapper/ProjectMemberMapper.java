@@ -47,7 +47,7 @@ public interface ProjectMemberMapper extends BaseMapper<ProjectMember> {
 
     @Select("select user.id user_id,user.username,real_name,email,department,phone_number,leader_id,leader_name " +
             "from project_member inner join user on project_member.user_id = user.id " +
-            "where project_id = #{projectId} and user.real_name like concat('%',#{keyword},'%') order by user.username limit #{limit} offset #{offset}")
+            "where project_id = #{projectId} and user.real_name like concat('%',#{keyword},'%') limit #{limit} offset #{offset}")
     List<MemberDetails> selectMemberDetailsByProjectIdAndNameKeyword(@Param("projectId") Integer projectId, @Param("keyword") String keyword, @Param("limit") Integer limit, @Param("offset") Integer offset);
 
     @Select({"select count(*) from project_member where project_id = #{projectId}"})

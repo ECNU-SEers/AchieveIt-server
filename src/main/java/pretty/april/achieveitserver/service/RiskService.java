@@ -11,15 +11,10 @@ import pretty.april.achieveitserver.dto.PageDTO;
 import pretty.april.achieveitserver.dto.RiskDTO;
 import pretty.april.achieveitserver.dto.SearchableDTO;
 import pretty.april.achieveitserver.dto.UsernameDTO;
-import pretty.april.achieveitserver.entity.OrgStdRisk;
-import pretty.april.achieveitserver.entity.ProjectRisk;
-import pretty.april.achieveitserver.entity.RiskRelatedPerson;
+import pretty.april.achieveitserver.entity.*;
 import pretty.april.achieveitserver.enums.RiskState;
 import pretty.april.achieveitserver.enums.RiskType;
-import pretty.april.achieveitserver.mapper.OrgStdRiskMapper;
-import pretty.april.achieveitserver.mapper.RiskMapper;
-import pretty.april.achieveitserver.mapper.RiskRelatedPersonMapper;
-import pretty.april.achieveitserver.mapper.UserMapper;
+import pretty.april.achieveitserver.mapper.*;
 import pretty.april.achieveitserver.model.Searchable;
 import pretty.april.achieveitserver.model.Username;
 import pretty.april.achieveitserver.request.AddRiskRequest;
@@ -37,15 +32,18 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
 
     private UserMapper userMapper;
 
-    private RiskRelatedPersonMapper riskRelatedPersonMapper;
-
     private OrgStdRiskMapper orgStdRiskMapper;
 
-    public RiskService(RiskMapper riskMapper, UserMapper userMapper, RiskRelatedPersonMapper riskRelatedPersonMapper, OrgStdRiskMapper orgStdRiskMapper) {
+    private ProjectMemberMapper projectMemberMapper;
+
+    private RiskRelatedPersonService riskRelatedPersonService;
+
+    public RiskService(RiskMapper riskMapper, UserMapper userMapper, OrgStdRiskMapper orgStdRiskMapper, ProjectMemberMapper projectMemberMapper, RiskRelatedPersonService riskRelatedPersonService) {
         this.riskMapper = riskMapper;
         this.userMapper = userMapper;
-        this.riskRelatedPersonMapper = riskRelatedPersonMapper;
         this.orgStdRiskMapper = orgStdRiskMapper;
+        this.projectMemberMapper = projectMemberMapper;
+        this.riskRelatedPersonService = riskRelatedPersonService;
     }
 
     public Integer addRisk(Integer projectId, AddRiskRequest request) {
@@ -59,7 +57,7 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
             List<Username> usernames = userMapper.selectUsernameBatch(request.getRelatedPersons());
             List<RiskRelatedPerson> riskRelatedPeople = usernames.stream()
                     .map(o -> new RiskRelatedPerson(risk.getId(), o.getId(), o.getUsername())).collect(Collectors.toList());
-            riskRelatedPersonMapper.insertRiskRelatedPersonBatch(riskRelatedPeople);
+            riskRelatedPersonService.saveBatch(riskRelatedPeople);
         }
         return risk.getId();
     }
@@ -74,6 +72,19 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
         risk.setProjectId(projectId);
         risk.setId(riskId);
         riskMapper.updateById(risk);
+        if (!CollectionUtils.isEmpty(request.getRelatedPersons())) {
+            riskRelatedPersonService.remove(new QueryWrapper<RiskRelatedPerson>().eq("risk_id", riskId));
+            List<RiskRelatedPerson> riskRelatedPeople = new ArrayList<>();
+            for (Integer userId : request.getRelatedPersons()) {
+                if (projectMemberMapper.selectCount(new QueryWrapper<ProjectMember>().eq("project_id", projectId).eq("user_id", userId)) < 1) {
+                    throw new IllegalArgumentException("User ID " + userId + " is not a project member");
+                }
+                User user = userMapper.selectById(userId);
+                RiskRelatedPerson riskRelatedPerson = new RiskRelatedPerson(riskId, userId, user.getUsername());
+                riskRelatedPeople.add(riskRelatedPerson);
+            }
+            riskRelatedPersonService.saveBatch(riskRelatedPeople);
+        }
     }
 
     public void deleteRisk(Integer projectId, Integer riskId) {
@@ -113,7 +124,7 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
         RiskDTO riskDTO = new RiskDTO();
         ProjectRisk risk = riskMapper.selectById(riskId);
         BeanUtils.copyProperties(risk, riskDTO);
-        List<RiskRelatedPerson> riskRelatedPeople = riskRelatedPersonMapper.selectList(new QueryWrapper<RiskRelatedPerson>()
+        List<RiskRelatedPerson> riskRelatedPeople = riskRelatedPersonService.list(new QueryWrapper<RiskRelatedPerson>()
                 .eq("risk_id", risk.getId()));
         List<UsernameDTO> usernameDTOS = riskRelatedPeople.stream()
                 .map(o -> new UsernameDTO(o.getUserId(), o.getUsername())).collect(Collectors.toList());
@@ -153,4 +164,8 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
         this.saveBatch(projectRisks);
         return projectRisks.stream().map(ProjectRisk::getId).collect(Collectors.toList());
     }
+}
+
+@Service
+class RiskRelatedPersonService extends ServiceImpl<RiskRelatedPersonMapper, RiskRelatedPerson> {
 }

@@ -47,30 +47,41 @@ public class MemberService {
 
     public void addProjectMember(AddProjectMemberRequest request, Integer projectId) {
         Project project = projectMapper.selectById(projectId);
-        if (project == null) {
-            throw new IllegalArgumentException("Cannot find project");
-        }
-
-        if (userMapper.selectById(request.getUserId()) == null) {
+        User member = userMapper.selectOne(new QueryWrapper<User>().eq("username", request.getUsername()));
+        if (member == null) {
             throw new IllegalArgumentException("Cannot find member");
         }
-
-        if (userMapper.selectById(request.getLeaderId()) == null) {
-            throw new IllegalArgumentException("Cannot find leader");
+        if (projectMemberMapper.selectCount(new QueryWrapper<ProjectMember>()
+                .eq("project_id", project)
+                .eq("user_id", member.getId())) > 0) {
+            throw new IllegalArgumentException("Member already in project");
+        }
+        User leader = null;
+        if (request.getLeaderName() != null) {
+            leader = userMapper.selectOne(new QueryWrapper<User>().eq("username", request.getLeaderName()));
+            if (leader == null) {
+                throw new IllegalArgumentException("Cannot find leader");
+            }
+        }
+        if (project == null) {
+            throw new IllegalArgumentException("Cannot find project");
         }
 
         ProjectMember projectMember = new ProjectMember();
         projectMember.setProjectId(projectId);
         projectMember.setProjectName(project.getName());
-        projectMember.setUserId(request.getUserId());
-        projectMember.setUsername(request.getUsername());
-        projectMember.setLeaderId(request.getLeaderId());
-        projectMember.setLeaderName(request.getLeaderName());
+        projectMember.setUserId(member.getId());
+        projectMember.setUsername(member.getUsername());
+        if (leader != null) {
+            projectMember.setLeaderId(leader.getId());
+            projectMember.setLeaderName(leader.getUsername());
+        }
+
         projectMemberMapper.insert(projectMember);
 
         if (!CollectionUtils.isEmpty(request.getRoleId())) {
             List<UserRole> userRoles = request.getRoleId().stream()
-                    .map(o -> new UserRole(request.getUserId(), o, projectId)).collect(Collectors.toList());
+                    .map(o -> new UserRole(member.getId(), o, projectId)).collect(Collectors.toList());
             userRoleMapper.insertBatch(userRoles);
         }
     }
