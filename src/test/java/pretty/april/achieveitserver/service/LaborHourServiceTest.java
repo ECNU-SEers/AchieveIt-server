@@ -58,14 +58,14 @@ public class LaborHourServiceTest {
 		request.setDate(1586766087165L);
 		request.setFunctionId(3);
 		request.setFunctionName("func1");
-		request.setSubfunctionId(4);
-		request.setSubfunctionName("func1.1");
+//		request.setSubfunctionId(4);
+//		request.setSubfunctionName("func1.1");
 		request.setActivityId(1);
 		request.setActivityName("act1");
-		request.setSubactivityId(3);
-		request.setSubactivityName("act3");
-		request.setStartTime(1580518800000L);
-		request.setEndTime(1580547600000L);
+//		request.setSubactivityId(3);
+//		request.setSubactivityName("act3");
+		request.setStartTime(1580547600000L);
+		request.setEndTime(1580547700000L);
 		laborHourService.createLaborHour(request, userId);
 	}
 	

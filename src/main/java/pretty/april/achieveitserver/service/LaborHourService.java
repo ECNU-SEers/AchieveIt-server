@@ -178,9 +178,17 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 		LaborHour laborHour = new LaborHour();
 		BeanUtils.copyProperties(request, laborHour);
 		laborHour.setUserId(userId);
-		laborHour.setProjectId(functionService.getById(request.getSubfunctionId()).getProjectId());
-		laborHour.setActivityId(request.getSubactivityId());
-		laborHour.setFunctionId(request.getSubfunctionId());
+		laborHour.setProjectId(functionService.getById(request.getFunctionId()).getProjectId());
+		if (request.getSubfunctionId() == null) {
+			laborHour.setFunctionId(request.getFunctionId());
+		} else {
+			laborHour.setFunctionId(request.getSubfunctionId());
+		}
+		if (request.getSubactivityId() == null) {
+			laborHour.setActivityId(request.getActivityId());
+		} else {
+			laborHour.setActivityId(request.getSubactivityId());
+		}
 		laborHour.setDate(localdate1);
 		laborHour.setStartTime(startTime);
 		laborHour.setEndTime(endTime);
@@ -207,19 +215,36 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 		for (LaborHour laborHour: laborHours.getRecords()) {
 			ShowLaborHourListRequest request = new ShowLaborHourListRequest();
 			BeanUtils.copyProperties(laborHour, request);
-			Integer subfunctionId = laborHour.getFunctionId();
-			Integer functionId = projectFunctionMapper.selectById(subfunctionId).getParentId();
-			request.setFunctionId(functionId);
-			request.setFunctionName(projectFunctionMapper.selectById(functionId).getName());
-			request.setSubfunctionId(subfunctionId);
-			request.setSubfunctionName(projectFunctionMapper.selectById(subfunctionId).getName());
-			
-			Integer subactivityId = laborHour.getActivityId();
-			Integer activityId = activityMapper.selectById(subactivityId).getParentId();
-			request.setActivityId(activityId);
-			request.setActivityName(activityMapper.selectById(activityId).getName());
-			request.setSubactivityId(subactivityId);
-			request.setSubactivityName(activityMapper.selectById(subactivityId).getName());
+//			只有一级功能
+			if (projectFunctionMapper.selectById(laborHour.getFunctionId()).getParentId() == null) {
+				Integer functionId = laborHour.getFunctionId();
+				request.setFunctionId(functionId);
+				request.setFunctionName(projectFunctionMapper.selectById(functionId).getName());
+				request.setSubfunctionId(null);
+				request.setSubfunctionName(null);
+			} else {
+				Integer subfunctionId = laborHour.getFunctionId();
+				Integer functionId = projectFunctionMapper.selectById(subfunctionId).getParentId();
+				request.setFunctionId(functionId);
+				request.setFunctionName(projectFunctionMapper.selectById(functionId).getName());
+				request.setSubfunctionId(subfunctionId);
+				request.setSubfunctionName(projectFunctionMapper.selectById(subfunctionId).getName());
+			}
+//			只有一级活动
+			if (activityMapper.selectById(laborHour.getActivityId()).getParentId() == null) {
+				Integer activityId = laborHour.getActivityId();
+				request.setActivityId(activityId);
+				request.setActivityName(activityMapper.selectById(activityId).getName());
+				request.setSubactivityId(null);
+				request.setSubactivityName(null);
+			} else {
+				Integer subactivityId = laborHour.getActivityId();
+				Integer activityId = activityMapper.selectById(subactivityId).getParentId();
+				request.setActivityId(activityId);
+				request.setActivityName(activityMapper.selectById(activityId).getName());
+				request.setSubactivityId(subactivityId);
+				request.setSubactivityName(activityMapper.selectById(subactivityId).getName());
+			}
 			
 			LocalDate localDate = laborHour.getDate();
 			request.setDate(this.localDateToLong(localDate));
@@ -251,8 +276,16 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 		LocalDate date = this.longToLocalDate(request.getDate());
 		LocalTime startTime = this.longToLocalTime(request.getStartTime());
 		LocalTime endTime = this.longToLocalTime(request.getEndTime());
-		laborHour.setActivityId(request.getSubactivityId());
-		laborHour.setFunctionId(request.getSubfunctionId());
+		if (request.getSubfunctionId() == null) {
+			laborHour.setFunctionId(request.getFunctionId());
+		} else {
+			laborHour.setFunctionId(request.getSubfunctionId());
+		}
+		if (request.getSubactivityId() == null) {
+			laborHour.setActivityId(request.getActivityId());
+		} else {
+			laborHour.setActivityId(request.getSubactivityId());
+		}
 		laborHour.setDate(date);
 		laborHour.setStartTime(startTime);
 		laborHour.setEndTime(endTime);
@@ -329,19 +362,37 @@ public class LaborHourService extends ServiceImpl<LaborHourMapper, LaborHour> {
 			ShowSubordinateLaborHourListRequest request = new ShowSubordinateLaborHourListRequest();
 			BeanUtils.copyProperties(laborHour, request);
 			
-			Integer subfunctionId = laborHour.getFunctionId();
-			Integer functionId = projectFunctionMapper.selectById(subfunctionId).getParentId();
-			request.setFunctionId(functionId);
-			request.setFunctionName(projectFunctionMapper.selectById(functionId).getName());
-			request.setSubfunctionId(subfunctionId);
-			request.setSubfunctionName(projectFunctionMapper.selectById(subfunctionId).getName());
+//			只有一级功能
+			if (projectFunctionMapper.selectById(laborHour.getFunctionId()).getParentId() == null) {
+				Integer functionId = laborHour.getFunctionId();
+				request.setFunctionId(functionId);
+				request.setFunctionName(projectFunctionMapper.selectById(functionId).getName());
+				request.setSubfunctionId(null);
+				request.setSubfunctionName(null);
+			} else {
+				Integer subfunctionId = laborHour.getFunctionId();
+				Integer functionId = projectFunctionMapper.selectById(subfunctionId).getParentId();
+				request.setFunctionId(functionId);
+				request.setFunctionName(projectFunctionMapper.selectById(functionId).getName());
+				request.setSubfunctionId(subfunctionId);
+				request.setSubfunctionName(projectFunctionMapper.selectById(subfunctionId).getName());
+			}
 			
-			Integer subactivityId = laborHour.getActivityId();
-			Integer activityId = activityMapper.selectById(subactivityId).getParentId();
-			request.setActivityId(activityId);
-			request.setActivityName(activityMapper.selectById(activityId).getName());
-			request.setSubactivityId(subactivityId);
-			request.setSubactivityName(activityMapper.selectById(subactivityId).getName());
+//			只有一级活动
+			if (activityMapper.selectById(laborHour.getActivityId()).getParentId() == null) {
+				Integer activityId = laborHour.getActivityId();
+				request.setActivityId(activityId);
+				request.setActivityName(activityMapper.selectById(activityId).getName());
+				request.setSubactivityId(null);
+				request.setSubactivityName(null);
+			} else {
+				Integer subactivityId = laborHour.getActivityId();
+				Integer activityId = activityMapper.selectById(subactivityId).getParentId();
+				request.setActivityId(activityId);
+				request.setActivityName(activityMapper.selectById(activityId).getName());
+				request.setSubactivityId(subactivityId);
+				request.setSubactivityName(activityMapper.selectById(subactivityId).getName());
+			}
 			
 			request.setSubmitterName(userService.getById(laborHour.getUserId()).getUsername());
 			request.setProjectName(projectService.getById(laborHour.getProjectId()).getName());
