@@ -22,6 +22,7 @@ public class ConfigController {
 
     /**
      * 获取某个项目的配置信息
+     *
      * @param projectId
      * @return
      */
@@ -32,6 +33,7 @@ public class ConfigController {
 
     /**
      * 修改某个项目的配置信息
+     *
      * @param projectId
      * @param request
      * @return
@@ -44,6 +46,7 @@ public class ConfigController {
 
     /**
      * 为某个项目创建配置信息
+     *
      * @param projectId
      * @param request
      * @return

@@ -3,9 +3,12 @@ package pretty.april.achieveitserver.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.Data;
 import org.springframework.stereotype.Service;
-import pretty.april.achieveitserver.dto.*;
+import org.springframework.util.CollectionUtils;
+import pretty.april.achieveitserver.dto.FullFunctionDTO;
+import pretty.april.achieveitserver.dto.FunctionDTO;
+import pretty.april.achieveitserver.dto.SimpleFunctionDTO;
+import pretty.april.achieveitserver.dto.ValueLabelChildren;
 import pretty.april.achieveitserver.entity.ProjectFunction;
 import pretty.april.achieveitserver.mapper.ProjectFunctionMapper;
 import pretty.april.achieveitserver.mapper.ProjectMemberMapper;
@@ -14,9 +17,7 @@ import pretty.april.achieveitserver.request.AddFunctionRequest;
 import pretty.april.achieveitserver.request.EditFunctionRequest;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -146,8 +147,14 @@ public class FunctionService {
                     subFuncs.add(subFunc);
                 }
 
+                if (CollectionUtils.isEmpty(subFuncs)) {
+                    subFuncs = null;
+                }
                 func.setChildren(subFuncs);
                 funcs.add(func);
+            }
+            if (CollectionUtils.isEmpty(funcs)) {
+                funcs = null;
             }
             vlc.setChildren(funcs);
             prj.add(vlc);

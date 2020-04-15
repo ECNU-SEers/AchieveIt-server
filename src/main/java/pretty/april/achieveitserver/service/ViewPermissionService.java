@@ -3,7 +3,6 @@ package pretty.april.achieveitserver.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
@@ -48,13 +47,6 @@ public class ViewPermissionService {
         this.viewPermissionMapper = viewPermissionMapper;
         this.userMapper = userMapper;
         this.projectMemberMapper = projectMemberMapper;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class SimpleUser {
-        private String username;
-        private String realName;
     }
 
     public Map<String, Object> getViewPermissions(Integer userId) {
@@ -195,12 +187,11 @@ public class ViewPermissionService {
                 .map(o -> new UserViewRole(userId, o)).collect(Collectors.toList());
         userViewRoleService.saveBatch(userViewRoles);
     }
-}
 
-@Service
-class ViewRolePermissionService extends ServiceImpl<ViewRolePermissionMapper, ViewRolePermission> {
-}
-
-@Service
-class UserViewRoleService extends ServiceImpl<UserViewRoleMapper, UserViewRole> {
+    @Data
+    @AllArgsConstructor
+    static class SimpleUser {
+        private String username;
+        private String realName;
+    }
 }

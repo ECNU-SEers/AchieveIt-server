@@ -9,6 +9,7 @@ import org.springframework.util.CollectionUtils;
 import pretty.april.achieveitserver.dto.SimpleUserDTO;
 import pretty.april.achieveitserver.entity.Employee;
 import pretty.april.achieveitserver.entity.User;
+import pretty.april.achieveitserver.entity.UserViewRole;
 import pretty.april.achieveitserver.mapper.EmployeeMapper;
 import pretty.april.achieveitserver.mapper.UserMapper;
 import pretty.april.achieveitserver.mapper.ViewRolePermissionMapper;
@@ -31,11 +32,14 @@ public class UserService extends ServiceImpl<UserMapper, User> {
 
     private EmployeeMapper employeeMapper;
 
-    public UserService(UserMapper userMapper, ViewRolePermissionMapper viewRolePermissionMapper, BCryptPasswordEncoder bCryptPasswordEncoder, EmployeeMapper employeeMapper) {
+    private UserViewRoleService userViewRoleService;
+
+    public UserService(UserMapper userMapper, ViewRolePermissionMapper viewRolePermissionMapper, BCryptPasswordEncoder bCryptPasswordEncoder, EmployeeMapper employeeMapper, UserViewRoleService userViewRoleService) {
         this.userMapper = userMapper;
         this.viewRolePermissionMapper = viewRolePermissionMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.employeeMapper = employeeMapper;
+        this.userViewRoleService = userViewRoleService;
     }
 
     public User getByUsername(String username) {
@@ -67,12 +71,14 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         List<User> users = new ArrayList<>();
         for (Employee employee : employees) {
             User user = new User();
-            BeanUtils.copyProperties(employees, user);
+            BeanUtils.copyProperties(employee, user);
             user.setUsername(employee.getJobNumber());
             user.setPassword(bCryptPasswordEncoder.encode(employee.getJobNumber()));
             users.add(user);
         }
         this.saveBatch(users);
+        List<UserViewRole> userViewRoles = users.stream().map(o -> new UserViewRole(o.getId(), 7)).collect(Collectors.toList());
+        userViewRoleService.saveBatch(userViewRoles);
     }
 
     public List<SimpleUserDTO> getEmployees() {
