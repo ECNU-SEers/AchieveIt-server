@@ -7,10 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import pretty.april.achieveitserver.converter.DefectConverter;
-import pretty.april.achieveitserver.dto.DefectDTO;
-import pretty.april.achieveitserver.dto.PageDTO;
-import pretty.april.achieveitserver.dto.SearchableDTO;
-import pretty.april.achieveitserver.dto.TypeDTO;
+import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.entity.Defect;
 import pretty.april.achieveitserver.entity.DefectType;
 import pretty.april.achieveitserver.entity.User;
@@ -25,6 +22,7 @@ import pretty.april.achieveitserver.request.DefectTransitionRequest;
 import pretty.april.achieveitserver.request.EditDefectRequest;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +39,14 @@ public class DefectService {
 
     private DefectTypeMapper defectTypeMapper;
 
-    public DefectService(DefectMapper defectMapper, DefectConverter defectConverter, UserMapper userMapper, DefectTypeMapper defectTypeMapper) {
+    private AuthorityService authorityService;
+
+    public DefectService(DefectMapper defectMapper, DefectConverter defectConverter, UserMapper userMapper, DefectTypeMapper defectTypeMapper, AuthorityService authorityService) {
         this.defectMapper = defectMapper;
         this.defectConverter = defectConverter;
         this.userMapper = userMapper;
         this.defectTypeMapper = defectTypeMapper;
+        this.authorityService = authorityService;
     }
 
     public Integer addDefect(CreateDefectRequest request, Integer creatorId, String creatorName, Integer projectId) {
@@ -149,5 +150,9 @@ public class DefectService {
     public List<SearchableDTO> searchDefects(Integer projectId, String name) {
         List<Searchable> searchables = defectMapper.selectLikeName(projectId, name);
         return searchables.stream().map(o -> new SearchableDTO(o.getId(), o.getName())).collect(Collectors.toList());
+    }
+
+    public List<SimpleMemberDTO> getAvailableDefectAssignees(Integer projectId) {
+        return authorityService.getPrivilegedMembers(projectId, Collections.singletonList(10));
     }
 }

@@ -18,10 +18,7 @@ import pretty.april.achieveitserver.model.MemberDetails;
 import pretty.april.achieveitserver.request.AddProjectMemberRequest;
 import pretty.april.achieveitserver.request.EditMemberRequest;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,12 +34,15 @@ public class MemberService {
 
     private WorkingHourMapper workingHourMapper;
 
-    public MemberService(ProjectMemberMapper projectMemberMapper, ProjectMapper projectMapper, UserRoleMapper userRoleMapper, UserMapper userMapper, WorkingHourMapper workingHourMapper) {
+    private ViewPermissionService viewPermissionService;
+
+    public MemberService(ProjectMemberMapper projectMemberMapper, ProjectMapper projectMapper, UserRoleMapper userRoleMapper, UserMapper userMapper, WorkingHourMapper workingHourMapper, ViewPermissionService viewPermissionService) {
         this.projectMemberMapper = projectMemberMapper;
         this.projectMapper = projectMapper;
         this.userRoleMapper = userRoleMapper;
         this.userMapper = userMapper;
         this.workingHourMapper = workingHourMapper;
+        this.viewPermissionService = viewPermissionService;
     }
 
     public void addProjectMember(AddProjectMemberRequest request, Integer projectId) {
@@ -155,5 +155,9 @@ public class MemberService {
     public List<SimpleMemberDTO> searchMembers(Integer projectId, String keyword) {
         List<Member> members = projectMemberMapper.selectByProjectIdAndRealNameLike(projectId, keyword);
         return members.stream().map(o -> new SimpleMemberDTO(o.getId(), o.getUsername(), o.getRealName())).collect(Collectors.toList());
+    }
+
+    public List<SimpleMemberDTO> getAvailableLeaders(Integer projectId) {
+        return viewPermissionService.getPrivilegedMembers(projectId, Collections.singletonList(5));
     }
 }

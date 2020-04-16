@@ -7,10 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import pretty.april.achieveitserver.converter.AuthorityConverter;
-import pretty.april.achieveitserver.dto.DetailedProjectRoleDTO;
-import pretty.april.achieveitserver.dto.PageDTO;
-import pretty.april.achieveitserver.dto.PermissionDTO;
-import pretty.april.achieveitserver.dto.RoleDTO;
+import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.entity.Permission;
 import pretty.april.achieveitserver.entity.Role;
 import pretty.april.achieveitserver.entity.RolePermission;
@@ -40,12 +37,15 @@ public class AuthorityService {
 
     private AuthorityConverter authorityConverter;
 
-    public AuthorityService(PermissionMapper permissionMapper, RoleMapper roleMapper, RolePermissionMapper rolePermissionMapper, UserRoleMapper userRoleMapper, AuthorityConverter authorityConverter) {
+    private UserService userService;
+
+    public AuthorityService(PermissionMapper permissionMapper, RoleMapper roleMapper, RolePermissionMapper rolePermissionMapper, UserRoleMapper userRoleMapper, AuthorityConverter authorityConverter, UserService userService) {
         this.permissionMapper = permissionMapper;
         this.roleMapper = roleMapper;
         this.rolePermissionMapper = rolePermissionMapper;
         this.userRoleMapper = userRoleMapper;
         this.authorityConverter = authorityConverter;
+        this.userService = userService;
     }
 
     public List<PermissionDTO> getPermissions(Integer pageNo, Integer pageSize) {
@@ -187,5 +187,18 @@ public class AuthorityService {
             detailedProjectRoleDTOS.add(detailedProjectRoleDTO);
         }
         return new PageDTO<>(page.getCurrent(), page.getSize(), page.getTotal(), detailedProjectRoleDTOS);
+    }
+
+    public List<SimpleMemberDTO> getPrivilegedMembers(Integer projectId, List<Integer> privileges) {
+        List<Integer> finalMemberIdList = null;
+        for (Integer privilege : privileges) {
+            List<Integer> memberIdList = userRoleMapper.selectUserIdByProjectIdAndPermissionId(projectId, privilege);
+            if (finalMemberIdList == null) {
+                finalMemberIdList = memberIdList;
+            } else {
+                finalMemberIdList.retainAll(memberIdList);
+            }
+        }
+        return userService.getSimpleMemberList(finalMemberIdList);
     }
 }

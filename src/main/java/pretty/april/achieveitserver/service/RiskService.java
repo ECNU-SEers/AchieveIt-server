@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import pretty.april.achieveitserver.dto.PageDTO;
-import pretty.april.achieveitserver.dto.RiskDTO;
-import pretty.april.achieveitserver.dto.SearchableDTO;
-import pretty.april.achieveitserver.dto.UsernameDTO;
+import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.entity.*;
 import pretty.april.achieveitserver.enums.RiskState;
 import pretty.april.achieveitserver.enums.RiskType;
@@ -22,6 +19,8 @@ import pretty.april.achieveitserver.request.EditRiskRequest;
 import pretty.april.achieveitserver.request.ImportRiskRequest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,12 +37,15 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
 
     private RiskRelatedPersonService riskRelatedPersonService;
 
-    public RiskService(RiskMapper riskMapper, UserMapper userMapper, OrgStdRiskMapper orgStdRiskMapper, ProjectMemberMapper projectMemberMapper, RiskRelatedPersonService riskRelatedPersonService) {
+    private AuthorityService authorityService;
+
+    public RiskService(RiskMapper riskMapper, UserMapper userMapper, OrgStdRiskMapper orgStdRiskMapper, ProjectMemberMapper projectMemberMapper, RiskRelatedPersonService riskRelatedPersonService, AuthorityService authorityService) {
         this.riskMapper = riskMapper;
         this.userMapper = userMapper;
         this.orgStdRiskMapper = orgStdRiskMapper;
         this.projectMemberMapper = projectMemberMapper;
         this.riskRelatedPersonService = riskRelatedPersonService;
+        this.authorityService = authorityService;
     }
 
     public Integer addRisk(Integer projectId, AddRiskRequest request) {
@@ -163,6 +165,14 @@ public class RiskService extends ServiceImpl<RiskMapper, ProjectRisk> {
         }
         this.saveBatch(projectRisks);
         return projectRisks.stream().map(ProjectRisk::getId).collect(Collectors.toList());
+    }
+
+    public List<SimpleMemberDTO> getAvailableRiskOwners(Integer projectId) {
+        return authorityService.getPrivilegedMembers(projectId, Arrays.asList(11, 13));
+    }
+
+    public List<SimpleMemberDTO> getAvailableRiskRelatedPeople(Integer projectId) {
+        return authorityService.getPrivilegedMembers(projectId, Collections.singletonList(11));
     }
 }
 

@@ -45,4 +45,9 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
             "where project_id = #{projectId} and user_id = #{userId}")
     List<Role> getByProjectIdAndUserId(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
 
+    @Select("select distinct user_id id " +
+            "from user_role ur left join role_permission rp on ur.role_id = rp.role_id " +
+            "where ur.project_id = #{projectId} and rp.permission_id = #{permissionId}")
+    List<Integer> selectUserIdByProjectIdAndPermissionId(@Param("projectId") Integer projectId, @Param("permissionId") Integer permissionId);
+
 }

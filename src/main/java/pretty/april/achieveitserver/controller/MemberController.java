@@ -106,4 +106,15 @@ public class MemberController {
         memberService.deleteMember(memberId, projectId);
         return ResponseUtils.successResponse();
     }
+
+    /**
+     * 获取某个项目中所有可以作为上级的成员
+     *
+     * @param projectId
+     * @return
+     */
+    @GetMapping("/project/{projectId}/member/leaders")
+    public Response<List<SimpleMemberDTO>> getAvailableLeaders(@PathVariable Integer projectId) {
+        return ResponseUtils.successResponse(memberService.getAvailableLeaders(projectId));
+    }
 }

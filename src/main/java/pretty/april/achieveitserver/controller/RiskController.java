@@ -1,10 +1,7 @@
 package pretty.april.achieveitserver.controller;
 
 import org.springframework.web.bind.annotation.*;
-import pretty.april.achieveitserver.dto.PageDTO;
-import pretty.april.achieveitserver.dto.Response;
-import pretty.april.achieveitserver.dto.RiskDTO;
-import pretty.april.achieveitserver.dto.SearchableDTO;
+import pretty.april.achieveitserver.dto.*;
 import pretty.april.achieveitserver.request.AddRiskRequest;
 import pretty.april.achieveitserver.request.EditRiskRequest;
 import pretty.april.achieveitserver.request.ImportRiskRequest;
@@ -67,5 +64,27 @@ public class RiskController {
     @PostMapping("/project/{projectId}/risk/import/std")
     public Response<List<Integer>> importRisksFromStdLib(@PathVariable Integer projectId) {
         return ResponseUtils.successResponse(riskService.importRisksFromStdLib(projectId));
+    }
+
+    /**
+     * 获取某个项目可以作为风险责任人的所有成员
+     *
+     * @param projectId
+     * @return
+     */
+    @GetMapping("/project/{projectId}/risk/owners")
+    public Response<List<SimpleMemberDTO>> getAvailableRiskOwners(@PathVariable Integer projectId) {
+        return ResponseUtils.successResponse(riskService.getAvailableRiskOwners(projectId));
+    }
+
+    /**
+     * 获取某个项目可以作为风险相关者的所有成员
+     *
+     * @param projectId
+     * @return
+     */
+    @GetMapping("/project/{projectId}/risk/relatedPeople")
+    public Response<List<SimpleMemberDTO>> getAvailableRiskRelatedPeople(@PathVariable Integer projectId) {
+        return ResponseUtils.successResponse(riskService.getAvailableRiskRelatedPeople(projectId));
     }
 }

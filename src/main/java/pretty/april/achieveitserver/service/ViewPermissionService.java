@@ -38,7 +38,9 @@ public class ViewPermissionService {
 
     private ProjectMemberMapper projectMemberMapper;
 
-    public ViewPermissionService(ViewRoleMapper viewRoleMapper, ViewRolePermissionService viewRolePermissionService, UserViewRoleService userViewRoleService, ViewRolePermissionMapper viewRolePermissionMapper, UserViewRoleMapper userViewRoleMapper, ViewPermissionMapper viewPermissionMapper, UserMapper userMapper, ProjectMapper projectMapper, ProjectMemberMapper projectMemberMapper) {
+    private UserService userService;
+
+    public ViewPermissionService(ViewRoleMapper viewRoleMapper, ViewRolePermissionService viewRolePermissionService, UserViewRoleService userViewRoleService, ViewRolePermissionMapper viewRolePermissionMapper, UserViewRoleMapper userViewRoleMapper, ViewPermissionMapper viewPermissionMapper, UserMapper userMapper, ProjectMapper projectMapper, ProjectMemberMapper projectMemberMapper, UserService userService) {
         this.viewRoleMapper = viewRoleMapper;
         this.viewRolePermissionService = viewRolePermissionService;
         this.userViewRoleService = userViewRoleService;
@@ -47,6 +49,7 @@ public class ViewPermissionService {
         this.viewPermissionMapper = viewPermissionMapper;
         this.userMapper = userMapper;
         this.projectMemberMapper = projectMemberMapper;
+        this.userService = userService;
     }
 
     public Map<String, Object> getViewPermissions(Integer userId) {
@@ -156,7 +159,7 @@ public class ViewPermissionService {
 
     public PageDTO<ViewRoleUserDTO> getViewRoleUsers(Integer pageNo, Integer pageSize, String keyword) {
         Page<User> userPage = new Page<>(pageNo, pageSize);
-        IPage<User> users = userMapper.selectPage(userPage, new QueryWrapper<User>().like("username", keyword));
+        IPage<User> users = userMapper.selectPage(userPage, new QueryWrapper<User>().like("real_name", keyword));
         List<User> userList = users.getRecords();
         List<ViewRoleUserDTO> viewRoleUserDTOS = new ArrayList<>();
         for (User user : userList) {
@@ -193,5 +196,18 @@ public class ViewPermissionService {
     static class SimpleUser {
         private String username;
         private String realName;
+    }
+
+    public List<SimpleMemberDTO> getPrivilegedMembers(Integer projectId, List<Integer> privileges) {
+        List<Integer> finalMemberIdList = null;
+        for (Integer privilege : privileges) {
+            List<Integer> memberIdList = userViewRoleMapper.selectUserIdByProjectIdAndViewPermissionId(projectId, privilege);
+            if (finalMemberIdList == null) {
+                finalMemberIdList = memberIdList;
+            } else {
+                finalMemberIdList.retainAll(memberIdList);
+            }
+        }
+        return userService.getSimpleMemberList(finalMemberIdList);
     }
 }

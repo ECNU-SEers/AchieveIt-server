@@ -121,4 +121,15 @@ public class DefectController {
     public Response<List<SearchableDTO>> searchDefects(@RequestParam String name, @PathVariable Integer projectId) {
         return ResponseUtils.successResponse(defectService.searchDefects(projectId, name));
     }
+
+    /**
+     * 获取某个项目中可为被分配缺陷的所有成员
+     *
+     * @param projectId
+     * @return
+     */
+    @GetMapping("/project/{projectId}/defect/assignees")
+    public Response<List<SimpleMemberDTO>> getAvailableDefectAssignees(@PathVariable Integer projectId) {
+        return ResponseUtils.successResponse(defectService.getAvailableDefectAssignees(projectId));
+    }
 }

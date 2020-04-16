@@ -6,6 +6,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import pretty.april.achieveitserver.dto.SimpleMemberDTO;
 import pretty.april.achieveitserver.dto.SimpleUserDTO;
 import pretty.april.achieveitserver.entity.Employee;
 import pretty.april.achieveitserver.entity.User;
@@ -148,5 +149,13 @@ public class UserService extends ServiceImpl<UserMapper, User> {
             }
         }
         return allEPGLeaders;
+    }
+
+    public List<SimpleMemberDTO> getSimpleMemberList(List<Integer> userIdList) {
+        List<User> users = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(userIdList)) {
+            users = userMapper.selectList(new QueryWrapper<User>().in("id", userIdList));
+        }
+        return users.stream().map(o -> new SimpleMemberDTO(o.getId(), o.getUsername(), o.getRealName())).collect(Collectors.toList());
     }
 }
