@@ -34,4 +34,23 @@ public class UserRoleService extends ServiceImpl<UserRoleMapper, UserRole> {
 	public List<Integer> getUserRoleByUserId(Integer userId) {
 		return this.baseMapper.selectByUserId(userId);
 	}
+	
+	/**
+     * 查询某个项目中所有的成员
+     * @param projectId
+     * @return
+     */
+	public List<Integer> getUserIdsByProjectId(Integer projectId) {
+		return this.baseMapper.selectUserIdsByProjectId(projectId);
+	}
+	
+	/**
+     * 查询某个项目中某个成员的所有权限
+     * @param projectId
+     * @param userId
+     * @return
+     */
+	public List<Integer> getPermissionIdsByProjectIdAndUserId(Integer projectId, Integer userId) {
+		return this.baseMapper.selectPermissionIdsByProjectIdAndUserId(projectId, userId);
+	}
 }

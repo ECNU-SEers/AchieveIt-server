@@ -1,7 +1,9 @@
 package pretty.april.achieveitserver.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -13,6 +15,9 @@ import pretty.april.achieveitserver.mapper.ProjectMemberMapper;
 @Service
 public class ProjectMemberService extends ServiceImpl<ProjectMemberMapper, ProjectMember> {
 
+	 @Autowired
+	 private UserRoleService userRoleService;
+	
 	/**
 	 * 利用project表id查询某个project的所有成员个数
 	 * @param projectId
@@ -45,11 +50,39 @@ public class ProjectMemberService extends ServiceImpl<ProjectMemberMapper, Proje
 	}
 	
 	/**
-	 * 
+	 * 查询一个用户参与的所有项目
 	 * @param userId 用户ID
 	 * @return
 	 */
 	public List<Integer> selectProjectIdByUserId(Integer userId) {
 		return this.baseMapper.selectProjectIdByUserId(userId);
+	}
+	
+	/**
+	 * 利用项目ID和用户ID查询成员信息
+	 * @param projectId
+	 * @param userId
+	 * @return
+	 */
+	public ProjectMember selectByProjectIdAndUserId(Integer projectId, Integer userId) {
+		return this.baseMapper.selectByProjectIdAndUserId(projectId, userId);
+	}
+	
+	/**
+	 * 查询某个项目中具有“查询设备”和“管理设备”权限的成员
+	 * @param projectId
+	 * @return
+	 */
+	public List<ProjectMember> selectProjectMembersWithDeviceQueryAndManagementPermission(Integer projectId) {
+		List<Integer> allUserIds = userRoleService.getUserIdsByProjectId(projectId);
+		List<ProjectMember> projectMembers = new ArrayList<>();
+		for (Integer userId: allUserIds) {
+			List<Integer> allUserPermissions = userRoleService.getPermissionIdsByProjectIdAndUserId(projectId, userId);
+			if (allUserPermissions.contains(new Integer(14)) && allUserPermissions.contains(new Integer(15))) {
+				ProjectMember projectMember = this.selectByProjectIdAndUserId(projectId, userId);
+				projectMembers.add(projectMember);
+			}
+		}
+		return projectMembers;
 	}
 }

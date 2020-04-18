@@ -38,7 +38,24 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
      * @return 用户角色
      */
     @Select("SELECT role_id FROM user_role WHERE user_id = #{userId}")
-    List<Integer> selectByUserId(Integer userId);
+    List<Integer> selectByUserId(@Param("userId")Integer userId);
+    
+    /**
+     * 查询某个项目中所有的成员
+     * @param projectId
+     * @return
+     */
+    @Select("SELECT user_id FROM user_role WHERE project_id = #{projectId}")
+    List<Integer> selectUserIdsByProjectId(@Param("projectId") Integer projectId);
+    
+    /**
+     * 查询某个项目中某个成员的所有权限
+     * @param projectId
+     * @param userId
+     * @return
+     */
+    @Select("SELECT permission_id FROM user_role, role_permission where project_id = #{projectId} and user_id = #{userId} and user_role.role_id=role_permission.role_id")
+    List<Integer> selectPermissionIdsByProjectIdAndUserId(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
 
     @Select("select role_id id,name,remark " +
             "from user_role left join role on user_role.role_id = role.id " +

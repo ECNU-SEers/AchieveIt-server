@@ -33,7 +33,10 @@ public interface ProjectMemberMapper extends BaseMapper<ProjectMember> {
      * @return
      */
     @Select("SELECT * FROM project_member WHERE project_id = #{projectId}")
-    List<ProjectMember> selectByProjectId(Integer projectId);
+    List<ProjectMember> selectByProjectId(@Param("projectId") Integer projectId);
+    
+    @Select("SELECT * FROM project_member where project_id = #{projectId} and user_id = #{userId};")
+    ProjectMember selectByProjectIdAndUserId(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
 
     /**
      * 更新项目内容时更新成员表中的project_member
