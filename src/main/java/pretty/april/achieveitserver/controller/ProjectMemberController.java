@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import pretty.april.achieveitserver.dto.Response;
-import pretty.april.achieveitserver.entity.ProjectMember;
+import pretty.april.achieveitserver.request.member.RetrieveBasicMemberInfoRequest;
 import pretty.april.achieveitserver.service.ProjectMemberService;
 import pretty.april.achieveitserver.utils.ResponseUtils;
 
@@ -21,7 +21,7 @@ public class ProjectMemberController {
 	private ProjectMemberService projectMemberService;
 	
 	@GetMapping("/with/device/permissions")
-    public Response<List<ProjectMember>> getProjectMembersWithDeviceQueryAndManagementPermission(@RequestParam(value="projectId") Integer projectId) {
+    public Response<List<RetrieveBasicMemberInfoRequest>> getProjectMembersWithDeviceQueryAndManagementPermission(@RequestParam(value="projectId") Integer projectId) {
     	return ResponseUtils.successResponse(projectMemberService.selectProjectMembersWithDeviceQueryAndManagementPermission(projectId));
     }
 }

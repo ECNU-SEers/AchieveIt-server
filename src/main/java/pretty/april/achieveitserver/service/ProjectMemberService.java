@@ -11,12 +11,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import pretty.april.achieveitserver.entity.ProjectMember;
 import pretty.april.achieveitserver.mapper.ProjectMemberMapper;
+import pretty.april.achieveitserver.request.member.RetrieveBasicMemberInfoRequest;
 
 @Service
 public class ProjectMemberService extends ServiceImpl<ProjectMemberMapper, ProjectMember> {
 
 	 @Autowired
 	 private UserRoleService userRoleService;
+	 
+	 @Autowired
+	 private UserService userService;
 	
 	/**
 	 * 利用project表id查询某个project的所有成员个数
@@ -73,14 +77,18 @@ public class ProjectMemberService extends ServiceImpl<ProjectMemberMapper, Proje
 	 * @param projectId
 	 * @return
 	 */
-	public List<ProjectMember> selectProjectMembersWithDeviceQueryAndManagementPermission(Integer projectId) {
+	public List<RetrieveBasicMemberInfoRequest> selectProjectMembersWithDeviceQueryAndManagementPermission(Integer projectId) {
 		List<Integer> allUserIds = userRoleService.getUserIdsByProjectId(projectId);
-		List<ProjectMember> projectMembers = new ArrayList<>();
+		List<RetrieveBasicMemberInfoRequest> projectMembers = new ArrayList<>();
 		for (Integer userId: allUserIds) {
 			List<Integer> allUserPermissions = userRoleService.getPermissionIdsByProjectIdAndUserId(projectId, userId);
 			if (allUserPermissions.contains(new Integer(14)) && allUserPermissions.contains(new Integer(15))) {
 				ProjectMember projectMember = this.selectByProjectIdAndUserId(projectId, userId);
-				projectMembers.add(projectMember);
+				RetrieveBasicMemberInfoRequest request = new RetrieveBasicMemberInfoRequest();
+				request.setUserId(userId);
+				request.setUsername(projectMember.getUsername());
+				request.setUserRealName(userService.getById(userId).getRealName());
+				projectMembers.add(request);
 			}
 		}
 		return projectMembers;
