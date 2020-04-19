@@ -21,8 +21,8 @@ public class ArchivedInfoController {
 	private ArchivedInfoService archivedInfoService;
 	
 	@GetMapping("/get")
-	public Response<ArchivedInfo> getArchivedInfo(@RequestParam(value="id") Integer id) {
-		return ResponseUtils.successResponse(archivedInfoService.getArchivedInfo(id));
+	public Response<ArchivedInfo> getArchivedInfo(@RequestParam(value="projectId") Integer projectId) {
+		return ResponseUtils.successResponse(archivedInfoService.getArchivedInfo(projectId));
 	}
 	
 	@PutMapping("/update")

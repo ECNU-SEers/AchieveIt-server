@@ -2,6 +2,7 @@ package pretty.april.achieveitserver.service;
 
 import org.springframework.stereotype.Service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import pretty.april.achieveitserver.entity.ArchivedInfo;
@@ -14,7 +15,7 @@ public class ArchivedInfoService extends ServiceImpl<ArchivedInfoMapper, Archive
 		return this.baseMapper.updateById(updateArchivedInforequest);
 	}
 	
-	public ArchivedInfo getArchivedInfo(Integer id) {
-		return this.baseMapper.selectById(id);
+	public ArchivedInfo getArchivedInfo(Integer projectId) {
+		return this.baseMapper.selectOne(new QueryWrapper<ArchivedInfo>().eq("project_id", projectId));
 	}
 }
