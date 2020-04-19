@@ -31,7 +31,7 @@ import pretty.april.achieveitserver.service.ProjectService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@Transactional
+//@Transactional
 public class ProjectServiceTest {
 
     @Autowired
@@ -395,7 +395,7 @@ public class ProjectServiceTest {
 	
 	@Test
 	public void endProjectTest() {
-		String outerId = "P04";
+		String outerId = "2020-1234-D-qq";
 		String remark = " end project";
 		Integer userId = new Integer(1);
 		assertNotNull(projectService.endProject(outerId, remark, userId));

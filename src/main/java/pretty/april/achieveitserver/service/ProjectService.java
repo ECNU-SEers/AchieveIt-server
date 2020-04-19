@@ -97,6 +97,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     
     @Autowired
     private RolePermissionMapper rolePermissionMapper;
+    
+    @Autowired
+    private ArchivedInfoMapper archivedInfoMapper;
 
     /**
      * 获得所有项目id和name
@@ -821,6 +824,10 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         stateChange.setOperatorId(userId);
         stateChange.setRemark(remark);
         stateChangeMapper.insert(stateChange);
+        
+        ArchivedInfo archievedInfo = new ArchivedInfo();
+        archievedInfo.setProjectId(project.getId());
+        archivedInfoMapper.insert(archievedInfo);
         
         return project;
     }

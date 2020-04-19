@@ -30,5 +30,6 @@ public class UpdateProjectRequest {
 	private String milestone;
 	private List<String> skillNames;
 	private String businessAreaName;
+	private String remark;
 
 }
