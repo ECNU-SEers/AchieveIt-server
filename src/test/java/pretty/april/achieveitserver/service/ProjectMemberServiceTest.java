@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import pretty.april.achieveitserver.entity.ProjectMember;
+import pretty.april.achieveitserver.request.member.RetrieveBasicMemberInfoRequest;
 import pretty.april.achieveitserver.service.ProjectMemberService;
 
 @RunWith(SpringRunner.class)
@@ -57,7 +58,13 @@ public class ProjectMemberServiceTest {
 	@Test
 	public void selectProjectMembersWithDeviceQueryAndManagementPermissionTest() {
 		Integer projectId = new Integer(1);
-		List<ProjectMember> projectMembers = projectMemberService.selectProjectMembersWithDeviceQueryAndManagementPermission(projectId);
+		List<RetrieveBasicMemberInfoRequest> projectMembers = projectMemberService.selectProjectMembersWithDeviceQueryAndManagementPermission(projectId);
+		for (RetrieveBasicMemberInfoRequest request: projectMembers) {
+			System.out.println(request.getUserId());
+			System.out.println(request.getUsername());
+			System.out.println(request.getUserRealName());
+			System.out.println("=======================");
+		}
 		assertEquals(1, projectMembers.size());
 	}
 }
