@@ -246,6 +246,12 @@ public class ProjectServiceTest {
 		System.out.println("epg="+projectList.getEpgAssigned());
 		System.out.println("counter="+projectList.getParticipantCounter());
 		System.out.println("clientOuterId="+projectList.getClientOuterId());
+		System.out.println("supervisorId="+projectList.getSupervisorId());
+		System.out.println("supervisorName="+projectList.getSupervisorName());
+		System.out.println("supervisorRealName="+projectList.getSupervisorRealName());
+		System.out.println("managerId="+projectList.getManagerId());
+		System.out.println("managerName="+projectList.getManagerName());
+		System.out.println("managerRealName="+projectList.getManagerRealName());
 	}
 	
     @Test
@@ -259,6 +265,12 @@ public class ProjectServiceTest {
 			System.out.println("outerId = "+request.getOuterId());
 			System.out.println("name = "+request.getName());
 			System.out.println("id = "+request.getId());
+			System.out.println("supervisorId="+request.getSupervisorId());
+			System.out.println("supervisorName="+request.getSupervisorName());
+			System.out.println("supervisorRealName="+request.getSupervisorRealName());
+			System.out.println("managerId="+request.getManagerId());
+			System.out.println("managerName="+request.getManagerName());
+			System.out.println("managerRealName="+request.getManagerRealName());
 		}
 	}    
 

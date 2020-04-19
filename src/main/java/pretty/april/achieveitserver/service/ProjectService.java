@@ -320,6 +320,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
         String company = clientService.getCompanyById(project.getClientId());
         ShowProjectListRequest projectList = new ShowProjectListRequest();
         BeanUtils.copyProperties(project, projectList);
+        projectList.setSupervisorRealName(userService.getById(project.getSupervisorId()).getRealName());
+        projectList.setManagerRealName(userService.getById(project.getManagerId()).getRealName());
         projectList.setClientOuterId(clientOuterId);
         projectList.setCompany(company);
         projectList.setParticipantCounter(memberService.selectCountByProjectId(project.getId()));

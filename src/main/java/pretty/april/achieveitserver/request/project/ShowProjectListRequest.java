@@ -29,8 +29,10 @@ public class ShowProjectListRequest {
 	private LocalDate endDate;
 	private int supervisorId;
 	private String supervisorName;
+	private String supervisorRealName;
 	private int managerId;
 	private String managerName;
+	private String managerRealName;
 	private int participantCounter;
 	private String qaAssigned;
 	private String epgAssigned;
