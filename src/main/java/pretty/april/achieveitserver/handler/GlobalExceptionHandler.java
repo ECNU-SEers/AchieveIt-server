@@ -1,5 +1,6 @@
 package pretty.april.achieveitserver.handler;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,8 +34,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public Response<?> handlerIllegalArgumentException(IllegalArgumentException e, HttpServletResponse response) {
+    public Response<?> handleIllegalArgumentException(IllegalArgumentException e, HttpServletResponse response) {
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         return ResponseUtils.errorResponseWithMessage(ErrorCode.INVALID_ARGUMENT, e.getMessage());
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public Response<?> handleDataAccessException() {
+        return ResponseUtils.errorResponse(ErrorCode.SYSTEM_ERROR);
     }
 }
