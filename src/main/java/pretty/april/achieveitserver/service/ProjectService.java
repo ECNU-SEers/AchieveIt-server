@@ -508,6 +508,8 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     @Transactional
     public Project updateProjectInfoDuringProjectApproval(UpdateProjectRequest validator, Integer userId) {
         Project project = this.updateProjectInfo(validator, userId);
+        project.setState("申请立项");
+    	projectMapper.updateById(project);
 
 //		2.查询该执行人名下所有的task
         String projectOuterId = validator.getOuterId();
