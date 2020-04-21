@@ -403,9 +403,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      */
     @Transactional
     public Project updateProjectInfoWithoutSkillsAndBusinessAreaAndMilestone(UpdateProjectInfoRequest validator) {
-//		1.利用projectId找到待修改的project，判断项目是否“结束”或“已归档”
+//		1.利用projectId找到待修改的project，判断项目是否“申请归档”或“已归档”
         Project primaryProject = this.getProjectByOuterId(validator.getOuterId());
-        if (primaryProject.getState().equals("结束") || primaryProject.getState().equals("已归档")) {
+        if (primaryProject.getState().equals("申请归档") || primaryProject.getState().equals("已归档")) {
             throw new IllegalArgumentException("The project already expires, cannot be updated, please choose a new one.");
         }
 //		2.更新project表
@@ -438,9 +438,9 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
      */
     @Transactional
     public Project updateProjectInfo(UpdateProjectRequest validator, Integer userId) {
-//		1.利用projectId找到待修改的project，判断项目是否“结束”或“已归档”
+//		1.利用projectId找到待修改的project，判断项目是否“申请归档”或“已归档”
         Project primaryProject = this.getProjectByOuterId(validator.getOuterId());
-        if (primaryProject.getState().equals("结束") || primaryProject.getState().equals("已归档")) {
+        if (primaryProject.getState().equals("申请归档") || primaryProject.getState().equals("已归档")) {
             throw new IllegalArgumentException("The project already expires, cannot be updated, please choose a new one.");
         }
 //		2.更新project表
@@ -811,13 +811,13 @@ public class ProjectService extends ServiceImpl<ProjectMapper, Project> {
     @Transactional
     public Project endProject(String outerId, String remark, Integer userId) {
         Project project = this.getProjectByOuterId(outerId);
-        if (project.getState().equals("结束") || project.getState().equals("已归档")) {
+        if (project.getState().equals("申请归档") || project.getState().equals("已归档")) {
             throw new IllegalArgumentException("The project already expires, cannot be updated, please choose a new one.");
         }
         StateChange stateChange = new StateChange();
         stateChange.setFormerState(project.getState());
         
-        project.setState("结束");
+        project.setState("申请归档");
         projectMapper.updateById(project);
         
         stateChange.setProjectId(project.getId());

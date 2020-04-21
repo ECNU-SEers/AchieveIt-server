@@ -47,8 +47,8 @@ public class StateChangeService extends ServiceImpl<StateChangeMapper, StateChan
 				request.setOperation("配置信息");
 			} else if (request.getLatterState().equals("已交付")) {
 				request.setOperation("项目交付");
-			} else if (request.getLatterState().equals("结束")) {
-				request.setOperation("结束项目");
+			} else if (request.getLatterState().equals("申请归档")) {
+				request.setOperation("申请归档");
 			} else if (request.getLatterState().equals("已归档")) {
 				request.setOperation("项目归档");
 			}
